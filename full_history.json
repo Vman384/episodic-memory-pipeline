@@ -1,0 +1,23 @@
+[
+  {
+    "chunk_index": 0,
+    "timestamp": "00:00 - 00:05",
+    "start_seconds": 0.0,
+    "vlm_description": "The image depicts the interior of a car, specifically the driver's perspective. The steering wheel is prominently visible, and the driver's hand is gripping it, indicating that the car is in motion. The dashboard features various gauges and controls, including a speedometer, fuel gauge, and climate control buttons. The windshield is wet, suggesting that it has been raining or is currently raining. The road ahead is straight and flanked by trees on both sides, indicating a rural or less urbanized area. The overall scene conveys a sense of driving on a rainy day, with the driver navigating the car through the wet conditions.",
+    "change_detected": false
+  },
+  {
+    "chunk_index": 1,
+    "timestamp": "00:05 - 00:10",
+    "start_seconds": 5.0,
+    "vlm_description": "The image shows the interior of a car, specifically the driver's perspective. The person is holding the steering wheel with both hands, indicating that they are driving. The steering wheel has a black leather cover and features several buttons and controls, including turn signals and audio controls. The dashboard is visible, with various gauges and indicators, including a speedometer and a tachometer. The windshield has raindrops on it, suggesting that it is raining outside. The road ahead is straight and flanked by trees on both sides, indicating a rural or less urbanized area. The overall scene conveys a sense of motion and travel, with the person actively driving through a rainy day.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 2,
+    "timestamp": "00:10 - 00:13",
+    "start_seconds": 10.0,
+    "vlm_description": "The image depicts the interior of a car, specifically the driver's perspective. The steering wheel, dashboard, and part of the windshield are visible. The steering wheel has the brand logo \"KIA\" prominently displayed in the center. The dashboard includes various gauges and controls, such as the speedometer and fuel gauge. The windshield has raindrops on it, indicating that it is raining outside. The road ahead is lined with trees, suggesting a rural or suburban setting. The driver's hand is visible, holding the steering wheel, indicating that the car is in motion. The overall scene conveys a sense of driving on a rainy day, with the focus on the driver's perspective from inside the car.",
+    "change_detected": true
+  }
+]

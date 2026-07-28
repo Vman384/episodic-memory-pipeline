@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -N qwen_vllm_large
+#PBS -P pg06
+#PBS -q gpuhopper
+#PBS -l ncpus=12
+#PBS -l ngpus=1
+#PBS -l mem=64GB
+#PBS -l walltime=01:25:00
+#PBS -l jobfs=50GB
+#PBS -l storage=scratch/pg06
+#PBS -l wd
+
+# 1. Load the required Gadi stacks
+module load python3/3.11.7
+module load cuda/12.2.2
+
+# # 2. Apply your verified compilation fixes
+# export CPATH="/apps/python3/3.11.7/include/python3.11:$(python3 -c "import sysconfig; print(sysconfig.get_path('include'))"):$CPATH"
+# export CPLUS_INCLUDE_PATH=$CPATH
+# export CUDA_HOME=/apps/cuda/12.2.2
+# export PATH=$CUDA_HOME/bin:$PATH
+
+# # 3. Optimizations specifically for Qwen2-VL & heavy data loading
+# export VLLM_ATTENTION_BACKEND=FLASH_ATTN # Forces stable attention backend
+# export TORCH_EXTENSIONS_DIR="${PBS_JOBFS}/torch_extensions" # Redirects JIT compilation to fast local SSD
+
+# 4. Activate your environment and run
+source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
+python main.py
