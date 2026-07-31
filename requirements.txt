@@ -1,2 +1,8 @@
-vlm
+vllm
 decord
+
+# sparse_event_pipeline requirements
+anthropic>=0.120
+tqdm
+decord
+Pillow
