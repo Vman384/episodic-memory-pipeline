@@ -5,7 +5,7 @@
 #PBS -l ncpus=16
 #PBS -l ngpus=1
 #PBS -l mem=64GB
-#PBS -l walltime=10:00:00      # Set according to your workload size
+#PBS -l walltime=00:10:00      # Set according to your workload size
 #PBS -l jobfs=50GB
 #PBS -l wd
 

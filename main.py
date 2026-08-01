@@ -84,7 +84,10 @@ def run_video_pipeline(
 
         if previous_description is not None:
             comparison_prompt = f"""<|im_start|>system
-You are a video analysis assistant. Compare two consecutive video scene descriptions and identify if any NEW significant action, subject, or state change occurred.
+You are a video analysis assistant. Compare two consecutive video scene descriptions and identify if any NEW significant action, subject, or state change occurred. 
+Don't compare the scences rather identify anything new found and structure the questions regarding a new event or object that appeared.
+Create a question that can be answered without knowing the specifc scene and instead treat the scene as a chunk of a larger video and the question that can
+be answered by looking at the video as a whole 
 Return ONLY a valid JSON object matching this schema:
 {{
   "something_new": true/false,
