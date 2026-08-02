@@ -1,311 +1,251 @@
-# re — strip markdown fences from model output before JSON parsing
-# os / os.path — check files exist, join directory paths
-# json — parse the model's JSON response
-# glob — find frame_*.jpg files inside a directory
-# base64 — encode binary JPEG data as ASCII text so it can travel in a JSON HTTP body
-# asyncio — run multiple API calls concurrently and bound them with a Semaphore
-# anthropic / AsyncAnthropic — talk to the opencode.ai gateway (Anthropic-compatible API)
-import re
-import os
-import json
-import glob
-import base64
-import asyncio
+"""Send frame subsections to a VLM through the OpenCode Go API."""
 
-import anthropic
+from __future__ import annotations
+
+import argparse
+import asyncio
+import base64
+import json
+import os
+from pathlib import Path
+
 from anthropic import AsyncAnthropic
 
-# The opencode gateway exposes an Anthropic-compatible Messages endpoint at this base URL.
-# The SDK internally appends /v1/messages, so we strip any trailing /v1 suffix on our end
-# to avoid a double path like /v1/v1/messages.
+
 DEFAULT_BASE_URL = "https://opencode.ai/zen/go/v1"
-
-# The model name as recognised by the opencode gateway.  Must be a vision-capable
-# model (the frames are sent as base64 images in the request).
 DEFAULT_MODEL = "qwen3.7-plus"
-
-# When loading frames from a directory, we only pick up files matching this pattern
-# (the naming convention used by video_parser.py).  Sorting alphabetically gives
-# chronological order because the frame index is zero-padded.
-FRAME_GLOB = "frame_*.jpg"
-
-
-class AIEventParser:
-    """Call a VLM via the opencode Anthropic-compatible endpoint and parse the result.
-
-    Usage:
-        parser = AIEventParser()
-        result = await parser.query(["frame_00001.jpg", "frame_00002.jpg"])
-        # result == {"interesting_events": [...], ...}
-    """
-
-    def __init__(self, model_name: str = DEFAULT_MODEL,
-                 max_concurrent_task: int = 3, api_key: str = None,
-                 base_url: str = DEFAULT_BASE_URL, max_retries: int = 2,
-                 request_timeout: int = 600):
-
-        # --- API authentication ---
-        # The key can be passed directly or read from the OPENCODE_API_KEY env var.
-        self.api_key = api_key or os.environ.get("OPENCODE_API_KEY")
-        if not self.api_key:
-            raise ValueError("OPENCODE_API_KEY not found, provide --api-key or set env var")
-
-        # --- HTTP client ---
-        # We use the official Anthropic Python SDK.  The opencode gateway speaks the
-        # same wire protocol, so we just point base_url at the gateway.
-        # .rstrip("/").removesuffix("/v1") handles base URLs like
-        # "https://opencode.ai/zen/go/v1" or "https://opencode.ai/zen/go/v1/" — the
-        # SDK will append /v1/messages on its own.
-        self.client = AsyncAnthropic(
-            api_key=self.api_key,
-            base_url=base_url.rstrip("/").removesuffix("/v1"),
-        )
-        self.model_name = model_name
-
-        # --- Concurrency control ---
-        # asyncio.Semaphore acts like a bouncer: at most max_concurrent_task API calls
-        # can be in flight at the same time.  Each call does `async with self.semaphore`
-        # before hitting the network, so it waits its turn if too many are already running.
-        # This prevents rate-limit 429 errors and keeps memory bounded.
-        self.semaphore = asyncio.Semaphore(max_concurrent_task)
-
-        # If a call fails with a transient error (network hiccup, 429, 5xx), we retry
-        # up to this many times with exponential backoff before giving up.
-        self.max_retries = max_retries
-
-        # How long to wait for a single API call before timing out.  VLM calls with
-        # many images attached can take minutes, so 600 s is a generous default.
-        self.request_timeout = request_timeout
-
-        # --- Default system prompt ---
-        # This is the instruction we send alongside the frame images.  It tells the
-        # model what to look for and what JSON format to return.  You can override it
-        # per query by passing a custom `prompt` argument to query().
-        self.prompt = """You are analyzing frames from a dashcam video, sampled in chronological order
+PROMPT = """You are analyzing frames from a dashcam video, sampled in chronological order
 from one section of a longer drive through forest, rural and tunnel road
 environments.
 
-You are looking for rare or noteworthy events: unusual occurrences, unexpected
-objects, events, sudden changes, unique terrain transitions, or anything that
-stands out from just regularly driving. DO NOT report normal driving, regular
-traffic, or mundane scenery. We only want unusual, rare and interesting events.
+Look for rare or noteworthy events: unusual occurrences, unexpected objects,
+sudden changes, unique terrain transitions, or anything that stands out from
+normal driving. Do not report normal driving, regular traffic, or mundane
+scenery.
 
-Each frame you receive is a file in its own section folder, in the order
-frame_00000.jpg, frame_00001.jpg, ... The frame index is the part of the
-filename before ".jpg". Report events by referring to the specific frame file
-they occur in, along with the section_id you were told for this batch. We keep
-these files on disk, so the exact frame name lets us verify the event later.
-
-Respond with ONLY a JSON object (no markdown, no commentary). If nothing
-noteworthy happens, return an empty interesting_events list.
+Respond with ONLY a JSON object. If nothing noteworthy happens, return an
+empty interesting_events list.
 
 {
     "interesting_events": [
         {
-        "section_id": <integer section_id you received for this batch>,
-        "frame": "name of the frame file, e.g. frame_00042.jpg",
-        "event_description": "detailed description of what happened",
-        "why_interesting": "why this is considered a rare/sparse event",
-        "terrain": "one of: forest, rural, tunnel, other"
+            "section_id": "the section name",
+            "frame": "the exact frame filename",
+            "event_description": "what happened",
+            "why_interesting": "why this is unusual",
+            "terrain": "forest, rural, tunnel, or other"
         }
     ]
 }
 """
 
-    # ------------------------------------------------------------------
-    # JSON parsing
-    # ------------------------------------------------------------------
+# Maps lowercase file extensions to the corresponding MIME type string
+# expected by the Anthropic-compatible Messages API.
+IMAGE_MEDIA_TYPES = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".bmp": "image/bmp",
+}
+
+
+class AIEventParser:
+    """Process each frame subsection concurrently with a VLM."""
+
+    def __init__(
+        self,
+        api_key: str | None = None,
+        model: str = DEFAULT_MODEL,
+        base_url: str = DEFAULT_BASE_URL,
+        prompt: str = PROMPT,
+        max_concurrent: int = 3,
+        max_tokens: int = 2048,
+    ):
+        # Sanity checks so nonsense values fail fast.
+        if max_concurrent <= 0:
+            raise ValueError("max_concurrent must be greater than zero")
+        if max_tokens <= 0:
+            raise ValueError("max_tokens must be greater than zero")
+
+        # The API key can come from the environment or the constructor.
+        self.api_key = api_key or os.environ.get("OPENCODE_API_KEY")
+        if not self.api_key:
+            raise ValueError("Set OPENCODE_API_KEY or pass api_key explicitly")
+
+        # The OpenCode Go gateway speaks the Anthropic wire protocol, so we
+        # use the official SDK pointed at the gateway base URL.
+        self.client = AsyncAnthropic(
+            api_key=self.api_key,
+            base_url=base_url.rstrip("/").removesuffix("/v1"),
+        )
+        self.model = model
+        self.prompt = prompt
+        self.max_tokens = max_tokens
+
+        # Bounded concurrency: at most max_concurrent API calls can be in
+        # flight at once, avoiding rate limits and memory pressure.
+        self.semaphore = asyncio.Semaphore(max_concurrent)
 
     @staticmethod
-    def _parse_json(body: str) -> dict:
-        """Try to extract a valid JSON dict from the model's raw text output.
+    def _frame_paths(section_dir: Path) -> list[Path]:
+        """Return supported numeric frame files in chronological order.
 
-        LLMs are messy — even with careful prompting they sometimes wrap JSON in
-        ```json ... ``` markdown fences, or prepend a spurious opening brace, or
-        append commentary after the closing brace.  This method tries several
-        recovery strategies in order, from most to least specific:
-
-          1. Raw text as-is (the happy path).
-          2. Prepend "{" — the model may have dropped the opening brace because
-             we pre-filled the assistant message with "{", making the model think
-             the brace was already emitted.
-          3. Strip markdown fences (``` or ```json) from (1), then parse.
-          4. Strip markdown fences from (2), then parse.
-          5. Regex-extract the first { ... } block from the stripped text and
-             parse that.  This catches cases where the model added text before
-             or after the JSON object.
-
-        If every path fails, the last JSONDecodeError is raised and caught by
-        query()'s retry loop — the model may produce valid output on the next
-        attempt.
+        Only regular files whose extension is in IMAGE_MEDIA_TYPES are kept.
+        Frames are sorted by their numeric stem so the VLM sees them in the
+        order they were captured.
         """
-        last_error = None
-        # Try two "candidates": the raw text, and the raw text with "{" prepended.
-        for candidate in (body, "{" + body):
-            # Strip ```json fences — just remove the backtick markers, keep everything else.
-            cleaned = re.sub(r"```(?:json)?", "", candidate).strip()
+        # Collect every file that looks like a supported image.
+        paths = []
+        for path in section_dir.iterdir():
+            if not path.is_file():
+                continue
+            if path.suffix.lower() not in IMAGE_MEDIA_TYPES:
+                continue
+            paths.append(path)
 
-            # Attempt 1: direct JSON parse of the cleaned text.
-            try:
-                return json.loads(cleaned)
-            except json.JSONDecodeError as e:
-                last_error = e
+        # Sort chronologically by the numeric filename stem.
+        paths.sort(key=lambda path: int(path.stem))
+        return paths
 
-            # Attempt 2: find the first { ... } block with a regex and parse just that.
-            # re.DOTALL makes "." match newlines, so the regex works across multi-line text.
-            match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-            if match:
-                try:
-                    return json.loads(match.group(0))
-                except json.JSONDecodeError as e:
-                    last_error = e
+    async def _query_section(self, section_dir: Path) -> dict:
+        """Send one subsection to the VLM and return the parsed JSON result.
 
-        # Nothing worked — let the caller (the retry loop) handle it.
-        raise last_error
-
-    # ------------------------------------------------------------------
-    # Core API call
-    # ------------------------------------------------------------------
-
-    async def query(self, frame_paths: list, prompt: str = None) -> dict:
-        """Send a list of frame images + a prompt to the VLM and return parsed JSON.
-
-        This is the single place where HTTP calls happen.  Everything else
-        (query_directory, query_multiple) delegates to this method.
-
-        The flow:
-          1. Build a content list: text prompt first, then each frame as a
-             base64-encoded image block.
-          2. Wrap it in Anthropic Messages format:
-             - The user message contains the prompt + images.
-             - We pre-fill the assistant's response with "{" to force the model
-               to continue in JSON.
-          3. Call the API with retries and exponential backoff.
-          4. Parse the body with _parse_json and return the dict.
-
-        Args:
-            frame_paths: list of paths to JPEG frame files (sent in order).
-            prompt: custom prompt.  Uses self.prompt when None.
+        Each frame in the subsection is read from disk, base64-encoded, and
+        attached to the request as an image block.  The section directory name
+        is prepended to the prompt so the model can reference it in its
+        response.
         """
-
-        # --- Step 1: build the content list ---
-        # The Anthropic Messages API expects content as a list of blocks.
-        # A block is either {"type": "text", "text": "..."} or
-        # {"type": "image", "source": {"type": "base64", "media_type": "...", "data": "..."}}.
-        content = [{"type": "text", "text": prompt or self.prompt}]
-
-        for fp in frame_paths:
-            # Read the JPEG file as raw bytes …
-            with open(fp, "rb") as f:
-                raw_bytes = f.read()
-            # … and encode those bytes as a base64 string.  base64 turns binary
-            # data into plain ASCII so it can live inside a JSON request body.
-            b64 = base64.standard_b64encode(raw_bytes).decode("utf-8")
-            content.append({
-                "type": "image",
-                "source": {"type": "base64", "media_type": "image/jpeg", "data": b64},
-            })
-
-        # --- Step 2: build the Messages-format payload ---
-        # The "user" message carries the prompt + frames.
-        # The "assistant" message is a prefill: by putting "{" as the assistant's
-        # first response, the model is forced to continue it — which means it must
-        # write valid JSON (starting with the key/value pairs after "{").
-        # This avoids most formatting problems entirely.
-        messages = [
-            {"role": "user", "content": content},
-            {"role": "assistant", "content": [{"type": "text", "text": "{"}]},
+        # Start the message content with the text prompt.
+        content = [
+            {
+                "type": "text",
+                "text": f"Section name: {section_dir.name}\n\n{self.prompt}",
+            }
         ]
 
-        # --- Step 3: call the API with retries ---
-        last_error = None
-        for attempt in range(self.max_retries + 1):
-            try:
-                # Wait for the semaphore — if max_concurrent_task calls are already
-                # running, this will pause here until one finishes and releases the slot.
-                async with self.semaphore:
-                    response = await self.client.messages.create(
-                        model=self.model_name,
-                        temperature=0.3,  # low temp = more deterministic, fewer hallucinations
-                        messages=messages,
-                        timeout=self.request_timeout,
-                    )
+        # Attach every frame image in this subsection.
+        for frame_path in self._frame_paths(section_dir):
+            # Read the raw bytes and base64-encode them for transport
+            # inside a JSON body.
+            raw_bytes = frame_path.read_bytes()
+            image_data = base64.b64encode(raw_bytes).decode("ascii")
 
-                # The response.content is a list of ContentBlock objects.  We only
-                # care about text blocks (not tool-use blocks, etc.), so we join
-                # all text block contents into a single string.
-                body = "".join(b.text for b in response.content if b.type == "text")
+            # Look up the correct MIME type for this file extension.
+            media_type = IMAGE_MEDIA_TYPES[frame_path.suffix.lower()]
 
-                # Parse the text into a Python dict.
-                result = self._parse_json(body)
+            content.append(
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": media_type,
+                        "data": image_data,
+                    },
+                }
+            )
 
-                # Ensure the result always has "interesting_events" so callers
-                # don't have to guard against KeyError.
-                result.setdefault("interesting_events", [])
-                return result
+        # Wait for a semaphore slot so we do not exceed max_concurrent calls.
+        async with self.semaphore:
+            response = await self.client.messages.create(
+                model=self.model,
+                max_tokens=self.max_tokens,
+                temperature=0.2,
+                messages=[{"role": "user", "content": content}],
+            )
 
-            # --- Error classification ---
-            # Not all errors should be retried the same way.
+        # Extract only the text portions of the response.
+        body_parts = []
+        for block in response.content:
+            if getattr(block, "type", None) == "text":
+                body_parts.append(block.text)
+        body = "".join(body_parts).strip()
 
-            except anthropic.APIStatusError as e:
-                last_error = e
-                # 4xx errors (bad request, bad API key, unknown model) are
-                # PERMANENT — retrying with the same payload will just fail again.
-                # The one exception is 429 (rate limit), which IS transient.
-                if e.status_code < 500 and e.status_code != 429:
-                    break  # stop retrying immediately
+        # The model is prompted to respond with pure JSON, so parse it.
+        return json.loads(body)
 
-            except (anthropic.APIConnectionError,   # DNS / network failure
-                    anthropic.APITimeoutError,      # request took too long
-                    asyncio.TimeoutError,           # client-side timeout
-                    json.JSONDecodeError) as e:     # model output wasn't valid JSON
-                last_error = e
-                # These are all TRANSIENT — the next attempt might succeed.
+    async def process_subsections(
+        self,
+        sections_dir: str | Path,
+        output_dir: str | Path,
+    ) -> list[Path]:
+        """Process every direct subsection and save one JSON result per section.
 
-            # Exponential backoff before the next retry:
-            # attempt 0 → sleep 2s, attempt 1 → 4s, attempt 2 → 8s, etc.
-            if attempt < self.max_retries:
-                await asyncio.sleep(2 ** attempt * 2)
-
-        # All retries exhausted — return a partial result with an error field
-        # so the caller knows something went wrong, but the pipeline can still
-        # aggregate results from other (successful) queries.
-        print(f"Query failed after {attempt + 1} attempt(s): {last_error}")
-        return {"interesting_events": [],
-                "error": f"{type(last_error).__name__}: {last_error}"}
-
-    # ------------------------------------------------------------------
-    # Convenience methods
-    # ------------------------------------------------------------------
-
-    async def query_directory(self, frames_dir: str, prompt: str = None) -> dict:
-        """Scan a directory for frame_*.jpg files and query the model with all of them.
-
-        Sort order is alphabetical, which matches chronological order because
-        video_parser.py names frames with zero-padded indices (frame_00000.jpg,
-        frame_00001.jpg, ...).
+        Each subsection directory under *sections_dir* is queried
+        concurrently.  Results are written to
+        ``<output_dir>/<section_name>_output/result.json``.
         """
-        # glob finds all files matching the pattern; sorted ensures they're in order.
-        paths = sorted(glob.glob(os.path.join(frames_dir, FRAME_GLOB)))
-        if not paths:
-            return {"interesting_events": [], "error": f"no frames in {frames_dir}"}
-        return await self.query(paths, prompt)
+        sections_dir = Path(sections_dir).expanduser()
+        output_dir = Path(output_dir).expanduser()
 
-    async def query_multiple(self, batch_specs: list) -> list:
-        """Fire multiple queries at once, all sharing the same semaphore.
+        if not sections_dir.is_dir():
+            raise FileNotFoundError(f"Sections directory not found: {sections_dir}")
 
-        Use this when you have several independent sets of frames (e.g., different
-        sections of a video) and want to process them concurrently rather than
-        one-after-the-other.
+        # Discover every subdirectory under the sections root.
+        section_dirs = []
+        for path in sections_dir.iterdir():
+            if path.is_dir():
+                section_dirs.append(path)
+        section_dirs.sort()
 
-        Each item in batch_specs is a dict with:
-            frame_paths  — list of file paths (required)
-            prompt       — optional per-batch prompt override
+        # Ensure the output root exists before writing results.
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-        Returns a list of result dicts, one per batch, in the same order as
-        batch_specs.  The semaphore ensures we never exceed max_concurrent_task
-        in-flight calls, even if batch_specs has 100 entries.
-        """
+        async def process(section_dir: Path) -> Path:
+            # One isolated output folder per section.
+            result_dir = output_dir / f"{section_dir.name}_output"
+            result_dir.mkdir(parents=True, exist_ok=True)
+
+            # Call the VLM for this section's frames.
+            result = await self._query_section(section_dir)
+
+            # Persist the JSON result inside the section output folder.
+            result_path = result_dir / "result.json"
+            result_path.write_text(json.dumps(result, indent=2) + "\n")
+            return result_path
+
+        # Launch all section queries concurrently; the semaphore limits
+        # how many actually call the API at the same time.
         return await asyncio.gather(
-            *[self.query(b["frame_paths"], b.get("prompt")) for b in batch_specs]
+            *(process(section) for section in section_dirs)
         )
+
+
+def main() -> None:
+    """Run the subsection VLM parser from the command line."""
+    parser = argparse.ArgumentParser(
+        description="Process frame subsections with an OpenCode Go VLM."
+    )
+    parser.add_argument("sections_dir", help="Directory containing subsection folders")
+    parser.add_argument("--output", required=True, help="Directory for subsection results")
+    parser.add_argument("--prompt", default=PROMPT, help="Prompt sent to the VLM")
+    parser.add_argument("--model", default=DEFAULT_MODEL, help="VLM model name")
+    parser.add_argument("--api-key", default=None, help="API key or OPENCODE_API_KEY")
+    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="OpenCode Go API URL")
+    parser.add_argument(
+        "--max-concurrent",
+        type=int,
+        default=3,
+        help="Maximum concurrent VLM requests (default: 3)",
+    )
+    args = parser.parse_args()
+
+    # Wire up the parser from CLI arguments.
+    parser_instance = AIEventParser(
+        api_key=args.api_key,
+        model=args.model,
+        base_url=args.base_url,
+        prompt=args.prompt,
+        max_concurrent=args.max_concurrent,
+    )
+
+    # Run the async pipeline and print every produced result path.
+    result_paths = asyncio.run(
+        parser_instance.process_subsections(args.sections_dir, args.output)
+    )
+    for result_path in result_paths:
+        print(result_path)
+
+
+if __name__ == "__main__":
+    main()

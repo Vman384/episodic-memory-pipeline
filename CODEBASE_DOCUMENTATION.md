@@ -188,7 +188,7 @@ No video files are split or re-encoded — only frames are extracted. This avoid
                                            ⋮
 ```
 
-**Class: `VideoParser`**
+**Class: `FrameParser`**
 
 | Constructor Parameter | Description | Default |
 |-----------------------|-------------|---------|

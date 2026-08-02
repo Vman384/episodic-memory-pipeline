@@ -7,18 +7,30 @@ Benchmarking pipeline to assess Vision Language Models' (VLMs) episodic memory c
 | Script | Purpose |
 |--------|---------|
 | `main.py` | Full-video chunked description pipeline using vLLM (Qwen2-VL + DeepSeek-V4) |
-| `sparse_event_pipeline/video_parser.py` | Build frame-range manifest for overlapping video sections (Decord, no ffmpeg) |
-| `sparse_event_pipeline/AIParser.py` | Sparse event detector using opencode.ai VLM gateway (Anthropic-compatible) |
+| `sparse_event_pipeline/frame_parser.py` | Split an existing folder of numerically named frame images into VLM-sized sections |
+| `sparse_event_pipeline/AIParser.py` | Concurrent subsection parser using the OpenCode Go VLM API |
+| `sparse_event_pipeline/run.py` | CLI wrapper for the subsection VLM parser |
 
 ## Quick Start
 
 ```bash
-# 1. Generate a section manifest
-python sparse_event_pipeline/video_parser.py my_dashcam_video.mp4 --output manifest.json --duration 300 --overlap 10
+# 1. Split an existing frame folder into sections.
+#    Frame filenames must have numeric stems, such as 1733343593917869.png.
+python sparse_event_pipeline/frame_parser.py path/to/frames --output path/to/sections --frames-per-section 100 --step 2
 
-# 2. Detect sparse events
-python sparse_event_pipeline/AIParser.py manifest.json --output events.json --fps 1.0
+# 2. Query every generated subsection concurrently.
+export OPENCODE_API_KEY="your-api-key"
+python sparse_event_pipeline/run.py path/to/sections \
+  --output path/to/results \
+  --model qwen3.7-plus \
+  --max-concurrent 3
 ```
+
+`--step 1` keeps every frame. A value of `2` keeps every second frame,
+which reduces the number of images sent to the VLM. Frames are sorted by their
+numeric filename before sampling and sectioning. By default, frames are copied;
+pass `--move` to move them instead. Each subsection result is written to a
+directory such as `section_0000_output/result.json` under the output directory.
  
 ## Full Documentation
 
