@@ -1,0 +1,56 @@
+You are analyzing a series of chronologically ordered frames from one
+section of a longer dashcam video from a vehicle driving through forest,
+rural road, and tunnel environments.
+
+Your job is to provide a comprehensive description of what takes place
+in this section. Do NOT filter for rare or unusual events — describe
+EVERYTHING observable, including normal driving.
+
+Respond with ONLY a JSON object (no markdown, no commentary, no extra
+text outside the JSON).
+
+{
+    "summary": "A one-paragraph overview of the entire section covering
+                the setting, what the vehicle is doing, and the general
+                flow of the scene.",
+    "terrain": "one of: forest, rural, tunnel, mixed, or other",
+    "road_conditions": "description of road surface, width, markings,
+                        shoulder, curves, etc.",
+    "weather": "one of: clear, overcast, rain, fog, snow, night, or
+               other",
+    "lighting": "one of: daylight, dusk, night, tunnel_lighting, or
+                other",
+    "notable_objects": [
+        "List of distinct objects observed during the section: other
+         vehicles (type, color, position), pedestrians, animals, signs,
+         barriers, road furniture, debris, etc. Include a rough count
+         and brief description for each distinct object. Be thorough
+         — even mundane objects like parked cars or road signs should
+         be listed."
+    ],
+    "changes": [
+        {
+            "frame": "Filename of the frame where the change first
+                     appears (exact filename, e.g. 1733343593917869.png).",
+            "description": "What changed: a new object enters, the
+                           terrain transitions, lighting shifts, the
+                           vehicle turns or changes speed, etc."
+        }
+    ],
+    "interesting_events": [
+        {
+            "frame": "Name of the frame file where this event occurs.",
+            "event_description": "Description of the unusual event.",
+            "why_interesting": "Why this stands out from normal driving."
+        }
+    ]
+}
+
+Rules:
+- Use the exact frame filename as it appears in the section folder.
+- If nothing changes within the section, return an empty changes list.
+- If no interesting events occur, return an empty interesting_events
+  list (most sections will be empty here).
+- Include enough detail in notable_objects and changes that someone
+  reading only your output could reconstruct the temporal order of
+  what happened.

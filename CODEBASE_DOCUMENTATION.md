@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a **benchmarking pipeline** to assess **Vision Language Models' (VLMs) episodic memory capabilities** in long-form **egocentric dashcam video**. The input videos are dashcam recordings from vehicles driving through forests, rural roads, and tunnels, ranging from 6 minutes to 1 hour in duration. These videos have very low information density (few events), which intentionally stresses the model's ability to recall details over long time spans.
+This project is a **benchmarking pipeline** to assess **Vision Language Models' (VLMs) episodic memory capabilities** in long-form **egocentric dashcam video**. The input data consists of pre-extracted frame images (epoch-timestamped PNG/JPG files in a directory), sourced from dashcam recordings of vehicles driving through forests, rural roads, and tunnels, ranging from 6 minutes to 1 hour in duration. These videos have very low information density (few events), which intentionally stresses the model's ability to recall details over long time spans.
 
 ### Benchmark Categories (as defined in `AI.md`)
 
@@ -19,20 +19,25 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 ### What Is Currently Implemented
 
-1. **Full-Video Chunked Description Pipeline** (`main.py`) — Processes an entire video in chunks of frames, generating scene descriptions via a VLM (Qwen2-VL) and detecting changes between chunks via a text LLM comparator (DeepSeek-V4). This serves as the general foundation for the broader benchmark (all four categories).
+1. **Frame Parser** (`sparse_event_pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, and copy/move semantics.
 
-2. **Video Parser** (`sparse_event_pipeline/video_parser.py`) — Splits a video into overlapping time sections, extracts sampled JPEG frames into per-section subfolders, and writes a manifest JSON. Uses Decord for video reading and PIL for frame resizing/saving. No ffmpeg dependency.
+2. **AI Event Parser** (`sparse_event_pipeline/AIParser.py`) — Processes frame subsections concurrently through the opencode.ai VLM gateway (Anthropic-compatible endpoint). Supports two analysis modes via prompt selection (sparse-event detection and full scene description). Uses asyncio with a semaphore for concurrent API calls.
 
-3. **AI Event Parser** (`sparse_event_pipeline/AIParser.py`) — Sends batches of frame images to a VLM via the opencode.ai API gateway (Anthropic-compatible endpoint) and parses the model's JSON response for rare/noteworthy events. Uses asyncio with a semaphore for concurrent API calls.
+3. **Prompt Files** (`sparse_event_pipeline/prompts/descene_scene.txt`) — Full-narrative VLM prompt for the temporal pipeline's Stage 1. Asks the VLM to describe everything observable in a section, producing structured JSON for timeline construction.
 
-4. **HPC Job Script** (`run_vllm.pbs`) — PBS batch script for running the vLLM pipeline on NCI's Gadi cluster with A100 GPUs.
+4. **CLI Wrapper** (`sparse_event_pipeline/run.py`) — Thin entry point delegating to `AIParser.main()`.
+
+5. **Prototype** (`main.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. Reads video via Decord, chunks into 300-frame segments, generates descriptions and change-detection QA drafts via few-shot prompting. Hardcoded for Gadi A100 nodes but demonstrates the consecutive-comparison technique and single-model text+vision pattern. **Not pipeline-ified** — serves as design reference.
+
+6. **HPC Job Script** (`run_vllm.pbs`) — PBS batch script for running the vLLM pipeline on NCI's Gadi cluster with A100 GPUs.
 
 ### What Is Not Yet Implemented
 
-- The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting) — only the foundation pipeline exists.
-- The `run_vllm.pbs` script references a non-existent file `test_vlm.py`.
-- The `AI.md` design brief mentions plans for a **User Interface**, a **Hybrid Search Module** (historical data fetching), and a **Reporting frontend** — none of these exist yet.
-- No test suite, CI/CD, Dockerfile, or Makefile exists.
+- **Temporal pipeline** (`timeline_builder.py`, `draft_questions.py`, `ingest_review.py`) — designed but not yet built.
+- The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
+- `run_vllm.pbs` references a non-existent file `test_vlm.py`.
+- The `AI.md` design brief mentions a **User Interface**, a **Hybrid Search Module**, and a **Reporting frontend** — none exist.
+- No test suite, CI/CD, Dockerfile, or Makefile.
 
 ---
 
@@ -49,10 +54,11 @@ episodic-memory-pipeline/
 ├── CODEBASE_DOCUMENTATION.md
 ├── sparse_event_pipeline/
 │   ├── AIParser.py
+│   ├── frame_parser.py
 │   ├── run.py
-│   └── video_parser.py
-├── vids/
-│   └── 118014-714270866_medium.mp4
+│   └── prompts/
+│       └── describe_scene.txt
+├── vids/                           (git-ignored directory for video files)
 └── .venv/                         (virtual environment, git-ignored)
 ```
 
@@ -69,9 +75,8 @@ episodic-memory-pipeline/
 **What it defines:**
 - Project identity and goal: benchmarking VLMs on episodic memory using long-form egocentric dashcam video.
 - The four benchmark categories (listed above).
-- Input video characteristics: dashcam footage from forest, rural road, and tunnel driving. 6 minutes to 1 hour duration, minimal events, low information density.
-- High-level pipeline structure: a master pipeline composed of sub-pipelines for each benchmark category, with a user interface for executing specific benchmarks and a reporting frontend.
-- A "Hybrid Search" module for fetching historical data (anecdotes, images, code repositories, weather reports) to enrich reasoning.
+- Input data characteristics: dashcam footage from forest, rural road, and tunnel driving. 6 minutes to 1 hour duration, minimal events, low information density.
+- High-level pipeline structure: a master pipeline composed of sub-pipelines for each benchmark category.
 
 **Status:** Reference document. Not all planned components have been implemented.
 
@@ -82,14 +87,14 @@ episodic-memory-pipeline/
 **Purpose:** Version control exclusion rules.
 
 **Contents:**
-- `/vids/` — Excludes all video files from git (videos are large binary files).
-- `/.venv/` — Excludes the Python virtual environment.
+- `vids/` — Excludes all video files from git.
+- `.venv/` — Excludes the Python virtual environment.
 
 ---
 
 ### `main.py`
 
-**Purpose:** Core episodic memory benchmarking pipeline. Processes a video end-to-end by chunking it into segments, describing each segment with a VLM, and comparing consecutive descriptions with a text LLM to detect changes.
+**Purpose:** Coworker's prototype for full-video chunked description and change detection using self-hosted vLLM. **Not pipeline-ified** — serves as design reference demonstrating the consecutive-comparison technique.
 
 **Key Dependencies:** `vllm` (LLM, SamplingParams), `decord` (VideoReader), `PIL.Image`, `json`, `os`.
 
@@ -97,39 +102,29 @@ episodic-memory-pipeline/
 
 | Function | Purpose |
 |----------|---------|
-| `format_timestamp(seconds)` | Converts a float seconds value to `MM:SS` string format |
-| `sample_frames_from_indices(vr, start_idx, end_idx, num_samples=16)` | Uniformly samples a fixed number of frames (16) from a Decord VideoReader between two frame indices. Returns a list of PIL Images. |
-| `run_video_pipeline(video_path, full_history_json_path, change_analysis_json_path, vlm_model_name, text_llm_model_name, frames_per_chunk=300)` | **The main entry point.** See detailed flow below. |
+| `format_timestamp(seconds)` | Converts a float seconds value to `MM:SS` string format. |
+| `sample_frames_from_indices(vr, start_idx, end_idx, num_samples=8, max_size=(448, 448))` | Uniformly samples and downscales frames from a Decord VideoReader. Returns a list of PIL Images. |
+| `run_video_pipeline(video_path, ...)` | **Main entry point.** Processes video end-to-end. |
 
-**Pipeline Flow (`run_video_pipeline`):**
-
+**Pipeline Flow:**
 1. Opens the video via Decord, computes total frames and FPS.
-2. Initializes two separate vLLM models:
-   - **VLM** (default: `Qwen/Qwen2-VL-7B-Instruct`) — for describing video chunks.
-   - **Text LLM** (default: `deepseek-ai/DeepSeek-V4-Flash`) — for comparing consecutive scene descriptions.
-3. Iterates through the video in chunks of `frames_per_chunk` (default: 300 frames).
-4. For each chunk:
-   - Samples 16 frames uniformly from the chunk.
-   - Sends frames to the VLM with prompt: *"Describe what is taking place in this scene in detail."*
-   - If a previous description exists, asks the text LLM to compare the two scenes and output JSON: `{something_new, what_changed, question, answer}`.
-   - If a change is detected (`something_new: true`), appends a change record (including the generated QA pair) to `change_events_only`.
-   - Logs every chunk's description and change status to `full_pipeline_history`.
-5. Stream-saves both JSON files (`full_pipeline_history.json` and `change_analysis.json`) to disk after **every chunk** (crash-resilient).
-6. Returns both data buffers after processing the entire video.
+2. Initializes a single vLLM model (Qwen2-VL-7B) used for both vision description and text comparison — halves GPU memory.
+3. Iterates through the video in 300-frame chunks.
+4. For each chunk: samples 8 downscaled frames → VLM description → few-shot LLM comparison with previous chunk → `{something_new, what_changed, question, answer}` JSON.
+5. Stream-saves `full_history.json` and `change_analysis.json` after every chunk (crash-resilient).
+6. The few-shot comparator prompt is well-calibrated: explicit "most chunks should be false" threshold, no meta-questions, three calibration examples.
 
-**Bottom-of-file invocation:** Hardcoded test call with `"test.mp4"`, outputting to `./`. Uses `"Qwen/Qwen2-VL-7B-Instruct"` and `"deepseek-ai/DeepSeek-V4-Flash"`.
-
-**Status:** Functionally complete but hardcoded. The test video `"test.mp4"` likely does not exist (actual video is in `vids/`). The PBS script (`run_vllm.pbs`) references `test_vlm.py` which does not exist — this script may have evolved from or replaced that earlier file.
+**Status:** Prototype. Hardcoded scratch paths and model snapshot. Generates auto-QA drafts (circular ground truth — same model that describes also answers). No resume logic; restart reprocesses from chunk 0.
 
 ---
 
 ### `README.md`
 
-**Purpose:** Minimal project readme.
+**Purpose:** Project readme with structure overview and quick-start instructions.
 
-**Contents:** A single heading: `#Episodic-Memory`
+**Contents:** Documents `main.py`, `frame_parser.py`, `AIParser.py`, `run.py`, and `prompts/descene_scene.txt`. Quick Start shows the three-stage workflow: frame partitioning → sparse event detection → narrative pass.
 
-**Status:** Placeholder. No installation instructions, usage examples, or project description.
+**Status:** Complete.
 
 ---
 
@@ -138,158 +133,149 @@ episodic-memory-pipeline/
 **Purpose:** Root-level Python dependencies.
 
 **Contents:**
-- `vlm` — Likely meant to be `vllm` (VLM inference engine).
-- `decord` — Video reading and decoding library used by `main.py`.
-
-**Note:** `vlm` may be a typo; the actual package name is `vllm`.
+- `vllm` — VLM inference engine (used by `main.py`).
+- `decord` — Video reading and decoding library (used by `main.py`).
+- `anthropic>=0.120` — Anthropic Python SDK for the opencode API gateway (`AIParser.py`).
+- `tqdm` — Progress bar library.
+- `Pillow` — Image manipulation library.
 
 ---
 
 ### `run_vllm.pbs`
 
-**Purpose:** PBS (Portable Batch System) job script for running the vLLM pipeline on NCI's Gadi HPC cluster.
+**Purpose:** PBS job script for running the vLLM pipeline on NCI's Gadi HPC cluster.
 
 **Job Configuration:**
 - **Job name:** `qwen_vllm_large`
 - **Queue:** `dgxa100` (NVIDIA A100 GPU nodes)
-- **Resources:** 16 CPUs, 1 GPU, 64 GB RAM, 10-hour walltime, 50 GB local SSD (jobfs)
-- **Modules loaded:** `python3/3.11.7`, `cuda/12.2.2`
-- **Environment variables set:**
-  - `CPATH`, `CPLUS_INCLUDE_PATH`, `CUDA_HOME` (compilation fixes for A100)
-  - `VLLM_ATTENTION_BACKEND=FLASH_ATTN` (optimization)
-  - `TORCH_EXTENSIONS_DIR` and `XDG_CACHE_HOME` redirected to fast local SSD (`$PBS_JOBFS`)
-- **Entry point:** Activates conda env at `/scratch/pg06/vm4618/envs/vllm_env` and runs `python test_vlm.py`
+- **Resources:** 16 CPUs, 1 GPU, 64 GB RAM, 10-hour walltime, 50 GB local SSD
+- **Modules:** `python3/3.11.7`, `cuda/12.2.2`
+- **Entry point:** Activates conda env and runs `python test_vlm.py`
 
-**Status:** References `test_vlm.py` which does **not** exist in this repository. This script likely needs updating to reference `main.py` instead.
+**Status:** References `test_vlm.py` which does **not** exist. Needs updating to reference `main.py` or a pipeline-ified entry point.
 
 ---
 
 ## `sparse_event_pipeline/` — Sparse Event Localisation Sub-Pipeline
 
-This directory focuses specifically on **Benchmark Category 1: Sparse Event Localisation** — detecting rare, outlier events in dashcam footage.
+This directory focuses on **Benchmark Category 1: Sparse Event Localisation** and serves as the foundation for the planned temporal/episodic memory pipeline.
 
-**Workflow:** `video_parser.py` → per-section frame folders + manifest JSON → `AIParser.py` → event output JSON.
+**Workflow:** `frame_parser.py` → per-section frame folders → `AIParser.py` (two passes: sparse events + full narrative) → per-section output JSON.
 
 ---
 
-### `sparse_event_pipeline/video_parser.py`
+### `sparse_event_pipeline/frame_parser.py`
 
-**Purpose:** Takes a video, splits it into overlapping time sections, extracts sampled JPEG frames into a per-section folder structure, and writes a manifest JSON describing every section. This is the first stage of the sparse event pipeline — it produces the frame files that `AIParser.py` consumes.
+**Purpose:** Splits an existing directory of numerically named frame images into VLM-sized section folders. Works on pre-extracted frame directories (e.g., Boreas dataset camera images) — no video input, no Decord dependency. This is the first stage of the sparse event pipeline.
 
-No video files are split or re-encoded — only frames are extracted. This avoids quality loss from re-encoding and is much faster than splitting video files.
-
-**Key Dependencies:** `decord` (VideoReader), `PIL.Image`, `json`, `argparse`, `math`, `os`.
+**Key Dependencies:** `shutil`, `pathlib.Path`, `argparse`.
 
 **Output folder structure:**
 ```
-<frames_root>/<video_name>/<video_name>_section_0000/frame_00000.jpg
-                                           ⋮                  /frame_00149.jpg
-                        /<video_name>_section_0001/frame_00000.jpg
-                                           ⋮
+<output_dir>/
+    section_0000/1733343593917869.png
+                1733343596067826.png
+                ...
+    section_0001/1733343656170615.png
+                ...
 ```
 
 **Class: `FrameParser`**
 
 | Constructor Parameter | Description | Default |
 |-----------------------|-------------|---------|
-| `video_path` | Path to input video file | (required) |
-| `section_duration` | Section length in seconds | `300` (5 min) |
-| `overlap` | Overlap between adjacent sections in seconds | `10` |
-| `target_fps` | Frame sampling rate (frames per second of video) | `1.0` |
-| `frame_width` | Resize width for extracted frames | `768` |
-| `quality` | JPEG save quality (1–100) | `85` |
-| `frames_root` | Root directory for output frame folders | `"./frames"` |
+| `frames_dir` | Directory containing input frame files | (required) |
+| `output_dir` | Output root directory | `<frames_dir>_sections` |
+| `frames_per_section` | Maximum frames per section | `100` |
+| `step_size` | Keep every Nth frame after sorting | `1` |
+| `move` | Move frames instead of copying | `False` |
+| `extensions` | Accepted image extensions (case-insensitive) | `.jpg`, `.jpeg`, `.png`, `.webp`, `.bmp` |
 
 **Methods:**
 
 | Method | Purpose |
 |--------|---------|
-| `run()` | Entry point. Computes section ranges, creates output directories, extracts frames for each section via `_extract_section_frames()`, and writes the manifest JSON to `<frames_root>/<video_name>_manifest.json`. |
+| `create_section_dir()` | Sorts frame files by numeric stem, applies step sampling, partitions into per-section directories, and copies (or moves) files. Returns list of created section directory paths. |
 
-**Manifest JSON format:**
-```json
-{
-  "original_video": "/absolute/path/to/video.mp4",
-  "video_name": "video_name",
-  "fps": 30.0,
-  "total_frames": 54000,
-  "total_duration": 1800.0,
-  "section_duration": 300,
-  "overlap": 10,
-  "target_fps": 1.0,
-  "num_sections": 7,
-  "sections": [
-    {
-      "section_id": 0,
-      "start_frame": 0,
-      "end_frame": 9000,
-      "start_time_global": 0.0,
-      "end_time_global": 300.0,
-      "duration": 300.0,
-      "frame_dir": "./frames/video_name/video_name_section_0000"
-    }
-  ],
-  "frames_root": "./frames"
-}
+**CLI Interface:**
+
+| Argument | Description | Default |
+|----------|-------------|---------|
+| `frames_dir` (positional) | Directory containing frame images | (required) |
+| `--output` | Output root directory | `<frames_dir>_sections` |
+| `--frames-per-section` | Max frames per section | `100` |
+| `--step` | Keep every Nth frame | `1` |
+| `--move` | Move frames instead of copying | `False` |
+
+**Status:** Complete.
+
+---
+
+### `sparse_event_pipeline/AIParser.py`
+
+**Purpose:** Processes frame subsections concurrently through the OpenCode Go VLM API gateway (Anthropic-compatible interface). Supports two analysis modes via prompt selection (inline `--prompt` or `--prompt-file`). Exposes reusable `call_llm` and `call_vlm` methods for use by downstream modules (`timeline_builder`, `draft_questions`, etc.).
+
+**Key Dependencies:** `anthropic` (AsyncAnthropic), `asyncio`, `json`, `base64`, `os`, `pathlib.Path`.
+
+**Constants:**
+
+| Name | Value | Purpose |
+|------|-------|---------|
+| `DEFAULT_BASE_URL` | `"https://opencode.ai/zen/go/v1"` | OpenCode Go API gateway URL |
+| `DEFAULT_MODEL` | `"qwen3.7-plus"` | Default VLM model on the gateway |
+| `PROMPT` | (multi-line) | Built-in sparse-event detection prompt |
+| `IMAGE_MEDIA_TYPES` | `dict` | Extension → MIME type mapping for base64 encoding |
+
+**Class: `AIEventParser`**
+
+| Constructor Parameter | Description | Default |
+|-----------------------|-------------|---------|
+| `api_key` | API key for the opencode gateway | `OPENCODE_API_KEY` env var |
+| `model` | Model identifier on the gateway | `"qwen3.7-plus"` |
+| `base_url` | API base URL | `"https://opencode.ai/zen/go/v1"` |
+| `prompt` | Prompt text sent to the VLM | Built-in sparse-event prompt |
+| `max_concurrent` | Max concurrent API calls (via asyncio.Semaphore) | `3` |
+| `max_tokens` | Max tokens in VLM response | `2048` |
+
+**Public methods:**
+
+| Method | Purpose |
+|--------|---------|
+| `call_llm(prompt, model=None, max_tokens=None)` (async) → `str` | Text-only API call. Sends prompt with no images. Returns raw text — caller parses JSON if needed. Model override allows using a cheaper text model. Used by downstream modules for story generation, summarisation, etc. |
+| `call_vlm(frame_paths, prompt, model=None, max_tokens=None)` (async) → `dict` | Sends a list of frame image paths with a text prompt, base64-encodes each frame. Returns parsed JSON. This is the general form; `_query_section` wraps it for convenience. |
+| `process_subsections(sections_dir, output_dir)` (async) → `list[Path]` | Entry point. Discovers section subdirectories, launches concurrent queries for each, writes one JSON result per section under `<output_dir>/<section_name>_output/`. |
+
+**Output structure (per section):**
+```
+<output_dir>/section_0000_output/result.json
+<output_dir>/section_0001_output/result.json
+...
 ```
 
 **CLI Interface:**
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `video_path` (positional) | Path to input video | (required) |
-| `--duration` | Section duration in seconds | `300` |
-| `--overlap` | Overlap between sections in seconds | `10` |
-| `--fps` | Frame sampling rate | `1.0` |
-| `--width` | Resize width for frames | `768` |
-| `--quality` | JPEG quality | `85` |
-| `--frames-root` | Output root directory | `"./frames"` |
+| `sections_dir` (positional) | Directory containing subsection folders | (required) |
+| `--output` | Directory for subsection results | (required) |
+| `--prompt` | Inline prompt text | Built-in sparse-event prompt |
+| `--prompt-file` | Read prompt from a text file (overrides `--prompt`) | `None` |
+| `--output-name` | JSON filename written per section | `"result.json"` |
+| `--model` | Model name on the gateway | `"qwen3.7-plus"` |
+| `--api-key` | API key | `OPENCODE_API_KEY` env var |
+| `--base-url` | API base URL | `"https://opencode.ai/zen/go/v1"` |
+| `--max-concurrent` | Max concurrent API calls | `3` |
 
-**Status:** Fully functional and production-ready.
+**Two-pass usage pattern:**
 
----
+```bash
+# Pass 1: sparse event detection (default prompt)
+python sparse_event_pipeline/AIParser.py sections/ --output events/
 
-### `sparse_event_pipeline/AIParser.py`
-
-**Purpose:** Reads frame images from disk and sends them to a VLM via the opencode.ai API gateway (Anthropic-compatible interface) to identify rare/noteworthy events. Lightweight — no frame extraction, no section logic, no deduplication. Just: load frames → call API → return parsed JSON.
-
-**Key Dependencies:** `anthropic` (AsyncAnthropic), `asyncio`, `json`, `base64`, `os`, `glob`, `re`.
-
-**Class: `AIEventParser`**
-
-| Constructor Parameter | Description | Default |
-|-----------------------|-------------|---------|
-| `model_name` | Model identifier on the gateway | `"qwen3.7-plus"` |
-| `max_concurrent_task` | Max concurrent API calls (via asyncio.Semaphore) | `3` |
-| `api_key` | API key for the opencode gateway | `OPENCODE_API_KEY` env var |
-| `base_url` | API base URL | `"https://opencode.ai/zen/go/v1"` |
-| `max_retries` | Max retry attempts per API call | `2` |
-| `request_timeout` | Per-request timeout in seconds | `600` |
-
-**Methods:**
-
-| Method | Purpose |
-|--------|---------|
-| `query(frame_paths, prompt)` (async) | Core method. Reads JPEG frames from disk, base64-encodes them, sends them to the VLM along with a prompt, parses the JSON response. Includes retry logic with exponential backoff (retries on 5xx/429, does not retry on other 4xx). Uses a prefill trick (`{"role": "assistant", "content": "{"}`) to force the model to output JSON. |
-| `query_directory(frames_dir, prompt)` (async) | Convenience wrapper: globs `frame_*.jpg` from a directory (sorted chronologically) and calls `query`. |
-| `query_multiple(batch_specs)` (async) | Runs multiple `query` calls concurrently via `asyncio.gather`, all bounded by the semaphore. Each item in batch_specs is a dict with `frame_paths` (list) and optional `prompt`. |
-| `_parse_json(body)` (static) | Robust JSON parser: handles markdown code fences, missing leading `{` (prefill artifact), and extracts the first `{...}` via regex if needed. |
-
-**Default prompt (set in `__init__`):** Instructs the VLM to look for rare, out-of-place, or noteworthy events in dashcam footage from forest/rural/tunnel environments. Ignores normal driving. Outputs JSON with an `interesting_events` array.
-
-**Output JSON format (per query):**
-```json
-{
-  "interesting_events": [
-    {
-      "section_id": 0,
-      "frame": "frame_00042.jpg",
-      "event_description": "A deer crosses the road from left to right",
-      "why_interesting": "Uncommon wildlife encounter on an otherwise empty road",
-      "terrain": "forest"
-    }
-  ]
-}
+# Pass 2: full scene description (narrative prompt file, different output name)
+python sparse_event_pipeline/AIParser.py sections/ --output narratives/ \
+  --prompt-file sparse_event_pipeline/prompts/describe_scene.txt \
+  --output-name narrative.json
 ```
 
 **Status:** Complete.
@@ -298,32 +284,19 @@ No video files are split or re-encoded — only frames are extracted. This avoid
 
 ### `sparse_event_pipeline/run.py`
 
-**Purpose:** CLI entry point for `AIParser.py`. Uses argparse to accept a directory (or single frame file), constructs an `AIEventParser`, and runs a query.
-
-**Key Dependencies:** `AIParser` (AIEventParser, DEFAULT_MODEL), `asyncio`, `argparse`, `json`, `os`.
-
-**CLI Interface:**
-
-| Argument | Description | Default |
-|----------|-------------|---------|
-| `input` (positional) | Directory of `frame_*.jpg` files OR a single frame file | (required) |
-| `--prompt` | Custom prompt | (built-in event prompt) |
-| `--output` | Write JSON response to file | `None` (prints to stdout) |
-| `--model` | Model name on the gateway | `"qwen3.7-plus"` |
-| `--api-key` | API key | `OPENCODE_API_KEY` env var |
-| `--max-concurrent` | Max concurrent API calls | `3` |
+**Purpose:** Thin CLI entry point that delegates to `AIParser.main()`. Convenience wrapper so the user can run `python sparse_event_pipeline/run.py ...` instead of `python sparse_event_pipeline/AIParser.py ...`.
 
 **Status:** Complete.
 
 ---
 
-### `vids/118014-714270866_medium.mp4`
+### `sparse_event_pipeline/prompts/describe_scene.txt`
 
-**Purpose:** Sample dashcam video used as test input for the pipeline.
+**Purpose:** Full-narrative VLM prompt for the temporal pipeline's Stage 1. Asks the VLM to describe everything observable in a section of dashcam footage — terrain, road conditions, weather, lighting, notable objects, and changes/transitions — rather than filtering for rare events only. The resulting structured JSON (`narrative.json`) is designed to feed the upcoming `timeline_builder.py`.
 
-**Details:** Binary MP4 video file. Filename suggests it is a "medium" resolution/quality version of a dashcam recording (ID: `118014-714270866`). This is the only video in the `vids/` directory.
+**Output JSON schema:** `{summary, terrain, road_conditions, weather, lighting, notable_objects[], changes[], interesting_events[]}`
 
-**Git status:** The entire `vids/` directory is git-ignored (per `.gitignore`).
+**Status:** Complete.
 
 ---
 
@@ -333,10 +306,10 @@ The codebase demonstrates two different LLM/VLM API strategies:
 
 | Approach | File | Model | Interface |
 |----------|------|-------|-----------|
-| **Self-hosted vLLM** | `main.py` | Qwen2-VL-7B (vision), DeepSeek-V4-Flash (text) | Direct `vllm.LLM()` class |
-| **Anthropic-compatible Gateway** | `sparse_event_pipeline/AIParser.py` | qwen3.7-plus | opencode.ai gateway via `AsyncAnthropic` |
+| **Self-hosted vLLM** | `main.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
+| **Anthropic-compatible Gateway** | `sparse_event_pipeline/AIParser.py` | qwen3.7-plus (vision); text model configurable | opencode.ai gateway via `AsyncAnthropic` |
 
-Both pipelines use **Decord** for video reading. `main.py` does frame extraction inline; `video_parser.py` extracts frames to disk for `AIParser.py` to consume later.
+The coworker's prototype (`main.py`) reads video directly via Decord and uses a single vLLM instance for both vision and text tasks. The sparse event pipeline works on pre-extracted frame directories and uses the API gateway for all model calls. Both paths are viable for HPC — the self-hosted path requires GPU nodes with local model snapshots; the gateway path requires network access from compute nodes.
 
 ---
 
@@ -344,13 +317,11 @@ Both pipelines use **Decord** for video reading. `main.py` does frame extraction
 
 1. **`run_vllm.pbs` references non-existent file** — The PBS script runs `python test_vlm.py` which does not exist. It should likely reference `main.py`.
 
-2. **`requirements.txt` typo** — Lists `vlm` instead of `vllm`.
+2. **`main.py` hardcoded paths** — Bottom-of-file invocation uses absolute scratch paths and a model snapshot path specific to one Gadi filesystem. Not portable.
 
-3. **`main.py` hardcoded video path** — Bottom-of-file invocation uses `"test.mp4"` which does not exist. The actual video is at `vids/118014-714270866_medium.mp4`.
+3. **No test suite** — No unit tests, integration tests, or test framework configuration exists.
 
-4. **No test suite** — No unit tests, integration tests, or test framework configuration exists.
-
-5. **No CI/CD or containerization** — No Dockerfile, Makefile, GitHub Actions, or other automation.
+4. **No CI/CD or containerization** — No Dockerfile, Makefile, GitHub Actions, or other automation.
 
 ---
 
@@ -359,10 +330,12 @@ Both pipelines use **Decord** for video reading. `main.py` does frame extraction
 | Component | Status |
 |-----------|--------|
 | Project design/spec (`AI.md`) | Complete |
-| Full-video chunked pipeline (`main.py`) | Functional (hardcoded) |
-| Video parser (`video_parser.py`) | Complete & production-ready |
-| AI event parser (`AIParser.py`) | Complete with CLI |
+| Coworker prototype (`main.py`) | Functional (hardcoded, reference only) |
+| Frame parser (`frame_parser.py`) | Complete |
+| AI event parser (`AIParser.py`) | Complete with CLI, dual-prompt support, reusable `call_llm`/`call_vlm` |
+| Narrative prompt (`prompts/describe_scene.txt`) | Complete |
 | HPC job script (`run_vllm.pbs`) | Exists but references wrong file |
+| Temporal pipeline (timeline builder, draft questions, review) | Designed, not yet implemented |
 | Benchmark categories 2–4 | Not yet implemented |
 | User Interface | Not yet implemented |
 | Hybrid Search Module | Not yet implemented |

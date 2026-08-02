@@ -108,30 +108,63 @@ class AIEventParser:
         paths.sort(key=lambda path: int(path.stem))
         return paths
 
-    async def _query_section(self, section_dir: Path) -> dict:
-        """Send one subsection to the VLM and return the parsed JSON result.
+    async def call_llm(
+        self,
+        prompt: str,
+        model: str | None = None,
+        max_tokens: int | None = None,
+    ) -> str:
+        """Send a text-only prompt and return the raw text response.
 
-        Each frame in the subsection is read from disk, base64-encoded, and
-        attached to the request as an image block.  The section directory name
-        is prepended to the prompt so the model can reference it in its
-        response.
+        No images are attached — use this for story generation, timeline
+        summarisation, or any text-in/text-out task.  The caller is
+        responsible for parsing JSON from the response if needed.
+
+        Args:
+            prompt: The text prompt to send.
+            model: Override the instance model (e.g. use a cheaper text
+                   model instead of the VLM).  Defaults to ``self.model``.
+            max_tokens: Override max output tokens.
         """
-        # Start the message content with the text prompt.
-        content = [
-            {
-                "type": "text",
-                "text": f"Section name: {section_dir.name}\n\n{self.prompt}",
-            }
-        ]
+        async with self.semaphore:
+            response = await self.client.messages.create(
+                model=model or self.model,
+                max_tokens=max_tokens or self.max_tokens,
+                temperature=0.2,
+                messages=[{"role": "user", "content": prompt}],
+            )
 
-        # Attach every frame image in this subsection.
-        for frame_path in self._frame_paths(section_dir):
-            # Read the raw bytes and base64-encode them for transport
-            # inside a JSON body.
+        body_parts = []
+        for block in response.content:
+            if getattr(block, "type", None) == "text":
+                body_parts.append(block.text)
+        return "".join(body_parts).strip()
+
+    async def call_vlm(
+        self,
+        frame_paths: list[Path],
+        prompt: str,
+        model: str | None = None,
+        max_tokens: int | None = None,
+    ) -> dict:
+        """Send a list of frame images with a prompt and return parsed JSON.
+
+        Each frame is read from disk and base64-encoded.  The prompt is
+        sent as a leading text block, followed by one image block per
+        frame in the order given.  The response is parsed as JSON and
+        returned as a dict.
+
+        Args:
+            frame_paths: Frame image files to attach (sent in order).
+            prompt: Text prompt to accompany the images.
+            model: Override the instance model.
+            max_tokens: Override max output tokens.
+        """
+        content = [{"type": "text", "text": prompt}]
+
+        for frame_path in frame_paths:
             raw_bytes = frame_path.read_bytes()
             image_data = base64.b64encode(raw_bytes).decode("ascii")
-
-            # Look up the correct MIME type for this file extension.
             media_type = IMAGE_MEDIA_TYPES[frame_path.suffix.lower()]
 
             content.append(
@@ -145,24 +178,32 @@ class AIEventParser:
                 }
             )
 
-        # Wait for a semaphore slot so we do not exceed max_concurrent calls.
         async with self.semaphore:
             response = await self.client.messages.create(
-                model=self.model,
-                max_tokens=self.max_tokens,
-                temperature=0.2,
+                model=model or self.model,
+                max_tokens=max_tokens or self.max_tokens,
+                temperature=0.3,
                 messages=[{"role": "user", "content": content}],
             )
 
-        # Extract only the text portions of the response.
         body_parts = []
         for block in response.content:
             if getattr(block, "type", None) == "text":
                 body_parts.append(block.text)
         body = "".join(body_parts).strip()
 
-        # The model is prompted to respond with pure JSON, so parse it.
         return json.loads(body)
+
+    async def _query_section(self, section_dir: Path) -> dict:
+        """Send one subsection to the VLM and return the parsed JSON result.
+
+        Convenience wrapper around :meth:`call_vlm` that discovers and
+        sorts the frame files inside *section_dir* and prepends the
+        section name to the instance prompt.
+        """
+        frame_paths = self._frame_paths(section_dir)
+        prompt = f"Section name: {section_dir.name}\n\n{self.prompt}"
+        return await self.call_vlm(frame_paths, prompt)
 
     async def process_subsections(
         self,
