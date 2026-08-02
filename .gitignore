@@ -4,4 +4,4 @@ vids/
 # Virtual Environment stuff
 .venv/
 
-.env/*
+.env

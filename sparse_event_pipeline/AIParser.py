@@ -13,7 +13,9 @@ from anthropic import AsyncAnthropic
 
 
 DEFAULT_BASE_URL = "https://opencode.ai/zen/go/v1"
+
 DEFAULT_MODEL = "qwen3.7-plus"
+
 PROMPT = """You are analyzing frames from a dashcam video, sampled in chronological order
 from one section of a longer drive through forest, rural and tunnel road
 environments.
