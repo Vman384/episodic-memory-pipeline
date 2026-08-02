@@ -1,0 +1,254 @@
+[
+  {
+    "chunk_index": 0,
+    "timestamp": "00:00 - 00:10",
+    "start_seconds": 0.0,
+    "vlm_description": "The scene depicts a car driving down a road with a stop sign visible on the right side of the road. The car is moving forward, and the stop sign is positioned at the end of the road, indicating that the driver must come to a complete stop before proceeding. The road appears to be relatively empty, with no other vehicles or pedestrians visible in the immediate vicinity. The stop sign is a standard red octagonal sign with a white border, and it is mounted on a pole. The road itself is paved and well-maintained, with clear lane markings and a smooth surface. The overall atmosphere of the scene suggests a quiet, possibly suburban or rural area, with no signs of heavy traffic or congestion.",
+    "change_detected": false
+  },
+  {
+    "chunk_index": 1,
+    "timestamp": "00:10 - 00:20",
+    "start_seconds": 10.0,
+    "vlm_description": "The image depicts a car driving down a road with a view of a large dome-shaped building in the background. The car is positioned in the foreground, and the driver's perspective is captured from the dashboard. The road is relatively empty, with only a few cars visible in the distance. The sky is clear and blue, indicating a sunny day. The dome-shaped building appears to be a significant structure, possibly an industrial or commercial facility. The surrounding area includes some trees and a fence, suggesting a semi-rural or suburban setting. The overall scene conveys a sense of movement and exploration, as the car travels along the road towards the dome-shaped building.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 2,
+    "timestamp": "00:20 - 00:30",
+    "start_seconds": 20.0,
+    "vlm_description": "The image depicts a car driving down a street with a view of the hood and windshield. The car is moving forward, and the street appears to be relatively empty, with only a few parked cars visible on the sides. The scene is set in a suburban area, as evidenced by the presence of houses and trees in the background. The sky is clear, and the weather seems to be pleasant, with no signs of rain or adverse weather conditions. The car is likely on its way to a destination, possibly a residential area or a nearby park, given the calm and serene atmosphere of the scene.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 3,
+    "timestamp": "00:30 - 00:40",
+    "start_seconds": 30.0,
+    "vlm_description": "The image depicts a busy intersection with multiple vehicles and traffic lights. A car is driving down the street, approaching the intersection and waiting for the traffic light to change. There are several cars in the intersection, including a silver car on the left side of the intersection, a black car on the right side, and a white car in the middle. \n\nThere are also several traffic lights visible in the scene, with one on the left side of the intersection, another on the right side, and a third one further down the street. The traffic lights are displaying different colors, indicating that the cars are either waiting for the light to change or navigating through the intersection. The overall scene suggests a typical urban environment with moderate traffic flow.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 4,
+    "timestamp": "00:40 - 00:50",
+    "start_seconds": 40.0,
+    "vlm_description": "The image depicts a city street scene from the perspective of a car's dashboard camera. The car is driving down a two-lane road, with a white car directly ahead and a black car to the left. The road is lined with various buildings, including a large brick building on the right side. There are also several cars parked along the side of the road, and a few pedestrians can be seen walking on the sidewalk. The sky is clear, and the overall atmosphere appears to be calm and typical of a city street.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 5,
+    "timestamp": "00:50 - 01:00",
+    "start_seconds": 50.0,
+    "vlm_description": "The image depicts a city street scene from the perspective of a car's dashboard. The car is driving down a wide road with multiple lanes, and the road is filled with various vehicles, including cars, trucks, and buses. The traffic appears to be moderate, with cars moving in both directions.\n\nOn the left side of the street, there are several buildings, including a large apartment complex with multiple stories. The buildings are modern and well-maintained, with a mix of commercial and residential spaces. The street is lined with trees and streetlights, adding to the urban atmosphere.\n\nOn the right side of the street, there are more buildings, including a taller structure with a distinctive design. The buildings are likely part of a commercial or mixed-use area",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 6,
+    "timestamp": "01:00 - 01:10",
+    "start_seconds": 60.0,
+    "vlm_description": "The image depicts a busy city street with multiple lanes of traffic. The scene is captured from the perspective of a car's dashboard, providing a clear view of the road ahead. The street is lined with various vehicles, including cars, trucks, and buses, all moving in different directions. The traffic appears to be moderate, with cars and trucks driving in the left and right lanes, while a bus is visible in the center lane. The street is well-lit, suggesting it is daytime, and the sky is clear, indicating good weather conditions. The presence of traffic lights and street signs can be seen, indicating that the street is likely an intersection or a busy thoroughfare. The overall atmosphere of the scene is one of typical urban traffic, with vehicles",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 7,
+    "timestamp": "01:10 - 01:20",
+    "start_seconds": 70.0,
+    "vlm_description": "The image depicts a car driving down a road during the day. The car is positioned in the center of the road, with the view from the driver's perspective. The road is lined with trees on both sides, and there are several other cars visible in the distance. The sky is clear, indicating good weather conditions. The car appears to be moving at a moderate speed, and the surroundings suggest a suburban or rural area. The overall scene conveys a sense of calm and normalcy, as the car travels along the road.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 8,
+    "timestamp": "01:20 - 01:30",
+    "start_seconds": 80.0,
+    "vlm_description": "The image depicts a city street scene from the perspective of a driver in a car. The car is positioned in the middle of the road, with the dashboard visible in the foreground. The street is lined with various vehicles, including cars, a school bus, and a truck. The traffic lights are visible, indicating that the car is approaching an intersection. The sky is clear, suggesting a sunny day. The surrounding area includes buildings, trees, and other urban elements, giving the impression of a typical city environment.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 9,
+    "timestamp": "01:30 - 01:40",
+    "start_seconds": 90.0,
+    "vlm_description": "The image captures a busy intersection with multiple vehicles and traffic lights. The scene is set during the day, with a clear blue sky overhead. A white truck is driving down the street, and a white car is parked on the side of the road. A yellow school bus is also visible, driving down the street. \n\nThere are several traffic lights at the intersection, with some showing red lights and others showing green lights. The traffic lights are positioned at various points along the intersection, ensuring that vehicles can navigate the busy area safely. The overall atmosphere of the scene is one of a typical city intersection with various vehicles and traffic lights in operation.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 10,
+    "timestamp": "01:40 - 01:50",
+    "start_seconds": 100.0,
+    "vlm_description": "The image depicts a busy city street with multiple lanes of traffic. A white pickup truck is driving on the right side of the road, while a black car is traveling in the left lane. Several other cars are also visible on the street, indicating that it is a busy time of day. The street is lined with trees and buildings, and there are traffic lights and street signs visible in the scene. The sky is clear, suggesting that it is a sunny day. The overall atmosphere of the image is bustling and lively, with people and vehicles moving about in the city.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 11,
+    "timestamp": "01:50 - 02:00",
+    "start_seconds": 110.0,
+    "vlm_description": "The image depicts a busy road scene with multiple lanes of traffic. The road is filled with various vehicles, including cars, trucks, and a bus. The traffic appears to be moving in both directions, with cars on the left side of the road and those on the right side. The vehicles are of different colors, such as black, blue, and silver, and are moving at a moderate pace.\n\nIn the background, there are power lines and utility poles, indicating that the road is located in an urban or suburban area. The sky is clear and blue, suggesting that the weather is sunny and pleasant. There are also some trees visible on the sides of the road, adding to the natural scenery. Overall, the image captures a typical day on a",
+    "change_detected": false
+  },
+  {
+    "chunk_index": 12,
+    "timestamp": "02:00 - 02:10",
+    "start_seconds": 120.0,
+    "vlm_description": "The image depicts a busy street scene with multiple lanes of traffic. The road is filled with various vehicles, including cars, trucks, and possibly buses, all moving in different directions. The traffic appears to be congested, with cars stopped or moving slowly, indicating a possible traffic jam or heavy traffic conditions. \n\nIn the background, there are power lines and utility poles, suggesting an urban or suburban setting. The sky is clear, with a bright blue hue, indicating a sunny day. There are also some trees visible on the side of the road, adding to the urban landscape. The overall atmosphere of the image suggests a typical day in a busy city or town, with people going about their daily routines.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 13,
+    "timestamp": "02:10 - 02:20",
+    "start_seconds": 130.0,
+    "vlm_description": "The image depicts a busy urban street scene captured from the perspective of a car's dashboard camera. The car is stopped at a traffic light, which is currently red, indicating that vehicles must come to a complete stop. The traffic light is visible in the upper middle part of the image, hanging above the road.\n\nIn the foreground, the car's dashboard is partially visible, showing the edge of the windshield and the dashboard itself. The dashboard is grey in color, and the windshield is clear, allowing a full view of the street ahead.\n\nThe street is a multi-lane road with multiple lanes in each direction. There are several vehicles visible in the scene, including cars and trucks. The vehicles are stopped at the red light, and their brake lights are",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 14,
+    "timestamp": "02:20 - 02:30",
+    "start_seconds": 140.0,
+    "vlm_description": "The image depicts a busy urban street scene with multiple lanes of traffic. The perspective is from a car stopped at a traffic light, with the dashboard visible in the foreground. The traffic is dense, with several cars in the lanes ahead, including a black SUV in the left lane, a red car in the middle lane, and a black car in the right lane. \n\nIn the background, there are power lines and utility poles, indicating an urban environment. The sky is clear and blue, suggesting a sunny day. The traffic light is visible, and it appears to be red, causing the cars to be stopped. The overall atmosphere is typical of a busy city street with moderate traffic flow.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 15,
+    "timestamp": "02:30 - 02:40",
+    "start_seconds": 150.0,
+    "vlm_description": "The image depicts a busy urban intersection during what appears to be rush hour. The scene is set on a clear day with a blue sky and some clouds. The traffic is heavy, with numerous vehicles, including cars, SUVs, and trucks, stopped at a red light. The cars are lined up in both lanes, and there are pedestrians visible on the sidewalks, likely waiting to cross the street. The intersection is well-lit, and there are traffic lights and street signs visible in the background. The overall atmosphere suggests a typical day in a bustling city, with people and vehicles moving through the intersection.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 16,
+    "timestamp": "02:40 - 02:50",
+    "start_seconds": 160.0,
+    "vlm_description": "The image depicts a busy urban intersection with multiple lanes of traffic. The scene is captured from the perspective of a car stopped at a traffic light. The traffic light is red, indicating that vehicles must come to a complete stop. There are several cars in front of the viewer's car, including a black SUV directly ahead and a red car to the right. The traffic appears to be heavy, with many vehicles waiting at the intersection.\n\nIn the background, there are power lines and utility poles, suggesting that the area is well-developed and has infrastructure in place. The sky is clear, indicating good weather conditions. Pedestrians can be seen crossing the street, adding to the bustling atmosphere of the intersection. The overall impression is of a typical day in",
+    "change_detected": false
+  },
+  {
+    "chunk_index": 17,
+    "timestamp": "02:50 - 03:00",
+    "start_seconds": 170.0,
+    "vlm_description": "The image depicts a busy city street with multiple lanes of traffic. There are several cars on the road, including a black car in the foreground, a red car in the middle, and a white car on the right side. The traffic appears to be moving smoothly, with no immediate signs of congestion or accidents. \n\nThere are traffic lights visible in the scene, with one green light indicating that vehicles can proceed. The street is lined with power lines and poles, and there are some buildings visible in the background, suggesting an urban environment. The sky is clear, and the overall atmosphere is typical of a bustling city street during the day.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 18,
+    "timestamp": "03:00 - 03:10",
+    "start_seconds": 180.0,
+    "vlm_description": "The image depicts a car driving on a highway during the day. The car is positioned in the middle of the road, with the camera angle providing a view of the road ahead. The road is relatively empty, with only a few other cars visible in the distance. The sky is clear, and the weather appears to be sunny, with shadows visible on the road.\n\nThe car is traveling on a multi-lane highway, with multiple lanes in each direction. The road is well-maintained, and there are no visible potholes or debris. The surrounding area is relatively flat, with some trees and power lines visible on the sides of the road. The power lines are tall and stretch across the sky, indicating that the highway is likely in an",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 19,
+    "timestamp": "03:10 - 03:20",
+    "start_seconds": 190.0,
+    "vlm_description": "The image depicts a busy street scene with multiple cars and traffic lights visible. The perspective is from a vehicle's dashboard, looking forward down the road. There are several cars of various sizes and colors, including a white car in the foreground, a black car on the left side, and a gray car directly ahead. The traffic appears to be moving slowly, as indicated by the stopped vehicles and the presence of traffic lights at the intersection.\n\nThe street is lined with power lines and poles, and there are streetlights on the right side of the road. The sky is clear with a few scattered clouds, suggesting a sunny day. The overall atmosphere of the scene is typical of a busy urban or suburban area with moderate traffic flow.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 20,
+    "timestamp": "03:20 - 03:30",
+    "start_seconds": 200.0,
+    "vlm_description": "The image depicts a busy urban intersection during the daytime, with a clear blue sky overhead. The scene is captured from the perspective of a vehicle stopped at a traffic light. The intersection is bustling with activity, with multiple lanes of traffic moving in various directions. \n\nSeveral cars are visible, including a black SUV in the left lane, a silver sedan in the center lane, and a white car in the right lane. The traffic light is red, indicating that vehicles must stop. There are also traffic signs and streetlights visible in the background, adding to the urban setting. The overall atmosphere suggests a typical day in a busy city, with cars navigating through the intersection under the guidance of traffic signals.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 21,
+    "timestamp": "03:30 - 03:40",
+    "start_seconds": 210.0,
+    "vlm_description": "The image depicts a busy intersection with multiple lanes of traffic. The scene is captured from the perspective of a vehicle stopped at a traffic light. The intersection is well-lit, suggesting it is daytime with clear skies. There are several cars visible, including a white car directly in front of the viewer, a black car to the left, and other vehicles in the background. The traffic light is red, indicating that vehicles must stop. The surrounding area includes power lines, trees, and a few buildings in the distance. The overall atmosphere is typical of a busy urban or suburban intersection during peak hours.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 22,
+    "timestamp": "03:40 - 03:50",
+    "start_seconds": 220.0,
+    "vlm_description": "The image depicts a car driving down a straight road during the day. The car is positioned in the center of the road, with the camera facing forward, capturing the scene from the driver's perspective. The road is relatively empty, with only a few other vehicles visible in the distance. The sky is clear and blue, indicating good weather conditions. The surrounding area appears to be a mix of urban and suburban, with some trees and buildings visible on both sides of the road. The overall atmosphere is calm and serene, with the car moving smoothly along the road.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 23,
+    "timestamp": "03:50 - 04:00",
+    "start_seconds": 230.0,
+    "vlm_description": "The image depicts a scene from the perspective of a car driving down a four-lane road. The car is positioned in the middle of the road, with the hood of the car visible in the foreground. The road is relatively empty, with only a few vehicles visible in the distance. The sky is clear and blue, indicating a sunny day. The road is flanked by trees and power lines, and there are some buildings visible in the background. The overall scene suggests a peaceful and quiet drive on a clear day.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 24,
+    "timestamp": "04:00 - 04:10",
+    "start_seconds": 240.0,
+    "vlm_description": "The image depicts a car driving down a road during the day. The car is positioned in the center of the road, with the hood visible in the foreground. The road is a two-lane highway with a dividing line in the middle. There are several cars visible on the road, including a truck on the left side and a white car on the right side. The sky is clear and blue, indicating a sunny day. The road appears to be well-maintained, and there are no visible signs of traffic congestion. The overall scene suggests a typical day of driving on a busy road.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 25,
+    "timestamp": "04:10 - 04:20",
+    "start_seconds": 250.0,
+    "vlm_description": "The image depicts a scene from the perspective of a car driving down a multi-lane highway during the daytime. The car is positioned in the left lane, following a truck. The road is well-maintained, with clearly marked lanes and a median strip separating the opposing traffic. \n\nSeveral other vehicles are visible on the road, including a white van in the right lane and a silver car in the left lane. The sky is clear, with a few scattered clouds, indicating good weather conditions. The surrounding area appears to be suburban, with some buildings and trees visible in the background. The overall scene suggests a typical day of driving on a busy highway.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 26,
+    "timestamp": "04:20 - 04:30",
+    "start_seconds": 260.0,
+    "vlm_description": "The image depicts a busy road with multiple lanes of traffic. The scene is captured from the perspective of a car's dashboard, providing a clear view of the road ahead. There are several vehicles on the road, including a white van on the right side, a black pickup truck in the center, and other cars and trucks in various lanes. The road appears to be a multi-lane highway or a major road with multiple lanes in each direction.\n\nIn the background, there are buildings and structures visible, indicating that the road is likely located in an urban or suburban area. The sky is clear with a few clouds, suggesting a sunny day. The overall atmosphere of the image is one of typical daily traffic, with cars and trucks moving along the road in",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 27,
+    "timestamp": "04:30 - 04:40",
+    "start_seconds": 270.0,
+    "vlm_description": "The image depicts a scene from the perspective of a car driving down a two-lane road. The car is positioned in the left lane, and the driver is looking forward. The road is relatively empty, with only a few cars visible in the distance. The weather appears to be clear, with a blue sky and some clouds in the background. The road is well-maintained, and there are streetlights and power lines visible along the sides of the road. The surrounding area appears to be suburban, with some houses and trees visible in the distance. The overall atmosphere is calm and peaceful, with the driver likely enjoying a leisurely drive on a sunny day.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 28,
+    "timestamp": "04:40 - 04:50",
+    "start_seconds": 280.0,
+    "vlm_description": "The image is a view from inside a car, looking out onto a busy highway. The car is driving down the road, and the driver's perspective is from the front windshield. The road is a multi-lane highway with several lanes in each direction, and there are other cars visible on the road. The sky is clear, and the weather appears to be sunny, with some clouds in the distance. The road is well-maintained, and there are streetlights and power lines visible along the sides of the highway. The overall scene suggests that the car is traveling on a busy highway during the day.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 29,
+    "timestamp": "04:50 - 05:00",
+    "start_seconds": 290.0,
+    "vlm_description": "The image depicts a busy highway with multiple lanes of traffic. There are several cars and trucks moving in both directions, creating a bustling scene. In the foreground, a car is driving down the highway, and its hood is visible. The road is well-lit, suggesting it is daytime. The sky is clear, and there are no clouds visible. The highway is surrounded by trees and some buildings, indicating that it is located in a suburban or semi-urban area. The traffic appears to be moderate, with cars and trucks maintaining a safe distance from each other.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 30,
+    "timestamp": "05:00 - 05:10",
+    "start_seconds": 300.0,
+    "vlm_description": "The image depicts a scene from inside a car, capturing a view of the road ahead. The car is driving on a multi-lane highway, with a clear view of the road stretching into the distance. The road is well-maintained, with visible lane markings and a median separating the opposing traffic lanes. \n\nThere are several cars visible on the road, including a white car in the left lane, a black car in the right lane, and a white truck further ahead. The traffic appears to be moderate, with cars moving at a steady pace. The sky is clear, with a few scattered clouds, indicating good weather conditions. The surrounding area is relatively flat, with some vegetation visible on the sides of the road. The overall scene suggests a",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 31,
+    "timestamp": "05:10 - 05:20",
+    "start_seconds": 310.0,
+    "vlm_description": "The image depicts a busy highway scene captured from the perspective of a vehicle's dashboard camera. The road is divided into multiple lanes, with cars moving in both directions. The traffic appears to be moderate, with several vehicles visible on the road. The cars are of various types and sizes, including sedans and SUVs.\n\nThe road is well-maintained, with clear lane markings and a median separating the opposing traffic. The sky is mostly clear with a few scattered clouds, indicating fair weather conditions. The surrounding area includes some trees and power lines, suggesting an urban or suburban setting. The overall atmosphere is calm, with no signs of congestion or emergency situations.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 32,
+    "timestamp": "05:20 - 05:30",
+    "start_seconds": 320.0,
+    "vlm_description": "The image depicts a busy street scene with multiple cars and traffic lights. The cars are moving in both directions, with some cars driving towards the camera and others driving away. There are at least five cars visible in the scene, with some positioned closer to the foreground and others further in the background. The traffic lights are positioned at various points along the street, indicating that the area is well-regulated and organized. The street is lined with trees and other vegetation, creating a pleasant and natural atmosphere. The overall scene suggests a typical urban or suburban setting with active traffic flow.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 33,
+    "timestamp": "05:30 - 05:40",
+    "start_seconds": 330.0,
+    "vlm_description": "The image depicts a car driving down a street in a residential neighborhood. The car is positioned in the foreground, with the driver's perspective showing the street ahead. The street is lined with trees, and the car is approaching a stop sign at an intersection. \n\nIn the background, there are several houses visible, indicating that this is a residential area. The houses are of various sizes and styles, and some have visible driveways and front yards. The street is relatively quiet, with no other vehicles or pedestrians in sight. The overall scene conveys a peaceful and typical suburban environment.",
+    "change_detected": true
+  },
+  {
+    "chunk_index": 34,
+    "timestamp": "05:40 - 05:50",
+    "start_seconds": 340.0,
+    "vlm_description": "The image depicts a car driving down a suburban street, captured from the perspective of the driver. The car is positioned in the middle of the road, and the windshield is visible in the foreground. The street is lined with houses on both sides, and there are trees and streetlights scattered throughout the scene. The houses appear to be residential, with driveways and garages visible. The sky is clear, suggesting a sunny day. The overall scene gives a sense of a quiet, suburban neighborhood.",
+    "change_detected": false
+  },
+  {
+    "chunk_index": 35,
+    "timestamp": "05:50 - 05:53",
+    "start_seconds": 350.0,
+    "vlm_description": "The image depicts a residential street scene captured from the perspective of a car's dashboard camera. The car is driving down a street lined with houses on both sides. The houses appear to be single-family homes, with well-maintained lawns and driveways. \n\nThere are several cars parked along the street, indicating that this is a typical suburban neighborhood. The street is relatively quiet, with no visible pedestrians or other vehicles in motion. The trees lining the street are bare, suggesting that the season is likely late fall or winter. \n\nThe sky is clear with a few scattered clouds, and the overall lighting indicates that it is daytime, possibly late afternoon given the shadows cast by the trees and the houses. The street itself is well-paved and appears",
+    "change_detected": true
+  }
+]
