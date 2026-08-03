@@ -3,6 +3,7 @@ decord
 
 # sparse_event_pipeline requirements
 anthropic>=0.120
+python-dotenv
 tqdm
 decord
 Pillow

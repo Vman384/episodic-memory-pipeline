@@ -19,11 +19,11 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 ### What Is Currently Implemented
 
-1. **Frame Parser** (`sparse_event_pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, and copy/move semantics.
+1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, and copy/move semantics.
 
-2. **AI Event Parser** (`sparse_event_pipeline/AIParser.py`) — Library. Processes frame subsections concurrently through the opencode.ai VLM gateway (Anthropic-compatible endpoint). The prompt is passed as a required argument (no built-in default). Exposes reusable `call_llm` and `call_vlm` methods for downstream modules. Uses asyncio with a semaphore for concurrent API calls.
+2. **AI Parser** (`pipeline/AIParser.py`) — Local vLLM wrapper. Exposes `call_llm` for text prompts and `call_vlm` for prompts with all image frames from a folder.
 
-3. **Pipeline Runner** (`sparse_event_pipeline/run.py`) — Single entry point. Reads a JSON config file (with a `task` field selecting the benchmark category), runs `frame_parser` to split frames into sections, then runs `AIParser` to query the VLM over every section. No CLI flags beyond `--config`.
+3. **Sparse Event Pipeline** (`pipeline/sparse_event_main.py`) — `SparseEventPipeline` creates a `ConfigLoader`, reads a JSON config file, creates `FrameParser` and `AIParser`, then runs the sparse-event workflow. A separate runner will later own CLI argument parsing.
 
 5. **Prototype** (`main.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. Reads video via Decord, chunks into 300-frame segments, generates descriptions and change-detection QA drafts via few-shot prompting. Hardcoded for Gadi A100 nodes but demonstrates the consecutive-comparison technique and single-model text+vision pattern. **Not pipeline-ified** — serves as design reference.
 
@@ -50,10 +50,12 @@ episodic-memory-pipeline/
 ├── requirements.txt
 ├── run_vllm.pbs
 ├── CODEBASE_DOCUMENTATION.md
-├── sparse_event_pipeline/
+├── pipeline/
+│   ├── ConfigLoader.py
 │   ├── AIParser.py
 │   ├── frame_parser.py
-│   ├── run.py
+│   ├── sparse_event_main.py
+│   ├── temporal_main.py
 │   └── prompts/
 │       ├── temporal.txt
 │       └── sparse_event_prompt.txt
@@ -160,15 +162,15 @@ episodic-memory-pipeline/
 
 ---
 
-## `sparse_event_pipeline/` — Sparse Event Localisation Sub-Pipeline
+## `pipeline/` — Sparse Event Localisation Sub-Pipeline
 
 This directory focuses on **Benchmark Category 1: Sparse Event Localisation** and serves as the foundation for the planned temporal/episodic memory pipeline.
 
-**Workflow:** `run.py --config config.json` → `frame_parser.py` (split frames into sections) → `AIParser.py` (VLM query, prompt selected by `task` field) → per-section output JSON + aggregated `all_results.json`.
+**Workflow:** `run.py --config config.json` → `frame_parser.py` (split frames into sections) → `AIParser.call_vlm(prompt, section_dir)` for each section → per-section output JSON + aggregated `all_results.json`.
 
 ---
 
-### `sparse_event_pipeline/frame_parser.py`
+### `pipeline/frame_parser.py`
 
 **Purpose:** Splits an existing directory of numerically named frame images into VLM-sized section folders. Works on pre-extracted frame directories (e.g., Boreas dataset camera images) — no video input, no Decord dependency. This is the first stage of the sparse event pipeline.
 
@@ -205,54 +207,40 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `--config` | JSON config file with default values for all other arguments | `None` |
-| `frames_dir` (positional) | Directory containing frame images | (required unless in config) |
-| `--output` | Output root directory | `<frames_dir>_sections` |
-| `--frames-per-section` | Max frames per section | `100` |
-| `--step` | Keep every Nth frame | `1` |
-| `--move` | Move frames instead of copying | `False` |
+| `--config` | Required JSON config file containing all frame-processing settings | (required) |
 
 **Status:** Complete.
 
 ---
 
-### `sparse_event_pipeline/AIParser.py`
+### `pipeline/AIParser.py`
 
-**Purpose:** Library. Processes frame subsections concurrently through the OpenCode Go VLM API gateway (Anthropic-compatible interface). The VLM prompt is a required argument to the constructor — there is no built-in default. Exposes reusable `call_llm` and `call_vlm` methods for use by downstream modules.
+**Purpose:** Provides a small interface to a locally hosted vLLM model for text and multi-image generation.
 
-**Key Dependencies:** `anthropic`, `python-dotenv`, `asyncio`, `json`, `base64`, `os`, `pathlib.Path`.
+**Key Dependencies:** `vllm`, `Pillow`, and `pathlib.Path`.
 
-**Constants:**
-
-| Name | Value | Purpose |
-|------|-------|---------|
-| `DEFAULT_BASE_URL` | `"https://opencode.ai/zen/go/v1"` | OpenCode Go API gateway URL |
-| `DEFAULT_MODEL` | `"qwen3.7-plus"` | Default VLM model on the gateway |
-| `IMAGE_MEDIA_TYPES` | `dict` | Extension → MIME type mapping for base64 encoding |
-
-**Class: `AIEventParser`**
+**Class: `AIParser`**
 
 | Constructor Parameter | Description | Default |
 |-----------------------|-------------|---------|
-| Constructor Parameter | Description | Default |
-|-----------------------|-------------|---------|
-| `prompt` | Prompt text sent to the VLM | (required) |
-| `model` | Model identifier on the gateway | `"qwen3.7-plus"` |
-| `base_url` | API base URL | `"https://opencode.ai/zen/go/v1"` |
-| `max_concurrent` | Max concurrent API calls (via asyncio.Semaphore) | `3` |
-| `max_tokens` | Max tokens in VLM response | `2048` |
-
-The API key is **not** a constructor parameter — it is always read from
-the ``OPENCODE_API_KEY`` environment variable (set via a ``.env`` file or
-``export``).
+| `model` | Local model identifier or path | `None` |
+| `temperature` | Sampling temperature | `0.2` |
+| `max_tokens` | Maximum generated tokens | `100` |
+| `enforce_eager` | Disable CUDA graph capture | `True` |
+| `dtype` | Model data type | `"half"` |
+| `max_model_len` | Maximum model context length | `4096` |
+| `gpu_memory_utilization` | Fraction of GPU memory available to vLLM | `0.9` |
 
 **Public methods:**
 
 | Method | Purpose |
 |--------|---------|
-| `call_llm(prompt, model=None, max_tokens=None)` (async) → `str` | Text-only API call. Sends prompt with no images. Returns raw text — caller parses JSON if needed. Model override allows using a cheaper text model. Used by downstream modules for story generation, summarisation, etc. |
-| `call_vlm(frame_paths, prompt, model=None, max_tokens=None)` (async) → `dict` | Sends a list of frame image paths with a text prompt, base64-encodes each frame. Returns parsed JSON. This is the general form; `_query_section` wraps it for convenience. |
-| `process_subsections(sections_dir, output_dir)` (async) → `list[Path]` | Entry point. Discovers section subdirectories, launches concurrent queries for each. Writes per-section `<output_dir>/<section_name>_output/result.json` and an aggregated `<output_dir>/all_results.json`. |
+| `call_llm(prompt)` → `str` | Sends a text prompt to vLLM and returns generated text. |
+| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by numeric filename, sends them together as a multi-image input, and returns generated text. |
+
+Configuration loading belongs to the pipeline entry point, such as
+`pipeline/sparse_event_main.py`, which reads the JSON file
+and passes the model settings into the `AIParser` constructor.
 
 **Output structure (per section):**
 ```
@@ -266,18 +254,23 @@ the ``OPENCODE_API_KEY`` environment variable (set via a ``.env`` file or
 
 ---
 
-### `sparse_event_pipeline/run.py`
+### `pipeline/ConfigLoader.py`
 
-**Purpose:** Single entry point for the full pipeline. Reads a JSON config file
-and runs both stages: frame splitting (`frame_parser`) followed by VLM
-querying (`AIParser`). The `task` field in the config selects which prompt
-file to use.
+**Purpose:** Shared configuration component used by pipeline entry points.
+`ConfigLoader(config_path).load()` validates that the JSON file exists, parses
+it, verifies that it contains an object, and returns the configuration
+dictionary.
 
-**CLI Interface:**
+---
 
-| Argument | Description |
-|----------|-------------|
-| `--config` | Path to a JSON config file (required) |
+### `pipeline/sparse_event_main.py`
+
+**Purpose:** Defines `SparseEventPipeline`, which loads configuration through
+`ConfigLoader`, creates `FrameParser` and `AIParser`, splits frames into
+sections, queries the local vLLM model for each section, and writes results.
+
+The class is currently invoked programmatically. A separate main file will
+later handle CLI argument parsing.
 
 **Config file schema:**
 
@@ -289,9 +282,13 @@ file to use.
 | `output` | Final VLM results directory | (required) |
 | `frames_per_section` | Max frames per section | `100` |
 | `step` | Keep every Nth frame | `1` |
-| `model` | VLM model name | `"qwen3.7-plus"` |
-| `max_concurrent` | Max concurrent API calls | `3` |
-| `base_url` | API base URL | `"https://opencode.ai/zen/go/v1"` |
+| `model` | Local vLLM model name or path | (required) |
+| `temperature` | Sampling temperature | `0.2` |
+| `max_tokens` | Maximum generated tokens | `100` |
+| `enforce_eager` | Disable CUDA graph capture | `true` |
+| `dtype` | Model data type | `"half"` |
+| `max_model_len` | Maximum model context length | `4096` |
+| `gpu_memory_utilization` | Fraction of GPU memory available to vLLM | `0.9` |
 
 **Task → prompt mapping:**
 
@@ -300,11 +297,12 @@ file to use.
 | 1 | `prompts/sparse_event_prompt.txt` | Sparse event localisation |
 | 2 | `prompts/temporal.txt` | Full scene description |
 
-**Status:** Complete.
+**Status:** Complete. Configuration is loaded by `ConfigLoader`; this entry
+point creates `FrameParser` and `AIParser` and runs the sparse-event pipeline.
 
 ---
 
-### `sparse_event_pipeline/prompts/temporal.txt`
+### `pipeline/prompts/temporal.txt`
 
 **Purpose:** Full-narrative VLM prompt for the temporal pipeline's Stage 1. Asks the VLM to describe everything observable in a section of dashcam footage — terrain, road conditions, weather, lighting, notable objects, and changes/transitions — rather than filtering for rare events only. The resulting structured JSON (`narrative.json`) is designed to feed the upcoming `timeline_builder.py`.
 
@@ -314,7 +312,7 @@ file to use.
 
 ---
 
-### `sparse_event_pipeline/prompts/sparse_event_prompt.txt`
+### `pipeline/prompts/sparse_event_prompt.txt`
 
 **Purpose:** VLM prompt for the sparse event localisation benchmark (task 1). Asks the VLM to filter for rare or noteworthy events — unusual occurrences, unexpected objects, sudden changes — while ignoring normal driving. Output is a JSON object with an `interesting_events` array.
 
@@ -339,16 +337,16 @@ file to use.
 
 ---
 
-## Architecture: Two API Provider Approaches
+## Architecture: Local vLLM Implementations
 
-The codebase demonstrates two different LLM/VLM API strategies:
+The codebase contains a prototype and a pipeline wrapper around local vLLM:
 
 | Approach | File | Model | Interface |
 |----------|------|-------|-----------|
-| **Self-hosted vLLM** | `main.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
-| **Anthropic Messages API** | `sparse_event_pipeline/AIParser.py` | qwen3.7-plus (vision); text model configurable | opencode.ai gateway via `AsyncAnthropic` |
+| **Prototype** | `main.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
+| **Pipeline wrapper** | `pipeline/AIParser.py` | Configured local vision-language model | Direct `vllm.LLM()` class |
 
-The coworker's prototype (`main.py`) reads video directly via Decord and uses a single vLLM instance for both vision and text tasks. The sparse event pipeline works on pre-extracted frame directories and uses the API gateway for all model calls. Both paths are viable for HPC — the self-hosted path requires GPU nodes with local model snapshots; the gateway path requires network access from compute nodes.
+The coworker's prototype (`main.py`) reads video directly via Decord. The pipeline wrapper reads pre-extracted frame folders and sends all frames in each section to the local vLLM model. Both paths require GPU nodes with the model available locally.
 
 ---
 
@@ -371,8 +369,8 @@ The coworker's prototype (`main.py`) reads video directly via Decord and uses a 
 | Project design/spec (`AI.md`) | Complete |
 | Coworker prototype (`main.py`) | Functional (hardcoded, reference only) |
 | Frame parser (`frame_parser.py`) | Complete |
-| AI event parser (`AIParser.py`) | Complete, library only with reusable `call_llm`/`call_vlm` |
-| Pipeline runner (`run.py`) | Complete — single entry point with `--config` |
+| AI parser (`pipeline/AIParser.py`) | Complete, local vLLM wrapper with reusable `call_llm`/`call_vlm` |
+| Sparse event pipeline (`pipeline/sparse_event_main.py`) | Complete — class-based workflow; runner pending |
 | Narrative prompt (`prompts/temporal.txt`) | Complete |
 | Sparse event prompt (`prompts/sparse_event_prompt.txt`) | Complete |
 | Example configs (`configs/*.json`) | Complete |

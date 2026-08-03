@@ -15,27 +15,47 @@ OPENCODE_API_KEY=sk-or-v1-...
 
 | Script | Purpose |
 |--------|---------|
-| `sparse_event_pipeline/run.py` | Single entry point — runs the full pipeline (frame splitting + VLM query) from one JSON config |
-| `sparse_event_pipeline/frame_parser.py` | Splits a folder of numerically named frame images into VLM-sized sections |
-| `sparse_event_pipeline/AIParser.py` | Library — concurrent subsection parser via OpenCode Go VLM API; `call_llm` and `call_vlm` for downstream modules |
-| `sparse_event_pipeline/prompts/*.txt` | VLM prompt files, one per benchmark task |
+| `pipeline/sparse_event_main.py` | `SparseEventPipeline` class; creates the config loader, frame parser, and AI parser |
+| `pipeline/temporal_main.py` | Reserved for the temporal pipeline class |
+| `pipeline/ConfigLoader.py` | Shared JSON configuration loader for pipeline entry points |
+| `pipeline/frame_parser.py` | Splits a folder of numerically named frame images into VLM-sized sections |
+| `pipeline/AIParser.py` | Local vLLM wrapper; `call_llm` handles text and `call_vlm` handles all frames in a folder |
+| `pipeline/prompts/*.txt` | VLM prompt files, one per benchmark task |
 | `configs/*.json` | Config files for each pipeline run |
 | `main.py` | Coworker prototype — self-hosted vLLM, reference only |
 
-## Quick Start
+The pipeline classes are currently created by a future top-level runner. The
+`SparseEventPipeline` class can be run programmatically with a config path.
 
-```bash
-# Sparse event detection (task 1)
-python sparse_event_pipeline/run.py --config configs/sparse_events.json
+```python
+from pipeline.sparse_event_main import SparseEventPipeline
 
-# Full scene descriptions (task 2)
-python sparse_event_pipeline/run.py --config configs/narrative_pass.json
+SparseEventPipeline("configs/sparse_events.json").run()
 ```
 
 Each run:
 1. Splits frames into sections (`frame_parser`)
 2. Queries the VLM for every section (`AIParser`)
 3. Writes per-section JSON + an aggregated `all_results.json`
+
+## Local VLM Calls
+
+`AIParser.call_vlm(prompt, folder_path)` accepts a folder containing image frames.
+It loads all `.jpg`, `.jpeg`, `.png`, `.webp`, and `.bmp` files, sorts them by
+their numeric filename, and sends them together to the local vLLM model as a
+multi-image input. `pipeline/sparse_event_main.py` loads the JSON config and constructs the
+parser; direct callers can construct `AIParser` with the model settings they
+need.
+
+```python
+from pipeline.AIParser import AIParser
+
+parser = AIParser(model="Qwen/Qwen2-VL-7B-Instruct")
+response = parser.call_vlm(
+    "Describe the noteworthy events in these frames.",
+    "./sections/section_0000",
+)
+```
 
 ## Config files
 
@@ -49,8 +69,14 @@ All parameters live in JSON. Create your own or edit the examples in `configs/`.
     "output": "./results",        // Final VLM results
     "frames_per_section": 100,    // Frames per section (default 100)
     "step": 2,                    // Keep every Nth frame (default 1)
-    "model": "qwen3.7-plus",      // VLM model on the gateway
-    "max_concurrent": 3           // Concurrent API calls (default 3)
+    "model": "Qwen/Qwen2-VL-7B-Instruct", // Local vLLM model
+    "temperature": 0.2,
+    "max_tokens": 100,
+    "enforce_eager": true,
+    "dtype": "half",
+    "max_model_len": 4096,
+    "gpu_memory_utilization": 0.9,
+    "move": false
 }
 ```
 

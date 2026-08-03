@@ -25,10 +25,6 @@ class FrameParser:
             section_0001/1733343656170615.png
             ...
 
-    Original filenames are retained so downstream code can refer to the
-    source frame unambiguously.  Frame filenames must have numeric stems,
-    which are used for chronological ordering.
-
     Args:
         frames_dir: Directory containing the input frame files.
         output_dir: Directory in which section directories are created.  When
@@ -50,8 +46,7 @@ class FrameParser:
         frames_per_section: int = 100,
         step_size: int = 1,
         move: bool = False,
-        extensions: tuple[str, ...] = DEFAULT_EXTENSIONS,
-    ):
+        extensions: tuple[str, ...] = DEFAULT_EXTENSIONS):
 
         # Get the path of all the frames
         self.frames_dir = Path(frames_dir).expanduser()
@@ -72,21 +67,23 @@ class FrameParser:
         self.frames_per_section = frames_per_section
         self.step_size = step_size
         self.move = move
-        self.extensions = frozenset(
-            extension.lower() if extension.startswith(".") else f".{extension.lower()}"
-            for extension in extensions
-        )
+        normalized_extensions = set()
+        for extension in extensions:
+            if extension.startswith("."):
+                normalized_extensions.add(extension.lower())
+            else:
+                normalized_extensions.add(f".{extension.lower()}")
+        self.extensions = frozenset(normalized_extensions)
 
     def _get_frame_paths(self) -> list[Path]:
         """Return supported frame files in numeric filename order."""
         if not self.frames_dir.is_dir():
             raise FileNotFoundError(f"Frame directory not found: {self.frames_dir}")
 
-        frame_paths = [
-            path
-            for path in self.frames_dir.iterdir()
-            if path.is_file() and path.suffix.lower() in self.extensions
-        ]
+        frame_paths = []
+        for path in self.frames_dir.iterdir():
+            if path.is_file() and path.suffix.lower() in self.extensions:
+                frame_paths.append(path)
         return sorted(frame_paths, key=lambda path: int(path.stem))
 
     def create_section_dir(self) -> list[Path]:
@@ -100,21 +97,23 @@ class FrameParser:
         if not frame_paths:
             return []
 
+        # sanity check to ensure output directory is different from frame directory
         if self.output_dir.resolve() == self.frames_dir.resolve():
             raise ValueError("output_dir must be different from frames_dir")
 
+        # make a new output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
         section_dirs: list[Path] = []
 
-        for section_index, start in enumerate(
-            range(0, len(frame_paths), self.frames_per_section)
-        ):
+        for section_index, start in enumerate(range(0, len(frame_paths), self.frames_per_section)):
+
             section_dir = self.output_dir / f"section_{section_index:04d}"
             section_dir.mkdir(parents=True, exist_ok=True)
             section_dirs.append(section_dir)
 
             for frame_path in frame_paths[start : start + self.frames_per_section]:
                 destination = section_dir / frame_path.name
+                # Depending on params, either we move the actual frames themselves or we make a copy
                 if self.move:
                     shutil.move(str(frame_path), str(destination))
                 else:
@@ -124,64 +123,22 @@ class FrameParser:
 
 
 def main() -> None:
-    """Run the frame partitioner from the command line."""
-    # Parse --config first so its values become CLI defaults.
-    pre_parser = argparse.ArgumentParser(add_help=False)
-    pre_parser.add_argument("--config", default=None, help="JSON config file")
-    pre_args, remaining = pre_parser.parse_known_args()
-
-    config_defaults = {}
-    if pre_args.config:
-        with open(pre_args.config) as fh:
-            raw_config = json.load(fh)
-        for key, value in raw_config.items():
-            config_defaults[key.replace("-", "_")] = value
-
+    """Run the frame partitioner from a JSON configuration file."""
     parser = argparse.ArgumentParser(
         description="Split a directory of video frames into VLM-sized sections."
     )
-    parser.add_argument(
-        "--config",
-        default=None,
-        help="JSON config file with default values for all other arguments",
-    )
-    parser.add_argument(
-        "frames_dir",
-        nargs="?" if "frames_dir" in config_defaults else None,
-        default=config_defaults.get("frames_dir"),
-        help="Directory containing frame images",
-    )
-    parser.add_argument(
-        "--output",
-        default=config_defaults.get("output"),
-        help="Output directory (default: <frames_dir>_sections)",
-    )
-    parser.add_argument(
-        "--frames-per-section",
-        type=int,
-        default=config_defaults.get("frames_per_section", 100),
-        help="Maximum frames per section (default: 100)",
-    )
-    parser.add_argument(
-        "--step",
-        type=int,
-        default=config_defaults.get("step", 1),
-        help="Keep every Nth frame (default: 1, keep every frame)",
-    )
-    parser.add_argument(
-        "--move",
-        action="store_true",
-        default=config_defaults.get("move", False),
-        help="Move frames instead of copying them",
-    )
-    args = parser.parse_args(remaining)
+    parser.add_argument("--config", required=True, help="JSON config file")
+    args = parser.parse_args()
+
+    with open(args.config) as fh:
+        config = json.load(fh)
 
     section_dirs = FrameParser(
-        frames_dir=args.frames_dir,
-        output_dir=args.output,
-        frames_per_section=args.frames_per_section,
-        step_size=args.step,
-        move=args.move,
+        frames_dir=config["frames_dir"],
+        output_dir=config["sections_dir"],
+        frames_per_section=config["frames_per_section"],
+        step_size=config["step"],
+        move=config.get("move", False),
     ).create_section_dir()
 
     for section_dir in section_dirs:

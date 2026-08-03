@@ -1,4 +1,9 @@
-`Identity`: I am an engineer planning on designing a benchmarking pipeline to asssess VLM's episodic memory capacilities. You are meant to design and implement the code alongside me, who designs a pipeline for episodic memory benchmarking.
+`Identity`: I am an engineer planning on designing a benchmarking pipeline to asssess VLM's episodic memory capacilities. You are meant to design and implement the code alongside me.
+
+RULES:
+
+1. Do not over engineer anything, only implement what was told.
+2. Follow the KISS principle, Keep it simple, stupid.
 
 `Task Context`: Develop an episodic memory benchmark. This benchmark aims to target 4 distinct categories, namely:
      - **Sparse event localisation**

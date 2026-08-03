@@ -5,6 +5,11 @@
     "output": "./events",
     "frames_per_section": 10,
     "step": 12,
-    "model": "qwen3.7-plus",
-    "max_concurrent": 1
+    "model": "Qwen/Qwen2-VL-7B-Instruct",
+    "temperature": 0.2,
+    "max_tokens": 100,
+    "enforce_eager": true,
+    "dtype": "half",
+    "max_model_len": 4096,
+    "gpu_memory_utilization": 0.9
 }
