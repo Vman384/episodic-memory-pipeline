@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 from pathlib import Path
 
@@ -123,36 +124,57 @@ class FrameParser:
 
 
 def main() -> None:
-    
     """Run the frame partitioner from the command line."""
+    # Parse --config first so its values become CLI defaults.
+    pre_parser = argparse.ArgumentParser(add_help=False)
+    pre_parser.add_argument("--config", default=None, help="JSON config file")
+    pre_args, remaining = pre_parser.parse_known_args()
+
+    config_defaults = {}
+    if pre_args.config:
+        with open(pre_args.config) as fh:
+            raw_config = json.load(fh)
+        for key, value in raw_config.items():
+            config_defaults[key.replace("-", "_")] = value
+
     parser = argparse.ArgumentParser(
         description="Split a directory of video frames into VLM-sized sections."
     )
-    parser.add_argument("frames_dir", help="Directory containing frame images")
-
+    parser.add_argument(
+        "--config",
+        default=None,
+        help="JSON config file with default values for all other arguments",
+    )
+    parser.add_argument(
+        "frames_dir",
+        nargs="?" if "frames_dir" in config_defaults else None,
+        default=config_defaults.get("frames_dir"),
+        help="Directory containing frame images",
+    )
     parser.add_argument(
         "--output",
-        default=None,
+        default=config_defaults.get("output"),
         help="Output directory (default: <frames_dir>_sections)",
     )
     parser.add_argument(
         "--frames-per-section",
         type=int,
-        default=100,
+        default=config_defaults.get("frames_per_section", 100),
         help="Maximum frames per section (default: 100)",
     )
     parser.add_argument(
         "--step",
         type=int,
-        default=1,
+        default=config_defaults.get("step", 1),
         help="Keep every Nth frame (default: 1, keep every frame)",
     )
     parser.add_argument(
         "--move",
         action="store_true",
+        default=config_defaults.get("move", False),
         help="Move frames instead of copying them",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(remaining)
 
     section_dirs = FrameParser(
         frames_dir=args.frames_dir,

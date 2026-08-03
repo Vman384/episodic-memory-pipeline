@@ -1,0 +1,10 @@
+{
+    "task": 1,
+    "frames_dir": "./boreas-2024-12-04-15-19/camera",
+    "sections_dir": "./sections",
+    "output": "./events",
+    "frames_per_section": 10,
+    "step": 12,
+    "model": "qwen3.7-plus",
+    "max_concurrent": 1
+}

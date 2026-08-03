@@ -2,47 +2,22 @@
 
 from __future__ import annotations
 
-import argparse
 import asyncio
 import base64
 import json
 import os
+import re
 from pathlib import Path
+from typing import Any
+from dotenv import load_dotenv
 
-from anthropic import AsyncAnthropic
+from anthropic import APIStatusError, AsyncAnthropic
 
 
 DEFAULT_BASE_URL = "https://opencode.ai/zen/go/v1"
 
 DEFAULT_MODEL = "qwen3.7-plus"
 
-PROMPT = """You are analyzing frames from a dashcam video, sampled in chronological order
-from one section of a longer drive through forest, rural and tunnel road
-environments.
-
-Look for rare or noteworthy events: unusual occurrences, unexpected objects,
-sudden changes, unique terrain transitions, or anything that stands out from
-normal driving. Do not report normal driving, regular traffic, or mundane
-scenery.
-
-Respond with ONLY a JSON object. If nothing noteworthy happens, return an
-empty interesting_events list.
-
-{
-    "interesting_events": [
-        {
-            "section_id": "the section name",
-            "frame": "the exact frame filename",
-            "event_description": "what happened",
-            "why_interesting": "why this is unusual",
-            "terrain": "forest, rural, tunnel, or other"
-        }
-    ]
-}
-"""
-
-# Maps lowercase file extensions to the corresponding MIME type string
-# expected by the Anthropic-compatible Messages API.
 IMAGE_MEDIA_TYPES = {
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
@@ -57,47 +32,41 @@ class AIEventParser:
 
     def __init__(
         self,
-        api_key: str | None = None,
+        prompt: str,
         model: str = DEFAULT_MODEL,
         base_url: str = DEFAULT_BASE_URL,
-        prompt: str = PROMPT,
         max_concurrent: int = 3,
         max_tokens: int = 2048,
     ):
-        # Sanity checks so nonsense values fail fast.
         if max_concurrent <= 0:
             raise ValueError("max_concurrent must be greater than zero")
         if max_tokens <= 0:
             raise ValueError("max_tokens must be greater than zero")
 
-        # The API key can come from the environment or the constructor.
-        self.api_key = api_key or os.environ.get("OPENCODE_API_KEY")
-        if not self.api_key:
-            raise ValueError("Set OPENCODE_API_KEY or pass api_key explicitly")
+        load_dotenv()
+        api_key = os.environ.get("OPENCODE_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "OPENCODE_API_KEY is not set. Add it to a .env file or "
+                "export it in your shell."
+            )
 
-        # The OpenCode Go gateway speaks the Anthropic wire protocol, so we
-        # use the official SDK pointed at the gateway base URL.
+        # The SDK appends /v1/messages to its base URL. The public config
+        # includes /v1, so remove it before constructing the client.
+        sdk_base_url = base_url.rstrip("/").removesuffix("/v1")
         self.client = AsyncAnthropic(
-            api_key=self.api_key,
-            base_url=base_url.rstrip("/").removesuffix("/v1"),
+            api_key=api_key,
+            base_url=sdk_base_url,
+            timeout=30.0,
+            max_retries=0,
         )
         self.model = model
         self.prompt = prompt
         self.max_tokens = max_tokens
-
-        # Bounded concurrency: at most max_concurrent API calls can be in
-        # flight at once, avoiding rate limits and memory pressure.
         self.semaphore = asyncio.Semaphore(max_concurrent)
 
     @staticmethod
     def _frame_paths(section_dir: Path) -> list[Path]:
-        """Return supported numeric frame files in chronological order.
-
-        Only regular files whose extension is in IMAGE_MEDIA_TYPES are kept.
-        Frames are sorted by their numeric stem so the VLM sees them in the
-        order they were captured.
-        """
-        # Collect every file that looks like a supported image.
         paths = []
         for path in section_dir.iterdir():
             if not path.is_file():
@@ -105,10 +74,35 @@ class AIEventParser:
             if path.suffix.lower() not in IMAGE_MEDIA_TYPES:
                 continue
             paths.append(path)
-
-        # Sort chronologically by the numeric filename stem.
         paths.sort(key=lambda path: int(path.stem))
         return paths
+
+    @staticmethod
+    def _parse_json(body: str) -> dict:
+        last_error = None
+        for candidate in (body, "{" + body):
+            cleaned = re.sub(r"```(?:json)?", "", candidate).strip()
+            try:
+                return json.loads(cleaned)
+            except json.JSONDecodeError as exc:
+                last_error = exc
+            match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+            if match:
+                try:
+                    return json.loads(match.group(0))
+                except json.JSONDecodeError as exc:
+                    last_error = exc
+        raise last_error
+
+    async def _make_request(self, messages: list[dict], model: str,
+                            max_tokens: int, temperature: float) -> Any:
+        """Send a request through the Anthropic Messages SDK."""
+        return await self.client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            messages=messages,
+        )
 
     async def call_llm(
         self,
@@ -116,31 +110,18 @@ class AIEventParser:
         model: str | None = None,
         max_tokens: int | None = None,
     ) -> str:
-        """Send a text-only prompt and return the raw text response.
-
-        No images are attached — use this for story generation, timeline
-        summarisation, or any text-in/text-out task.  The caller is
-        responsible for parsing JSON from the response if needed.
-
-        Args:
-            prompt: The text prompt to send.
-            model: Override the instance model (e.g. use a cheaper text
-                   model instead of the VLM).  Defaults to ``self.model``.
-            max_tokens: Override max output tokens.
-        """
         async with self.semaphore:
-            response = await self.client.messages.create(
+            response = await self._make_request(
+                messages=[{"role": "user", "content": prompt}],
                 model=model or self.model,
                 max_tokens=max_tokens or self.max_tokens,
                 temperature=0.2,
-                messages=[{"role": "user", "content": prompt}],
             )
-
-        body_parts = []
+        parts = []
         for block in response.content:
             if getattr(block, "type", None) == "text":
-                body_parts.append(block.text)
-        return "".join(body_parts).strip()
+                parts.append(block.text)
+        return "".join(parts).strip()
 
     async def call_vlm(
         self,
@@ -148,147 +129,124 @@ class AIEventParser:
         prompt: str,
         model: str | None = None,
         max_tokens: int | None = None,
+        label: str = "",
     ) -> dict:
-        """Send a list of frame images with a prompt and return parsed JSON.
-
-        Each frame is read from disk and base64-encoded.  The prompt is
-        sent as a leading text block, followed by one image block per
-        frame in the order given.  The response is parsed as JSON and
-        returned as a dict.
-
-        Args:
-            frame_paths: Frame image files to attach (sent in order).
-            prompt: Text prompt to accompany the images.
-            model: Override the instance model.
-            max_tokens: Override max output tokens.
-        """
         content = [{"type": "text", "text": prompt}]
-
         for frame_path in frame_paths:
             raw_bytes = frame_path.read_bytes()
-            image_data = base64.b64encode(raw_bytes).decode("ascii")
+            b64 = base64.b64encode(raw_bytes).decode("ascii")
             media_type = IMAGE_MEDIA_TYPES[frame_path.suffix.lower()]
-
-            content.append(
-                {
-                    "type": "image",
-                    "source": {
-                        "type": "base64",
-                        "media_type": media_type,
-                        "data": image_data,
-                    },
-                }
-            )
+            content.append({
+                "type": "image",
+                "source": {"type": "base64", "media_type": media_type,
+                           "data": b64},
+            })
 
         async with self.semaphore:
-            response = await self.client.messages.create(
-                model=model or self.model,
-                max_tokens=max_tokens or self.max_tokens,
-                temperature=0.3,
-                messages=[{"role": "user", "content": content}],
-            )
+            if label:
+                print(f"    Calling API for {label} ...")
 
-        body_parts = []
-        for block in response.content:
+            for attempt in range(3):
+                try:
+                    data = await self._make_request(
+                        messages=[{"role": "user", "content": content}],
+                        model=model or self.model,
+                        max_tokens=max_tokens or self.max_tokens,
+                        temperature=0.3,
+                    )
+                    break
+                except APIStatusError as exc:
+                    delay = 3
+                    print(f"    API error on attempt {attempt + 1}/3: "
+                          f"{exc.status_code}. "
+                          f"Retrying in {delay}s ...")
+                    await asyncio.sleep(delay)
+            else:
+                raise RuntimeError("All 3 API attempts failed")
+
+        parts = []
+        for block in data.content:
             if getattr(block, "type", None) == "text":
-                body_parts.append(block.text)
-        body = "".join(body_parts).strip()
+                parts.append(block.text)
+        body = "".join(parts).strip()
 
-        return json.loads(body)
+        preview = body[:500].replace("\n", "\\n")
+        if len(body) > 500:
+            preview += f" ... ({len(body)} chars total)"
+        print(f"    Response ({len(body)} chars): {preview}")
+
+        try:
+            return self._parse_json(body)
+        except json.JSONDecodeError:
+            print(f"    Raw response that failed to parse:\n{body}")
+            raise
 
     async def _query_section(self, section_dir: Path) -> dict:
-        """Send one subsection to the VLM and return the parsed JSON result.
-
-        Convenience wrapper around :meth:`call_vlm` that discovers and
-        sorts the frame files inside *section_dir* and prepends the
-        section name to the instance prompt.
-        """
         frame_paths = self._frame_paths(section_dir)
         prompt = f"Section name: {section_dir.name}\n\n{self.prompt}"
-        return await self.call_vlm(frame_paths, prompt)
+        return await self.call_vlm(
+            frame_paths, prompt,
+            label=f"{section_dir.name} ({len(frame_paths)} frames)",
+        )
 
     async def process_subsections(
         self,
         sections_dir: str | Path,
         output_dir: str | Path,
     ) -> list[Path]:
-        """Process every direct subsection and save one JSON result per section.
-
-        Each subsection directory under *sections_dir* is queried
-        concurrently.  Results are written to
-        ``<output_dir>/<section_name>_output/result.json``.
-        """
         sections_dir = Path(sections_dir).expanduser()
         output_dir = Path(output_dir).expanduser()
 
         if not sections_dir.is_dir():
             raise FileNotFoundError(f"Sections directory not found: {sections_dir}")
 
-        # Discover every subdirectory under the sections root.
         section_dirs = []
         for path in sections_dir.iterdir():
             if path.is_dir():
                 section_dirs.append(path)
         section_dirs.sort()
 
-        # Ensure the output root exists before writing results.
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        async def process(section_dir: Path) -> Path:
-            # One isolated output folder per section.
+        aggregated = []
+        total = len(section_dirs)
+        print(f"Processing {total} sections with up to {self.semaphore._value} "
+              f"concurrent calls ...")
+
+        async def process(section_dir: Path, index: int,
+                          total: int) -> tuple[Path, dict]:
             result_dir = output_dir / f"{section_dir.name}_output"
             result_dir.mkdir(parents=True, exist_ok=True)
 
-            # Call the VLM for this section's frames.
-            result = await self._query_section(section_dir)
+            frames = self._frame_paths(section_dir)
+            print(f"[{index}/{total}] Starting {section_dir.name} "
+                  f"({len(frames)} frames)")
 
-            # Persist the JSON result inside the section output folder.
+            result = await self._query_section(section_dir)
             result_path = result_dir / "result.json"
             result_path.write_text(json.dumps(result, indent=2) + "\n")
-            return result_path
 
-        # Launch all section queries concurrently; the semaphore limits
-        # how many actually call the API at the same time.
-        return await asyncio.gather(
-            *(process(section) for section in section_dirs)
+            entry = {
+                "section": section_dir.name,
+                "num_frames": len(frames),
+                "start_frame": frames[0].name if frames else None,
+                "end_frame": frames[-1].name if frames else None,
+            }
+            entry.update(result)
+            aggregated.append(entry)
+
+            print(f"[{index}/{total}] {section_dir.name} done")
+            return result_path, entry
+
+        results = await asyncio.gather(
+            *(process(section, i + 1, total)
+              for i, section in enumerate(section_dirs))
         )
 
+        result_paths = [path for path, _ in results]
 
-def main() -> None:
-    """Run the subsection VLM parser from the command line."""
-    parser = argparse.ArgumentParser(
-        description="Process frame subsections with an OpenCode Go VLM."
-    )
-    parser.add_argument("sections_dir", help="Directory containing subsection folders")
-    parser.add_argument("--output", required=True, help="Directory for subsection results")
-    parser.add_argument("--prompt", default=PROMPT, help="Prompt sent to the VLM")
-    parser.add_argument("--model", default=DEFAULT_MODEL, help="VLM model name")
-    parser.add_argument("--api-key", default=None, help="API key or OPENCODE_API_KEY")
-    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="OpenCode Go API URL")
-    parser.add_argument(
-        "--max-concurrent",
-        type=int,
-        default=3,
-        help="Maximum concurrent VLM requests (default: 3)",
-    )
-    args = parser.parse_args()
+        aggregate_path = output_dir / "all_results.json"
+        aggregate_path.write_text(json.dumps(aggregated, indent=2) + "\n")
+        print(f"Wrote aggregate results to {aggregate_path}")
 
-    # Wire up the parser from CLI arguments.
-    parser_instance = AIEventParser(
-        api_key=args.api_key,
-        model=args.model,
-        base_url=args.base_url,
-        prompt=args.prompt,
-        max_concurrent=args.max_concurrent,
-    )
-
-    # Run the async pipeline and print every produced result path.
-    result_paths = asyncio.run(
-        parser_instance.process_subsections(args.sections_dir, args.output)
-    )
-    for result_path in result_paths:
-        print(result_path)
-
-
-if __name__ == "__main__":
-    main()
+        return result_paths

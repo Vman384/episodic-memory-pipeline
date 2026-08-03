@@ -21,11 +21,9 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 1. **Frame Parser** (`sparse_event_pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, and copy/move semantics.
 
-2. **AI Event Parser** (`sparse_event_pipeline/AIParser.py`) — Processes frame subsections concurrently through the opencode.ai VLM gateway (Anthropic-compatible endpoint). Supports two analysis modes via prompt selection (sparse-event detection and full scene description). Uses asyncio with a semaphore for concurrent API calls.
+2. **AI Event Parser** (`sparse_event_pipeline/AIParser.py`) — Library. Processes frame subsections concurrently through the opencode.ai VLM gateway (Anthropic-compatible endpoint). The prompt is passed as a required argument (no built-in default). Exposes reusable `call_llm` and `call_vlm` methods for downstream modules. Uses asyncio with a semaphore for concurrent API calls.
 
-3. **Prompt Files** (`sparse_event_pipeline/prompts/descene_scene.txt`) — Full-narrative VLM prompt for the temporal pipeline's Stage 1. Asks the VLM to describe everything observable in a section, producing structured JSON for timeline construction.
-
-4. **CLI Wrapper** (`sparse_event_pipeline/run.py`) — Thin entry point delegating to `AIParser.main()`.
+3. **Pipeline Runner** (`sparse_event_pipeline/run.py`) — Single entry point. Reads a JSON config file (with a `task` field selecting the benchmark category), runs `frame_parser` to split frames into sections, then runs `AIParser` to query the VLM over every section. No CLI flags beyond `--config`.
 
 5. **Prototype** (`main.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. Reads video via Decord, chunks into 300-frame segments, generates descriptions and change-detection QA drafts via few-shot prompting. Hardcoded for Gadi A100 nodes but demonstrates the consecutive-comparison technique and single-model text+vision pattern. **Not pipeline-ified** — serves as design reference.
 
@@ -57,8 +55,13 @@ episodic-memory-pipeline/
 │   ├── frame_parser.py
 │   ├── run.py
 │   └── prompts/
-│       └── describe_scene.txt
+│       ├── temporal.txt
+│       └── sparse_event_prompt.txt
 ├── vids/                           (git-ignored directory for video files)
+├── configs/                        (example JSON config files for each pipeline stage)
+│   ├── frame_split.json
+│   ├── sparse_events.json
+│   └── narrative_pass.json
 └── .venv/                         (virtual environment, git-ignored)
 ```
 
@@ -135,7 +138,8 @@ episodic-memory-pipeline/
 **Contents:**
 - `vllm` — VLM inference engine (used by `main.py`).
 - `decord` — Video reading and decoding library (used by `main.py`).
-- `anthropic>=0.120` — Anthropic Python SDK for the opencode API gateway (`AIParser.py`).
+- `anthropic>=0.120` — Anthropic Python SDK configured for the OpenCode Go gateway (`AIParser.py`).
+- `python-dotenv` — Load environment variables from a `.env` file (`AIParser.py`).
 - `tqdm` — Progress bar library.
 - `Pillow` — Image manipulation library.
 
@@ -160,7 +164,7 @@ episodic-memory-pipeline/
 
 This directory focuses on **Benchmark Category 1: Sparse Event Localisation** and serves as the foundation for the planned temporal/episodic memory pipeline.
 
-**Workflow:** `frame_parser.py` → per-section frame folders → `AIParser.py` (two passes: sparse events + full narrative) → per-section output JSON.
+**Workflow:** `run.py --config config.json` → `frame_parser.py` (split frames into sections) → `AIParser.py` (VLM query, prompt selected by `task` field) → per-section output JSON + aggregated `all_results.json`.
 
 ---
 
@@ -201,7 +205,8 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `frames_dir` (positional) | Directory containing frame images | (required) |
+| `--config` | JSON config file with default values for all other arguments | `None` |
+| `frames_dir` (positional) | Directory containing frame images | (required unless in config) |
 | `--output` | Output root directory | `<frames_dir>_sections` |
 | `--frames-per-section` | Max frames per section | `100` |
 | `--step` | Keep every Nth frame | `1` |
@@ -213,9 +218,9 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 
 ### `sparse_event_pipeline/AIParser.py`
 
-**Purpose:** Processes frame subsections concurrently through the OpenCode Go VLM API gateway (Anthropic-compatible interface). Supports two analysis modes via prompt selection (inline `--prompt` or `--prompt-file`). Exposes reusable `call_llm` and `call_vlm` methods for use by downstream modules (`timeline_builder`, `draft_questions`, etc.).
+**Purpose:** Library. Processes frame subsections concurrently through the OpenCode Go VLM API gateway (Anthropic-compatible interface). The VLM prompt is a required argument to the constructor — there is no built-in default. Exposes reusable `call_llm` and `call_vlm` methods for use by downstream modules.
 
-**Key Dependencies:** `anthropic` (AsyncAnthropic), `asyncio`, `json`, `base64`, `os`, `pathlib.Path`.
+**Key Dependencies:** `anthropic`, `python-dotenv`, `asyncio`, `json`, `base64`, `os`, `pathlib.Path`.
 
 **Constants:**
 
@@ -223,19 +228,23 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 |------|-------|---------|
 | `DEFAULT_BASE_URL` | `"https://opencode.ai/zen/go/v1"` | OpenCode Go API gateway URL |
 | `DEFAULT_MODEL` | `"qwen3.7-plus"` | Default VLM model on the gateway |
-| `PROMPT` | (multi-line) | Built-in sparse-event detection prompt |
 | `IMAGE_MEDIA_TYPES` | `dict` | Extension → MIME type mapping for base64 encoding |
 
 **Class: `AIEventParser`**
 
 | Constructor Parameter | Description | Default |
 |-----------------------|-------------|---------|
-| `api_key` | API key for the opencode gateway | `OPENCODE_API_KEY` env var |
+| Constructor Parameter | Description | Default |
+|-----------------------|-------------|---------|
+| `prompt` | Prompt text sent to the VLM | (required) |
 | `model` | Model identifier on the gateway | `"qwen3.7-plus"` |
 | `base_url` | API base URL | `"https://opencode.ai/zen/go/v1"` |
-| `prompt` | Prompt text sent to the VLM | Built-in sparse-event prompt |
 | `max_concurrent` | Max concurrent API calls (via asyncio.Semaphore) | `3` |
 | `max_tokens` | Max tokens in VLM response | `2048` |
+
+The API key is **not** a constructor parameter — it is always read from
+the ``OPENCODE_API_KEY`` environment variable (set via a ``.env`` file or
+``export``).
 
 **Public methods:**
 
@@ -243,39 +252,14 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 |--------|---------|
 | `call_llm(prompt, model=None, max_tokens=None)` (async) → `str` | Text-only API call. Sends prompt with no images. Returns raw text — caller parses JSON if needed. Model override allows using a cheaper text model. Used by downstream modules for story generation, summarisation, etc. |
 | `call_vlm(frame_paths, prompt, model=None, max_tokens=None)` (async) → `dict` | Sends a list of frame image paths with a text prompt, base64-encodes each frame. Returns parsed JSON. This is the general form; `_query_section` wraps it for convenience. |
-| `process_subsections(sections_dir, output_dir)` (async) → `list[Path]` | Entry point. Discovers section subdirectories, launches concurrent queries for each, writes one JSON result per section under `<output_dir>/<section_name>_output/`. |
+| `process_subsections(sections_dir, output_dir)` (async) → `list[Path]` | Entry point. Discovers section subdirectories, launches concurrent queries for each. Writes per-section `<output_dir>/<section_name>_output/result.json` and an aggregated `<output_dir>/all_results.json`. |
 
 **Output structure (per section):**
 ```
-<output_dir>/section_0000_output/result.json
+<output_dir>/all_results.json                (aggregated single-file view)
+<output_dir>/section_0000_output/result.json (per-section persistent artifact)
 <output_dir>/section_0001_output/result.json
 ...
-```
-
-**CLI Interface:**
-
-| Argument | Description | Default |
-|----------|-------------|---------|
-| `sections_dir` (positional) | Directory containing subsection folders | (required) |
-| `--output` | Directory for subsection results | (required) |
-| `--prompt` | Inline prompt text | Built-in sparse-event prompt |
-| `--prompt-file` | Read prompt from a text file (overrides `--prompt`) | `None` |
-| `--output-name` | JSON filename written per section | `"result.json"` |
-| `--model` | Model name on the gateway | `"qwen3.7-plus"` |
-| `--api-key` | API key | `OPENCODE_API_KEY` env var |
-| `--base-url` | API base URL | `"https://opencode.ai/zen/go/v1"` |
-| `--max-concurrent` | Max concurrent API calls | `3` |
-
-**Two-pass usage pattern:**
-
-```bash
-# Pass 1: sparse event detection (default prompt)
-python sparse_event_pipeline/AIParser.py sections/ --output events/
-
-# Pass 2: full scene description (narrative prompt file, different output name)
-python sparse_event_pipeline/AIParser.py sections/ --output narratives/ \
-  --prompt-file sparse_event_pipeline/prompts/describe_scene.txt \
-  --output-name narrative.json
 ```
 
 **Status:** Complete.
@@ -284,17 +268,72 @@ python sparse_event_pipeline/AIParser.py sections/ --output narratives/ \
 
 ### `sparse_event_pipeline/run.py`
 
-**Purpose:** Thin CLI entry point that delegates to `AIParser.main()`. Convenience wrapper so the user can run `python sparse_event_pipeline/run.py ...` instead of `python sparse_event_pipeline/AIParser.py ...`.
+**Purpose:** Single entry point for the full pipeline. Reads a JSON config file
+and runs both stages: frame splitting (`frame_parser`) followed by VLM
+querying (`AIParser`). The `task` field in the config selects which prompt
+file to use.
+
+**CLI Interface:**
+
+| Argument | Description |
+|----------|-------------|
+| `--config` | Path to a JSON config file (required) |
+
+**Config file schema:**
+
+| Key | Description | Default |
+|-----|-------------|---------|
+| `task` | Benchmark category: 1 = sparse events, 2 = temporal/narrative | (required) |
+| `frames_dir` | Directory of frame images | (required) |
+| `sections_dir` | Intermediate section output | `"./sections"` |
+| `output` | Final VLM results directory | (required) |
+| `frames_per_section` | Max frames per section | `100` |
+| `step` | Keep every Nth frame | `1` |
+| `model` | VLM model name | `"qwen3.7-plus"` |
+| `max_concurrent` | Max concurrent API calls | `3` |
+| `base_url` | API base URL | `"https://opencode.ai/zen/go/v1"` |
+
+**Task → prompt mapping:**
+
+| `task` | Prompt file | Purpose |
+|--------|-------------|---------|
+| 1 | `prompts/sparse_event_prompt.txt` | Sparse event localisation |
+| 2 | `prompts/temporal.txt` | Full scene description |
 
 **Status:** Complete.
 
 ---
 
-### `sparse_event_pipeline/prompts/describe_scene.txt`
+### `sparse_event_pipeline/prompts/temporal.txt`
 
 **Purpose:** Full-narrative VLM prompt for the temporal pipeline's Stage 1. Asks the VLM to describe everything observable in a section of dashcam footage — terrain, road conditions, weather, lighting, notable objects, and changes/transitions — rather than filtering for rare events only. The resulting structured JSON (`narrative.json`) is designed to feed the upcoming `timeline_builder.py`.
 
 **Output JSON schema:** `{summary, terrain, road_conditions, weather, lighting, notable_objects[], changes[], interesting_events[]}`
+
+**Status:** Complete.
+
+---
+
+### `sparse_event_pipeline/prompts/sparse_event_prompt.txt`
+
+**Purpose:** VLM prompt for the sparse event localisation benchmark (task 1). Asks the VLM to filter for rare or noteworthy events — unusual occurrences, unexpected objects, sudden changes — while ignoring normal driving. Output is a JSON object with an `interesting_events` array.
+
+**Output JSON schema:** `{interesting_events[]}`
+
+**Status:** Complete.
+
+---
+
+### `configs/`
+
+**Purpose:** Example JSON config files for each benchmark run. The `task` field selects the benchmark category and corresponding VLM prompt. `run.py` reads these files to run the full pipeline (frame splitting + VLM query).
+
+**Files:**
+
+| File | task | Purpose |
+|------|------|---------|
+| `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`) |
+| `narrative_pass.json` | 2 | Full scene description (uses `prompts/temporal.txt`) |
 
 **Status:** Complete.
 
@@ -307,7 +346,7 @@ The codebase demonstrates two different LLM/VLM API strategies:
 | Approach | File | Model | Interface |
 |----------|------|-------|-----------|
 | **Self-hosted vLLM** | `main.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
-| **Anthropic-compatible Gateway** | `sparse_event_pipeline/AIParser.py` | qwen3.7-plus (vision); text model configurable | opencode.ai gateway via `AsyncAnthropic` |
+| **Anthropic Messages API** | `sparse_event_pipeline/AIParser.py` | qwen3.7-plus (vision); text model configurable | opencode.ai gateway via `AsyncAnthropic` |
 
 The coworker's prototype (`main.py`) reads video directly via Decord and uses a single vLLM instance for both vision and text tasks. The sparse event pipeline works on pre-extracted frame directories and uses the API gateway for all model calls. Both paths are viable for HPC — the self-hosted path requires GPU nodes with local model snapshots; the gateway path requires network access from compute nodes.
 
@@ -332,8 +371,11 @@ The coworker's prototype (`main.py`) reads video directly via Decord and uses a 
 | Project design/spec (`AI.md`) | Complete |
 | Coworker prototype (`main.py`) | Functional (hardcoded, reference only) |
 | Frame parser (`frame_parser.py`) | Complete |
-| AI event parser (`AIParser.py`) | Complete with CLI, dual-prompt support, reusable `call_llm`/`call_vlm` |
-| Narrative prompt (`prompts/describe_scene.txt`) | Complete |
+| AI event parser (`AIParser.py`) | Complete, library only with reusable `call_llm`/`call_vlm` |
+| Pipeline runner (`run.py`) | Complete — single entry point with `--config` |
+| Narrative prompt (`prompts/temporal.txt`) | Complete |
+| Sparse event prompt (`prompts/sparse_event_prompt.txt`) | Complete |
+| Example configs (`configs/*.json`) | Complete |
 | HPC job script (`run_vllm.pbs`) | Exists but references wrong file |
 | Temporal pipeline (timeline builder, draft questions, review) | Designed, not yet implemented |
 | Benchmark categories 2–4 | Not yet implemented |

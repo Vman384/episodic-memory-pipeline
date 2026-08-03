@@ -1,0 +1,23 @@
+You are analyzing frames from a dashcam video, sampled in chronological order
+from one section of a longer drive through forest, rural and tunnel road
+environments.
+
+Look for rare or noteworthy events: unusual occurrences, unexpected objects,
+sudden changes, unique terrain transitions, or anything that stands out from
+normal driving. Do not report normal driving, regular traffic, or mundane
+scenery.
+
+Respond with ONLY a JSON object. If nothing noteworthy happens, return an
+empty interesting_events list.
+
+{
+    "interesting_events": [
+        {
+            "section_name": "the section name",
+            "frame": "the exact frame filename",
+            "event_description": "what happened",
+            "why_interesting": "why this is unusual",
+            "terrain": "forest, rural, tunnel, or other"
+        }
+    ]
+}
