@@ -4,16 +4,16 @@ Benchmarking pipeline for assessing Vision Language Models' (VLMs) episodic memo
 
 ## Current Status
 
-The top-level runner accepts four benchmark modes. Only `sparse_event` is currently connected to a pipeline; the other modes are recognized but report that they are not implemented yet.
+The top-level runner accepts four benchmark modes. Only `sparse` is currently connected to a pipeline; the other modes are recognized but report that they are not implemented yet.
 
 | Mode | Status |
 |------|--------|
-| `sparse_event` | Connected to `SparseEventPipeline` |
+| `sparse` | Connected to `SparseEventPipeline` |
 | `temporal` | Not implemented |
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
-The sparse-event branch is connected, but the pipeline is not currently runnable end-to-end: the `AIParser` constructor and VLM methods are commented out. The intended frame partitioning, prompt resolution, VLM query, and result-writing flow is documented below.
+The sparse-event branch is connected and the VLM parser implementation is present. It requires a Gadi environment with `vllm`, an active vLLM import in `pipeline/AIParser.py`, the Qwen2-VL model available in the configured Hugging Face cache, and input frames configured in `configs/sparse_events.json`.
 
 ## Setup
 
@@ -24,16 +24,25 @@ Install the dependencies listed in `requirements.txt`. The current mode dispatch
 Run commands from the repository root because configuration paths are relative to the current working directory:
 
 ```bash
-python main.py --mode sparse_event
+python main.py --mode sparse
 ```
 
-The sparse-event mode uses `configs/sparse_events.json` by default. The other accepted modes currently print a not-implemented message:
+The sparse mode uses `configs/sparse_events.json` by default. The other accepted modes currently print a not-implemented message:
 
 ```bash
 python main.py --mode temporal
 python main.py --mode spatial
 python main.py --mode counting
 ```
+
+On Gadi, submit the current sparse-event job with:
+
+```bash
+qsub sparse_event.pbs
+```
+
+The PBS script uses `/scratch/pg06/vm4618/huggingface_cache` in offline mode.
+Ensure `Qwen/Qwen2-VL-7B-Instruct` is already present there before submitting.
 
 ## Structure
 
@@ -43,11 +52,12 @@ python main.py --mode counting
 | `pipeline/SparseEventPipeline.py` | Sparse-event pipeline class |
 | `pipeline/ConfigLoader.py` | Shared JSON configuration loader |
 | `pipeline/frame_parser.py` | Splits numerically named frame images into sections |
-| `pipeline/AIParser.py` | Scaffold for local VLM/LLM calls |
+| `pipeline/AIParser.py` | Local vLLM wrapper for text and multi-image calls |
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
 | `configs/*.json` | Pipeline configuration files |
 | `test_vlm.py` | VLM prototype/test script |
-| `vllm.pbs` | PBS job script for running the prototype on Gadi |
+| `vllm.pbs` | Legacy PBS job script for the prototype |
+| `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 
 ## Sparse-Event Pipeline
 
@@ -59,7 +69,7 @@ The pipeline reads a JSON configuration, creates a `FrameParser`, and prepares a
 4. Query the VLM for each section using the task prompt.
 5. Write per-section and aggregated results.
 
-At present, steps 1-3 and prompt resolution are scaffolded, but execution stops while constructing `AIParser` until its implementation is restored. Steps 4-5 remain commented scaffolding.
+The pipeline loads the model once, partitions frames, sends each section to the VLM, and writes one JSON result per section plus `all_results.json`.
 
 ## Configuration
 
