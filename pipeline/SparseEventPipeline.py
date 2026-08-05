@@ -3,9 +3,9 @@
 import json
 from pathlib import Path
 
-from AIParser import AIParser
-from ConfigLoader import ConfigLoader
-from frame_parser import FrameParser
+from pipeline.AIParser import AIParser
+from pipeline.ConfigLoader import ConfigLoader
+from pipeline.frame_parser import FrameParser
 
 # Each task maps to the prompt file the VLM should use.
 TASK_PROMPTS = {
@@ -82,29 +82,29 @@ class SparseEventPipeline:
         prompt_path = _resolve_prompt_file(config["task"], prompts_root)
         prompt = prompt_path.read_text()
 
-        # print(f"[2/2] Querying VLM (task={config['task']}, "f"model={config['model']}) ...")
+        print(f"[2/2] Querying VLM (task={config['task']}, "f"model={config['model']}) ...")
 
-        # output_dir = Path(config["output"])
-        # output_dir.mkdir(parents=True, exist_ok=True)
-        # all_results = []
+        output_dir = Path(config["output"])
+        output_dir.mkdir(parents=True, exist_ok=True)
+        all_results = []
 
-        # for curr_section in sections:
+        for curr_section in sections:
 
-        #     # call vlm
-        #     response = self.ai_parser.call_vlm(prompt, curr_section)
+            # call vlm
+            response = self.ai_parser.call_vlm(prompt, curr_section)
 
-        #     # get the result and response
-        #     section_result = {
-        #         "section": curr_section.name,
-        #         "response": response,
-        #     }
-        #     section_output_dir = output_dir / f"{curr_section.name}_output"
-        #     section_output_dir.mkdir(parents=True, exist_ok=True)
-        #     with open(section_output_dir / "result.json", "w") as result_file:
-        #         json.dump(section_result, result_file, indent=2)
-        #     all_results.append(section_result)
+            # get the result and response
+            section_result = {
+                "section": curr_section.name,
+                "response": response,
+            }
+            section_output_dir = output_dir / f"{curr_section.name}_output"
+            section_output_dir.mkdir(parents=True, exist_ok=True)
+            with open(section_output_dir / "result.json", "w") as result_file:
+                json.dump(section_result, result_file, indent=2)
+            all_results.append(section_result)
 
-        # with open(output_dir / "all_results.json", "w") as result_file:
-        #     json.dump(all_results, result_file, indent=2)
+        with open(output_dir / "all_results.json", "w") as result_file:
+            json.dump(all_results, result_file, indent=2)
 
-        # print(f"  Finished {len(all_results)} sections, results in {config['output']}")
+        print(f"  Finished {len(all_results)} sections, results in {config['output']}")

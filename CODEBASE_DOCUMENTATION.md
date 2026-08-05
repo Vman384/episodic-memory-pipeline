@@ -4,7 +4,7 @@
 
 This project is a **benchmarking pipeline** to assess **Vision Language Models' (VLMs) episodic memory capabilities** in long-form **egocentric dashcam video**. The input data consists of pre-extracted frame images (epoch-timestamped PNG/JPG files in a directory), sourced from dashcam recordings of vehicles driving through forests, rural roads, and tunnels, ranging from 6 minutes to 1 hour in duration. These videos have very low information density (few events), which intentionally stresses the model's ability to recall details over long time spans.
 
-### Benchmark Categories (as defined in `AI.md`)
+### Benchmark Categories
 
 | # | Category | Description |
 |---|----------|-------------|
@@ -21,20 +21,22 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, and copy/move semantics.
 
-2. **AI Parser** (`pipeline/AIParser.py`) — Local vLLM wrapper. Exposes `call_llm` for text prompts and `call_vlm` for prompts with all image frames from a folder.
+2. **AI Parser** (`pipeline/AIParser.py`) — Scaffold for a local vLLM wrapper. The planned `call_llm` and `call_vlm` methods are currently commented out.
 
-3. **Sparse Event Pipeline** (`pipeline/sparse_event_main.py`) — `SparseEventPipeline` creates a `ConfigLoader`, reads a JSON config file, creates `FrameParser` and `AIParser`, then runs the sparse-event workflow. A separate runner will later own CLI argument parsing.
+3. **Sparse Event Pipeline** (`pipeline/SparseEventPipeline.py`) — `SparseEventPipeline` reads a JSON config file and is intended to create `FrameParser` and `AIParser`, partition frames, and resolve the task prompt. The `AIParser` constructor and the VLM query/result-writing loop are currently commented scaffolding, so the pipeline is not runnable end-to-end.
 
-5. **Prototype** (`main.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. Reads video via Decord, chunks into 300-frame segments, generates descriptions and change-detection QA drafts via few-shot prompting. Hardcoded for Gadi A100 nodes but demonstrates the consecutive-comparison technique and single-model text+vision pattern. **Not pipeline-ified** — serves as design reference.
+4. **Top-Level CLI Dispatcher** (`main.py`) — Accepts `--mode` values for sparse event, temporal, spatial, and counting benchmarks. Only `sparse_event` currently dispatches to a pipeline; the remaining modes print a not-implemented message.
 
-6. **HPC Job Script** (`run_vllm.pbs`) — PBS batch script for running the vLLM pipeline on NCI's Gadi cluster with A100 GPUs.
+5. **Prototype/Test Script** (`test_vlm.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. It reads video via Decord, chunks into 300-frame segments, and generates descriptions and change-detection QA drafts via few-shot prompting.
+
+6. **HPC Job Script** (`vllm.pbs`) — PBS batch script for running the prototype on NCI's Gadi cluster.
 
 ### What Is Not Yet Implemented
 
-- **Temporal pipeline** (`timeline_builder.py`, `draft_questions.py`, `ingest_review.py`) — designed but not yet built.
+- **Temporal pipeline** — the mode is reserved by the CLI but no pipeline implementation exists.
 - The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
-- `run_vllm.pbs` references a non-existent file `test_vlm.py`.
-- The `AI.md` design brief mentions a **User Interface**, a **Hybrid Search Module**, and a **Reporting frontend** — none exist.
+- `vllm.pbs` runs the prototype script rather than the top-level mode dispatcher.
+- A **User Interface**, **Hybrid Search Module**, and **Reporting frontend** are not implemented.
 - No test suite, CI/CD, Dockerfile, or Makefile.
 
 ---
@@ -43,28 +45,25 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 ```
 episodic-memory-pipeline/
-├── AI.md
 ├── .gitignore
 ├── main.py
 ├── README.md
 ├── requirements.txt
-├── run_vllm.pbs
+├── test_vlm.py
+├── vllm.pbs
 ├── CODEBASE_DOCUMENTATION.md
 ├── pipeline/
 │   ├── ConfigLoader.py
 │   ├── AIParser.py
 │   ├── frame_parser.py
-│   ├── sparse_event_main.py
-│   ├── temporal_main.py
+│   ├── SparseEventPipeline.py
 │   └── prompts/
 │       ├── temporal.txt
 │       └── sparse_event_prompt.txt
-├── vids/                           (git-ignored directory for video files)
-├── configs/                        (example JSON config files for each pipeline stage)
-│   ├── frame_split.json
+├── boreas-*/                       (sample frame data)
+├── configs/                        (pipeline configuration files)
 │   ├── sparse_events.json
 │   └── narrative_pass.json
-└── .venv/                         (virtual environment, git-ignored)
 ```
 
 ---
@@ -73,17 +72,11 @@ episodic-memory-pipeline/
 
 ---
 
-### `AI.md`
+### Project Context
 
-**Purpose:** Project design brief / AI context document. Serves as the specification for the entire project.
+**Purpose:** The project context defines the goal of benchmarking VLM episodic memory with long-form egocentric dashcam footage across sparse-event, temporal-order, spatial-reasoning, and counting tasks.
 
-**What it defines:**
-- Project identity and goal: benchmarking VLMs on episodic memory using long-form egocentric dashcam video.
-- The four benchmark categories (listed above).
-- Input data characteristics: dashcam footage from forest, rural road, and tunnel driving. 6 minutes to 1 hour duration, minimal events, low information density.
-- High-level pipeline structure: a master pipeline composed of sub-pipelines for each benchmark category.
-
-**Status:** Reference document. Not all planned components have been implemented.
+**Status:** Reference context. Only the sparse-event mode currently has a connected pipeline.
 
 ---
 
@@ -94,42 +87,39 @@ episodic-memory-pipeline/
 **Contents:**
 - `vids/` — Excludes all video files from git.
 - `.venv/` — Excludes the Python virtual environment.
+- `.env` — Excludes local environment variables and secrets.
 
 ---
 
 ### `main.py`
 
-**Purpose:** Coworker's prototype for full-video chunked description and change detection using self-hosted vLLM. **Not pipeline-ified** — serves as design reference demonstrating the consecutive-comparison technique.
+**Purpose:** Top-level command-line dispatcher for the benchmark modes.
 
-**Key Dependencies:** `vllm` (LLM, SamplingParams), `decord` (VideoReader), `PIL.Image`, `json`, `os`.
+**Command-line interface:**
+
+```bash
+python main.py --mode sparse_event
+```
+
+The accepted values are `sparse_event`, `temporal`, `spatial`, and `counting`. `sparse_event` imports `pipeline/SparseEventPipeline.py`, passes it `configs/sparse_events.json`, and calls `run()`. The other modes are placeholders that print a not-implemented message.
 
 **Functions:**
 
 | Function | Purpose |
 |----------|---------|
-| `format_timestamp(seconds)` | Converts a float seconds value to `MM:SS` string format. |
-| `sample_frames_from_indices(vr, start_idx, end_idx, num_samples=8, max_size=(448, 448))` | Uniformly samples and downscales frames from a Decord VideoReader. Returns a list of PIL Images. |
-| `run_video_pipeline(video_path, ...)` | **Main entry point.** Processes video end-to-end. |
+| `main()` | Parses `--mode` and dispatches to the selected benchmark mode. |
 
-**Pipeline Flow:**
-1. Opens the video via Decord, computes total frames and FPS.
-2. Initializes a single vLLM model (Qwen2-VL-7B) used for both vision description and text comparison — halves GPU memory.
-3. Iterates through the video in 300-frame chunks.
-4. For each chunk: samples 8 downscaled frames → VLM description → few-shot LLM comparison with previous chunk → `{something_new, what_changed, question, answer}` JSON.
-5. Stream-saves `full_history.json` and `change_analysis.json` after every chunk (crash-resilient).
-6. The few-shot comparator prompt is well-calibrated: explicit "most chunks should be false" threshold, no meta-questions, three calibration examples.
-
-**Status:** Prototype. Hardcoded scratch paths and model snapshot. Generates auto-QA drafts (circular ground truth — same model that describes also answers). No resume logic; restart reprocesses from chunk 0.
+**Status:** Active dispatcher. Only the sparse-event branch is connected to an incomplete pipeline.
 
 ---
 
 ### `README.md`
 
-**Purpose:** Project readme with structure overview and quick-start instructions.
+**Purpose:** Project readme with current CLI usage, supported modes, sparse-event workflow, and configuration details.
 
-**Contents:** Documents `main.py`, `frame_parser.py`, `AIParser.py`, `run.py`, and `prompts/descene_scene.txt`. Quick Start shows the three-stage workflow: frame partitioning → sparse event detection → narrative pass.
+**Contents:** Documents `main.py`, `pipeline/frame_parser.py`, `pipeline/AIParser.py`, `pipeline/SparseEventPipeline.py`, and the current configuration files. The quick start uses `python main.py --mode sparse_event`.
 
-**Status:** Complete.
+**Status:** Current.
 
 ---
 
@@ -138,27 +128,27 @@ episodic-memory-pipeline/
 **Purpose:** Root-level Python dependencies.
 
 **Contents:**
-- `vllm` — VLM inference engine (used by `main.py`).
-- `decord` — Video reading and decoding library (used by `main.py`).
-- `anthropic>=0.120` — Anthropic Python SDK configured for the OpenCode Go gateway (`AIParser.py`).
-- `python-dotenv` — Load environment variables from a `.env` file (`AIParser.py`).
+- `vllm` — VLM inference engine used by the prototype and planned pipeline wrapper.
+- `decord` — Video reading and decoding library used by `test_vlm.py`.
+- `anthropic>=0.120` — Anthropic Python SDK listed for the AI parser integration.
+- `python-dotenv` — Load environment variables from a `.env` file.
 - `tqdm` — Progress bar library.
 - `Pillow` — Image manipulation library.
 
 ---
 
-### `run_vllm.pbs`
+### `vllm.pbs`
 
 **Purpose:** PBS job script for running the vLLM pipeline on NCI's Gadi HPC cluster.
 
 **Job Configuration:**
 - **Job name:** `qwen_vllm_large`
-- **Queue:** `dgxa100` (NVIDIA A100 GPU nodes)
-- **Resources:** 16 CPUs, 1 GPU, 64 GB RAM, 10-hour walltime, 50 GB local SSD
+- **Queue:** `gpuhopper`
+- **Resources:** 12 CPUs, 1 GPU, 25-minute walltime, 50 GB local SSD
 - **Modules:** `python3/3.11.7`, `cuda/12.2.2`
-- **Entry point:** Activates conda env and runs `python test_vlm.py`
+- **Entry point:** Activates the environment and runs `python main.py`
 
-**Status:** References `test_vlm.py` which does **not** exist. Needs updating to reference `main.py` or a pipeline-ified entry point.
+**Status:** Exists, but currently invokes `python main.py` without the required `--mode` argument.
 
 ---
 
@@ -166,7 +156,7 @@ episodic-memory-pipeline/
 
 This directory focuses on **Benchmark Category 1: Sparse Event Localisation** and serves as the foundation for the planned temporal/episodic memory pipeline.
 
-**Workflow:** `run.py --config config.json` → `frame_parser.py` (split frames into sections) → `AIParser.call_vlm(prompt, section_dir)` for each section → per-section output JSON + aggregated `all_results.json`.
+**Intended workflow:** `python main.py --mode sparse_event` → `SparseEventPipeline` → `ConfigLoader` → `FrameParser` (split frames into sections) → prompt resolution. The `AIParser` constructor currently prevents this flow from completing, and its planned `call_vlm(prompt, section_dir)` loop and result persistence are not enabled.
 
 ---
 
@@ -215,7 +205,7 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 
 ### `pipeline/AIParser.py`
 
-**Purpose:** Provides a small interface to a locally hosted vLLM model for text and multi-image generation.
+**Purpose:** Provides the scaffold for a small interface to a locally hosted vLLM model for text and multi-image generation.
 
 **Key Dependencies:** `vllm`, `Pillow`, and `pathlib.Path`.
 
@@ -231,16 +221,14 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 | `max_model_len` | Maximum model context length | `4096` |
 | `gpu_memory_utilization` | Fraction of GPU memory available to vLLM | `0.9` |
 
-**Public methods:**
+**Planned public methods:**
 
 | Method | Purpose |
 |--------|---------|
 | `call_llm(prompt)` → `str` | Sends a text prompt to vLLM and returns generated text. |
 | `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by numeric filename, sends them together as a multi-image input, and returns generated text. |
 
-Configuration loading belongs to the pipeline entry point, such as
-`pipeline/sparse_event_main.py`, which reads the JSON file
-and passes the model settings into the `AIParser` constructor.
+Configuration loading belongs to `pipeline/SparseEventPipeline.py`, which reads the JSON file and passes the model settings into the `AIParser` constructor. The constructor and public methods are currently commented out, so VLM calls are not active yet.
 
 **Output structure (per section):**
 ```
@@ -250,7 +238,7 @@ and passes the model settings into the `AIParser` constructor.
 ...
 ```
 
-**Status:** Complete.
+**Status:** Scaffold; implementation is currently commented out.
 
 ---
 
@@ -263,14 +251,14 @@ dictionary.
 
 ---
 
-### `pipeline/sparse_event_main.py`
+### `pipeline/SparseEventPipeline.py`
 
 **Purpose:** Defines `SparseEventPipeline`, which loads configuration through
 `ConfigLoader`, creates `FrameParser` and `AIParser`, splits frames into
-sections, queries the local vLLM model for each section, and writes results.
+sections, and resolves the prompt selected by the configuration.
 
-The class is currently invoked programmatically. A separate main file will
-later handle CLI argument parsing.
+The class is invoked by `main.py` when the user selects
+`--mode sparse_event`.
 
 **Config file schema:**
 
@@ -279,7 +267,7 @@ later handle CLI argument parsing.
 | `task` | Benchmark category: 1 = sparse events, 2 = temporal/narrative | (required) |
 | `frames_dir` | Directory of frame images | (required) |
 | `sections_dir` | Intermediate section output | `"./sections"` |
-| `output` | Final VLM results directory | (required) |
+| `output` | Intended final VLM results directory | (required) |
 | `frames_per_section` | Max frames per section | `100` |
 | `step` | Keep every Nth frame | `1` |
 | `model` | Local vLLM model name or path | (required) |
@@ -297,8 +285,8 @@ later handle CLI argument parsing.
 | 1 | `prompts/sparse_event_prompt.txt` | Sparse event localisation |
 | 2 | `prompts/temporal.txt` | Full scene description |
 
-**Status:** Complete. Configuration is loaded by `ConfigLoader`; this entry
-point creates `FrameParser` and `AIParser` and runs the sparse-event pipeline.
+**Status:** Partial. Configuration loading, frame partitioning, and prompt
+resolution are implemented. VLM calls and output writing remain commented out.
 
 ---
 
@@ -324,7 +312,7 @@ point creates `FrameParser` and `AIParser` and runs the sparse-event pipeline.
 
 ### `configs/`
 
-**Purpose:** Example JSON config files for each benchmark run. The `task` field selects the benchmark category and corresponding VLM prompt. `run.py` reads these files to run the full pipeline (frame splitting + VLM query).
+**Purpose:** JSON config files for benchmark runs. The `task` field selects the benchmark category and corresponding prompt. `main.py --mode sparse_event` uses `sparse_events.json`.
 
 **Files:**
 
@@ -337,28 +325,30 @@ point creates `FrameParser` and `AIParser` and runs the sparse-event pipeline.
 
 ---
 
-## Architecture: Local vLLM Implementations
+## Architecture: Local VLM Implementations
 
-The codebase contains a prototype and a pipeline wrapper around local vLLM:
+The codebase contains a prototype and a partially implemented pipeline wrapper:
 
 | Approach | File | Model | Interface |
 |----------|------|-------|-----------|
-| **Prototype** | `main.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
-| **Pipeline wrapper** | `pipeline/AIParser.py` | Configured local vision-language model | Direct `vllm.LLM()` class |
+| **Prototype** | `test_vlm.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
+| **Pipeline wrapper** | `pipeline/AIParser.py` | Configured local vision-language model | Planned direct `vllm.LLM()` class |
 
-The coworker's prototype (`main.py`) reads video directly via Decord. The pipeline wrapper reads pre-extracted frame folders and sends all frames in each section to the local vLLM model. Both paths require GPU nodes with the model available locally.
+The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrapper is intended to read pre-extracted frame folders and send all frames in each section to a local vLLM model. The pipeline's VLM constructor and calls are currently commented out.
 
 ---
 
 ## Known Issues & Missing Pieces
 
-1. **`run_vllm.pbs` references non-existent file** — The PBS script runs `python test_vlm.py` which does not exist. It should likely reference `main.py`.
+1. **Pipeline VLM calls are not active** — `pipeline/AIParser.py` currently contains commented-out vLLM initialization and call methods, and the VLM loop in `SparseEventPipeline.run()` is also commented out.
 
-2. **`main.py` hardcoded paths** — Bottom-of-file invocation uses absolute scratch paths and a model snapshot path specific to one Gadi filesystem. Not portable.
+2. **`vllm.pbs` runs the prototype** — The PBS script invokes `test_vlm.py`, not the mode dispatcher in `main.py`.
 
-3. **No test suite** — No unit tests, integration tests, or test framework configuration exists.
+3. **Relative configuration paths** — `main.py` expects to be run from the repository root because the configured paths are relative.
 
-4. **No CI/CD or containerization** — No Dockerfile, Makefile, GitHub Actions, or other automation.
+4. **No test suite** — No unit tests, integration tests, or test framework configuration exists.
+
+5. **No CI/CD or containerization** — No Dockerfile, Makefile, GitHub Actions, or other automation.
 
 ---
 
@@ -366,16 +356,17 @@ The coworker's prototype (`main.py`) reads video directly via Decord. The pipeli
 
 | Component | Status |
 |-----------|--------|
-| Project design/spec (`AI.md`) | Complete |
-| Coworker prototype (`main.py`) | Functional (hardcoded, reference only) |
+| Project design/spec | Reference context |
+| Top-level mode dispatcher (`main.py`) | Sparse-event branch connected; other modes pending |
+| Prototype (`test_vlm.py`) | Reference implementation |
 | Frame parser (`frame_parser.py`) | Complete |
-| AI parser (`pipeline/AIParser.py`) | Complete, local vLLM wrapper with reusable `call_llm`/`call_vlm` |
-| Sparse event pipeline (`pipeline/sparse_event_main.py`) | Complete — class-based workflow; runner pending |
+| AI parser (`pipeline/AIParser.py`) | Scaffold; vLLM wrapper methods commented out |
+| Sparse event pipeline (`pipeline/SparseEventPipeline.py`) | Partial — config, frame splitting, and prompt resolution |
 | Narrative prompt (`prompts/temporal.txt`) | Complete |
 | Sparse event prompt (`prompts/sparse_event_prompt.txt`) | Complete |
 | Example configs (`configs/*.json`) | Complete |
-| HPC job script (`run_vllm.pbs`) | Exists but references wrong file |
-| Temporal pipeline (timeline builder, draft questions, review) | Designed, not yet implemented |
+| HPC job script (`vllm.pbs`) | Exists and runs the prototype |
+| Temporal pipeline | Not yet implemented |
 | Benchmark categories 2–4 | Not yet implemented |
 | User Interface | Not yet implemented |
 | Hybrid Search Module | Not yet implemented |

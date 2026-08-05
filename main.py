@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 class BenchmarkMode(Enum):
-    SPARSE_EVENT = "sparse_event"
+    SPARSE_EVENT = "sparse"
     TEMPORAL = "temporal"
     SPATIAL = "spatial"
     COUNTING = "counting"
