@@ -64,6 +64,7 @@ class SparseEventPipeline:
             gpu_memory_utilization=self.config.get(
                 "gpu_memory_utilization", 0.9
             ),
+            tensor_parallel_size=self.config.get("tensor_parallel_size", 1),
         )
         return self.config
 

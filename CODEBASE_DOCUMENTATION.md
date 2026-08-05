@@ -167,7 +167,9 @@ python3 main.py --mode sparse
 
 Submit it from the repository root with `qsub sparse_event.pbs`.
 
-**Prerequisites:** The virtual environment must contain `vllm`, and the configured Qwen2-VL model must already be available in `/scratch/pg06/vm4618/huggingface_cache` because the job runs offline.
+**Resources:** 24 CPUs, 4 GPUs, 512 GB memory, and a five-hour walltime.
+
+**Prerequisites:** The sourced environment must contain `vllm`, provide access to `Qwen/Qwen2.5-VL-72B-Instruct`, and expose four GPUs to vLLM.
 
 ---
 
@@ -175,7 +177,7 @@ Submit it from the repository root with `qsub sparse_event.pbs`.
 
 This directory focuses on **Benchmark Category 1: Sparse Event Localisation** and serves as the foundation for the planned temporal/episodic memory pipeline.
 
-**Workflow:** `python main.py --mode sparse` → `SparseEventPipeline` → `ConfigLoader` → `FrameParser` (split frames into sections) → prompt resolution → `AIParser.call_vlm(prompt, section_dir)` → result persistence. The `AIParser` constructor currently prevents this flow from completing.
+**Workflow:** `python main.py --mode sparse` → `SparseEventPipeline` → `ConfigLoader` → `FrameParser` (split frames into sections) → prompt resolution → `AIParser.call_vlm(prompt, section_dir)` → result persistence.
 
 ---
 
@@ -239,6 +241,7 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 | `dtype` | Model data type | `"half"` |
 | `max_model_len` | Maximum model context length | `4096` |
 | `gpu_memory_utilization` | Fraction of GPU memory available to vLLM | `0.9` |
+| `tensor_parallel_size` | Number of GPUs used to shard the model | `1` |
 
 **Public methods:**
 
@@ -296,6 +299,19 @@ The class is invoked by `main.py` when the user selects
 | `dtype` | Model data type | `"half"` |
 | `max_model_len` | Maximum model context length | `4096` |
 | `gpu_memory_utilization` | Fraction of GPU memory available to vLLM | `0.9` |
+| `tensor_parallel_size` | Number of GPUs used to shard the model | `1` |
+
+**Configuration selection guide:**
+
+- `frames_per_section` controls how many images are sent in one VLM request. Lower values reduce memory use; start around `5-10` for high-resolution frames.
+- `step` keeps every Nth frame after sorting. Increase it to reduce compute, at the cost of temporal detail.
+- `max_model_len` is the total token budget for the prompt, visual image tokens, and generated output. It is not a duration or frame count. Start at `4096`; increase to `8192` if requests are too long, or reduce it and/or the section size if GPU memory is exhausted.
+- `max_tokens` reserves the output portion of the context budget. Use `100-256` for initial JSON event extraction and increase it if responses are truncated.
+- `dtype` controls numerical precision. `bfloat16` is appropriate for the current Qwen2.5-VL model on Hopper GPUs; `half` uses FP16.
+- `gpu_memory_utilization` should usually remain around `0.85-0.9` so CUDA and image-processing allocations have room.
+- `tensor_parallel_size` is the number of GPUs used by one model instance. It must match the GPU allocation; the current 72B PBS job uses `4`.
+- `temperature` controls output variation. Use `0.0-0.2` when reliable JSON is more important than diversity.
+- `frames_dir` can be an absolute path on Gadi. Relative `sections_dir` and `output` paths resolve from the job working directory.
 
 **Task → prompt mapping:**
 
@@ -359,7 +375,7 @@ The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrap
 
 ## Known Issues & Missing Pieces
 
-1. **GPU/model environment is required** — The local environment does not include vLLM, and the pipeline requires a GPU plus a locally cached Qwen2-VL model. The `from vllm import LLM, SamplingParams` import in `pipeline/AIParser.py` must also be active before execution.
+1. **GPU/model environment is required** — The local environment does not include vLLM, and the pipeline requires four GPUs plus access to the cached `Qwen/Qwen2.5-VL-72B-Instruct` model.
 
 2. **`vllm.pbs` runs the prototype** — The PBS script invokes `test_vlm.py`, not the mode dispatcher in `main.py`.
 
@@ -385,7 +401,7 @@ The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrap
 | Sparse event prompt (`prompts/sparse_event_prompt.txt`) | Complete |
 | Example configs (`configs/*.json`) | Complete |
 | Legacy HPC job script (`vllm.pbs`) | Exists for the old prototype |
-| Sparse-event HPC job script (`sparse_event.pbs`) | Current PBS wrapper; requires active `AIParser` implementation |
+| Sparse-event HPC job script (`sparse_event.pbs`) | Current PBS wrapper; requests four GPUs for the 72B model |
 | Temporal pipeline | Not yet implemented |
 | Benchmark categories 2–4 | Not yet implemented |
 | User Interface | Not yet implemented |

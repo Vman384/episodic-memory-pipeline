@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PIL import Image
-# from vllm import LLM, SamplingParams
+from vllm import LLM, SamplingParams
 
 
 
@@ -18,13 +18,15 @@ class AIParser:
         enforce_eager: bool = True,
         dtype: str = "half",
         max_model_len: int = 4096,
-        gpu_memory_utilization: float = 0.9):
+        gpu_memory_utilization: float = 0.9,
+        tensor_parallel_size: int = 1):
         self.model= LLM(
             model=model,
             enforce_eager=enforce_eager,
             dtype=dtype,
             max_model_len=max_model_len,
             gpu_memory_utilization=gpu_memory_utilization,
+            tensor_parallel_size=tensor_parallel_size,
         )
 
         self.sampling_params = SamplingParams(
