@@ -35,8 +35,14 @@ def main():
 
     if mode == BenchmarkMode.SPARSE_EVENT:
         from pipeline.SparseEventPipeline import SparseEventPipeline
+
         config_path = MODE_CONFIG[mode]
-        pipeline = SparseEventPipeline(config_path)
+        prompt_path = Path("pipeline/prompts/sparse_event_prompt.txt")
+        if not prompt_path.is_file():
+            raise SystemExit(f"Prompt file not found: {prompt_path}")
+
+        prompt = prompt_path.read_text()
+        pipeline = SparseEventPipeline(config_path, prompt)
         pipeline.run()
 
     elif mode == BenchmarkMode.TEMPORAL:

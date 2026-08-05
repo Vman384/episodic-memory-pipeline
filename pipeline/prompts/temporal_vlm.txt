@@ -3,8 +3,7 @@ section of a longer dashcam video from a vehicle driving through forest,
 rural road, and tunnel environments.
 
 Your job is to provide a comprehensive description of what takes place
-in this section. Do NOT filter for rare or unusual events — describe
-EVERYTHING observable, including normal driving.
+in this section.
 
 Respond with ONLY a JSON object (no markdown, no commentary, no extra
 text outside the JSON).
@@ -20,30 +19,16 @@ text outside the JSON).
                other",
     "lighting": "one of: daylight, dusk, night, tunnel_lighting, or
                 other",
-    "notable_objects": [
-        "List of distinct objects observed during the section: other
-         vehicles (type, color, position), pedestrians, animals, signs,
-         barriers, road furniture, debris, etc. Include a rough count
-         and brief description for each distinct object. Be thorough
-         — even mundane objects like parked cars or road signs should
-         be listed."
-    ],
-    "changes": [
-        {
-            "frame": "Filename of the frame where the change first
-                     appears (exact filename, e.g. 1733343593917869.png).",
-            "description": "What changed: a new object enters, the
-                           terrain transitions, lighting shifts, the
-                           vehicle turns or changes speed, etc."
-        }
-    ],
-    "interesting_events": [
+    "notable_objects/events": [
+        "        
         {
             "frame": "Name of the frame file where this event occurs.",
             "event_description": "Description of the unusual event.",
             "why_interesting": "Why this stands out from normal driving."
-        }
-    ]
+        }"
+    ],
+    "start_frame": [" List of starting frames for each notable objects or interesting events, when notable_objects/events occured],
+    "end_frame": [" List of ending frames for each notable objects or interesting events, in the same index as when notable_objects/events occured]
 }
 
 Rules:
