@@ -169,7 +169,7 @@ Submit it from the repository root with `qsub sparse_event.pbs`.
 
 **Resources:** 24 CPUs, 4 GPUs, 512 GB memory, and a five-hour walltime.
 
-**Prerequisites:** The sourced environment must contain `vllm`, provide access to `Qwen/Qwen2.5-VL-72B-Instruct`, and expose four GPUs to vLLM.
+**Prerequisites:** The virtual environment must contain `vllm`, the model must already be present in `/scratch/pg06/vm4618/huggingface_cache`, and four GPUs must be available. The job explicitly runs Hugging Face in offline mode because compute nodes cannot access the network.
 
 ---
 

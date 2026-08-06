@@ -41,7 +41,7 @@ On Gadi, submit the current sparse-event job with:
 qsub sparse_event.pbs
 ```
 
-The PBS script sources `/scratch/pg06/wn8778/scripts/episodic_memory`, which must activate the environment and configure access to `Qwen/Qwen2.5-VL-72B-Instruct`.
+The PBS script sources `/scratch/pg06/vm4618/envs/vllm_env/bin/activate` and uses `/scratch/pg06/vm4618/huggingface_cache` in offline mode. The 72B model must already be present in that cache.
 
 The 72B model is sharded across four GPUs using `tensor_parallel_size: 4`.
 There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the
