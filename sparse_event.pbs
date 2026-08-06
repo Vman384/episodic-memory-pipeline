@@ -3,7 +3,7 @@
 #PBS -P pg06
 #PBS -q gpuhopper
 #PBS -l ncpus=24
-#PBS -l ngpus=4
+#PBS -l ngpus=2
 #PBS -l mem=512GB
 #PBS -l walltime=05:00:00
 #PBS -l storage=scratch/pg06
