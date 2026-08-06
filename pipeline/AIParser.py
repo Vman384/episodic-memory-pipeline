@@ -1,50 +1,112 @@
+import base64
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 from PIL import Image
-from vllm import LLM, SamplingParams
-
 
 
 class AIParser:
     """
-    Clas mainly responsible for AI calls and formating output
+    Interface for local vLLM and OpenAI-compatible API inference.
     """
 
-    def __init__(
-        self,
-        model: str | None = None,
-        temperature: float = 0.2,
-        max_tokens: int = 100,
-        enforce_eager: bool = True,
-        dtype: str = "half",
-        max_model_len: int = 4096,
-        gpu_memory_utilization: float = 0.9,
-        tensor_parallel_size: int = 1):
-        self.model= LLM(
-            model=model,
-            enforce_eager=enforce_eager,
-            dtype=dtype,
-            max_model_len=max_model_len,
-            gpu_memory_utilization=gpu_memory_utilization,
-            tensor_parallel_size=tensor_parallel_size,
-        )
+    API_BASE_URL = "https://opencode.ai/zen/go/v1/responses"
+    IMAGE_MEDIA_TYPES = {
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".webp": "image/webp",
+        ".bmp": "image/bmp",
+    }
 
-        self.sampling_params = SamplingParams(
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
+    def __init__(self, config: dict):
+        backend = config.get("backend", "local").lower()
+        model = config.get("model")
+        temperature = config.get("temperature", 0.2)
+        max_tokens = config.get("max_tokens", 100)
 
-        self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp",}
+        if backend not in {"local", "api"}:
+            raise ValueError("backend must be either 'local' or 'api'")
+        if not model:
+            raise ValueError("A model must be configured")
+
+        self.backend = backend
+        self.model_name = model
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+
+        if backend == "local":
+            # Import vLLM only when it is actually needed. API-only jobs do not
+            # need CUDA, vLLM, or a local model cache.
+            from vllm import LLM, SamplingParams
+
+            self.model = LLM(
+                model=model,
+                enforce_eager=config.get("enforce_eager", True),
+                dtype=config.get("dtype", "half"),
+                max_model_len=config.get("max_model_len", 4096),
+                gpu_memory_utilization=config.get("gpu_memory_utilization", 0.9),
+                tensor_parallel_size=config.get("tensor_parallel_size", 1),
+            )
+            self.sampling_params = SamplingParams(
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+        else:
+            from openai import OpenAI
+
+            # get api key from environment file
+            load_dotenv()
+
+            api_key = os.getenv(config.get("api_key_env"))
+            if not api_key:
+                raise ValueError(
+                    f"API mode requires an API key"
+                )
+
+            # Connect to Opencode endpoint
+            api_base_url = config.get("api_base_url")
+
+            if not api_base_url:
+                raise ValueError(f" API Base URL not provided!")
+
+            # create client to connect to API provider
+            self.client = OpenAI(
+                api_key=api_key,
+                base_url=api_base_url,
+            )
 
     @staticmethod
     def _get_text(outputs) -> str:
         """Return the first generated response as plain text."""
         return outputs[0].outputs[0].text
 
+    @staticmethod
+    def _get_api_text(response) -> str:
+        """Return text from an OpenAI Responses API response."""
+        return response.output_text
+
+    def _call_api(self, content: str | list[dict]) -> str:
+        response = self.client.responses.create(
+            model=self.model_name,
+            input=[{"role": "user", "content": content}]
+            if isinstance(content, list)
+            else content,
+            temperature=self.temperature,
+            max_output_tokens=self.max_tokens,
+        )
+        return self._get_api_text(response)
+
     def call_llm(self, prompt: str) -> str:
         """
         Generate a response from a text prompt.
         """
+
+        if self.backend == "api":
+            return self._call_api(prompt)
+
         outputs = self.model.generate(
             prompt,
             sampling_params=self.sampling_params,
@@ -70,6 +132,35 @@ class AIParser:
         image_paths.sort(key=lambda path: int(path.stem))
         if not image_paths:
             raise ValueError(f"No image frames found in folder: {folder}")
+
+        if self.backend == "api":
+            # The Responses API expects the prompt and images in one ordered
+            # content list. Local file paths cannot be sent to the API directly.
+            content = [{"type": "input_text", "text": prompt}]
+
+            for image_path in image_paths:
+                # Encode each local frame as a base64 data URL for the request.
+                encoded_image = base64.b64encode(image_path.read_bytes()).decode(
+                    "ascii"
+                )
+
+                # Quick check of file type to ensure it's an image
+                media_type = self.IMAGE_MEDIA_TYPES.get(image_path.suffix.lower())
+                
+                if not media_type:
+                    raise ValueError(f"Unsupported image type: {image_path.suffix}")
+
+                # Add the frame after the prompt, preserving chronological order.
+                content.append(
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:{media_type};base64,{encoded_image}",
+                    }
+                )
+
+            # The API branch has already serialized the images, so skip the
+            # PIL/vLLM conversion below.
+            return self._call_api(content)
 
         images = []
         for image_path in image_paths:

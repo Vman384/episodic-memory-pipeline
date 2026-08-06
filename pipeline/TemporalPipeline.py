@@ -36,18 +36,7 @@ class TemporalPipeline:
         )
 
         # Initialise AI parser from config
-        self.ai_parser = AIParser(
-            model=self.config["model"],
-            temperature=self.config.get("temperature", 0.2),
-            max_tokens=self.config.get("max_tokens", 100),
-            enforce_eager=self.config.get("enforce_eager", True),
-            dtype=self.config.get("dtype", "half"),
-            max_model_len=self.config.get("max_model_len", 4096),
-            gpu_memory_utilization=self.config.get(
-                "gpu_memory_utilization", 0.9
-            ),
-            tensor_parallel_size=self.config.get("tensor_parallel_size", 1),
-        )
+        self.ai_parser = AIParser(config=self.config)
         return self.config
 
     def run(self) -> None:

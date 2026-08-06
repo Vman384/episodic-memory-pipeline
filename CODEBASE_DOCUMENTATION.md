@@ -21,7 +21,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, and copy/move semantics.
 
-2. **AI Parser** (`pipeline/AIParser.py`) — Local vLLM wrapper. `call_llm` handles text prompts and `call_vlm` handles multiple PIL images from a section directory.
+2. **AI Parser** (`pipeline/AIParser.py`) — Configurable local vLLM or OpenAI-compatible API wrapper. `call_llm` handles text prompts and `call_vlm` handles multiple images from a section directory.
 
 3. **Sparse Event Pipeline** (`pipeline/SparseEventPipeline.py`) — `SparseEventPipeline` reads a JSON config file, creates `FrameParser` and `AIParser`, partitions frames, resolves the task prompt, queries the VLM, and writes results.
 
@@ -136,6 +136,7 @@ The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse
 - `vllm` — VLM inference engine used by the prototype and sparse-event pipeline.
 - `decord` — Video reading and decoding library used by `test_vlm.py`.
 - `anthropic>=0.120` — Anthropic Python SDK listed for the AI parser integration.
+- `openai>=1.66.0` — OpenAI-compatible Responses API client.
 - `python-dotenv` — Load environment variables from a `.env` file.
 - `tqdm` — Progress bar library.
 - `Pillow` — Image manipulation library.
@@ -171,7 +172,7 @@ Submit it from the repository root with `qsub sparse_event.pbs`.
 
 **Resources:** 24 CPUs, 4 GPUs, 512 GB memory, and a five-hour walltime.
 
-**Prerequisites:** The virtual environment must contain `vllm`, the model must already be present in `/scratch/pg06/vm4618/huggingface_cache`, and four GPUs must be available. The job explicitly runs Hugging Face in offline mode because compute nodes cannot access the network.
+**Prerequisites:** Local mode requires `vllm`, the model must already be present in `/scratch/pg06/vm4618/huggingface_cache`, and four GPUs must be available. The job explicitly runs Hugging Face in offline mode because compute nodes cannot access the network. API mode requires `openai`, the configured API key environment variable, and approved outbound HTTPS access instead.
 
 ---
 
@@ -228,31 +229,40 @@ This directory focuses on **Benchmark Category 1: Sparse Event Localisation** an
 
 ### `pipeline/AIParser.py`
 
-**Purpose:** Provides a small interface to a locally hosted vLLM model for text and multi-image generation.
+**Purpose:** Provides a small interface for local vLLM or OpenAI-compatible API text and multi-image generation.
 
-**Key Dependencies:** `vllm`, `Pillow`, and `pathlib.Path`.
+**Key Dependencies:** `vllm` for local mode, `openai` for API mode, `Pillow`, and `pathlib.Path`.
 
 **Class: `AIParser`**
 
-| Constructor Parameter | Description | Default |
-|-----------------------|-------------|---------|
-| `model` | Local model identifier or path | `None` |
-| `temperature` | Sampling temperature | `0.2` |
-| `max_tokens` | Maximum generated tokens | `100` |
-| `enforce_eager` | Disable CUDA graph capture | `True` |
-| `dtype` | Model data type | `"half"` |
-| `max_model_len` | Maximum model context length | `4096` |
-| `gpu_memory_utilization` | Fraction of GPU memory available to vLLM | `0.9` |
-| `tensor_parallel_size` | Number of GPUs used to shard the model | `1` |
+| Constructor Parameter | Description |
+|----------------------|-------------|
+| `config` | Complete JSON configuration dictionary |
+
+The relevant configuration keys are:
+
+| Key | Description |
+|-----|-------------|
+| `backend` | `local` for vLLM or `api` for the OpenAI-compatible Responses API |
+| `model` | Local model path/name or API model identifier |
+| `temperature` | Sampling temperature |
+| `max_tokens` | Maximum generated output tokens |
+| `enforce_eager` | vLLM CUDA graph setting used in local mode |
+| `dtype` | vLLM model data type used in local mode |
+| `max_model_len` | vLLM maximum model context length |
+| `gpu_memory_utilization` | vLLM GPU memory fraction |
+| `tensor_parallel_size` | Number of GPUs used by vLLM |
+| `api_base_url` | OpenAI-compatible API base URL or full `/responses` endpoint |
+| `api_key_env` | Environment variable containing the API key |
 
 **Public methods:**
 
 | Method | Purpose |
 |--------|---------|
-| `call_llm(prompt)` → `str` | Sends a text prompt to vLLM and returns generated text. |
-| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by numeric filename, sends them together as a multi-image input, and returns generated text. |
+| `call_llm(prompt)` → `str` | Sends a text prompt to the selected backend and returns generated text. |
+| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by numeric filename, sends them together to the selected backend, and returns generated text. |
 
-Configuration loading belongs to `pipeline/SparseEventPipeline.py`, which reads the JSON file and passes the model settings into the `AIParser` constructor. `call_vlm` loads all images from a section, sends them with the prompt, and returns the generated text.
+Configuration loading belongs to the pipeline classes, which read the JSON file and pass the complete dictionary into the `AIParser` constructor. In API mode, the API key is read from the environment variable named by `api_key_env`; it is not stored in configuration files.
 
 **Output structure (per section):**
 ```
@@ -262,7 +272,7 @@ Configuration loading belongs to `pipeline/SparseEventPipeline.py`, which reads 
 ...
 ```
 
-**Status:** Implemented; requires a working vLLM installation and local model cache.
+**Status:** Implemented for local vLLM and OpenAI-compatible API backends.
 
 ---
 

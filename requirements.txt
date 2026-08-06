@@ -7,3 +7,4 @@ python-dotenv
 tqdm
 decord
 Pillow
+openai>=1.66.0

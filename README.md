@@ -13,11 +13,19 @@ The top-level runner accepts four benchmark modes. Only `sparse` is currently co
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
-The sparse-event branch is connected and the VLM parser implementation is present. It requires a Gadi environment with `vllm`, the Qwen2.5-VL-72B-Instruct model available in the configured Hugging Face cache, and input frames configured in `configs/sparse_events.json`.
+The sparse-event branch is connected and supports both local vLLM and API inference. The supplied sparse-event configuration uses the OpenAI-compatible API backend; local mode requires `vllm` and a model available in the configured Hugging Face cache.
 
 ## Setup
 
-Install the dependencies listed in `requirements.txt`. The current mode dispatcher does not require a `.env` file.
+Install the dependencies listed in `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+The current mode dispatcher does not require a `.env` file. API mode requires
+the environment variable named by `api_key_env` in the selected configuration.
+For the supplied API configuration, set `OPENCODE_API_KEY` before running.
 
 ## Run A Benchmark Mode
 
@@ -41,7 +49,7 @@ On Gadi, submit the current sparse-event job with:
 qsub sparse_event.pbs
 ```
 
-The PBS script sources `/scratch/pg06/vm4618/envs/vllm_env/bin/activate` and uses `/scratch/pg06/vm4618/huggingface_cache` in offline mode. The 72B model must already be present in that cache.
+The PBS script sources `/scratch/pg06/vm4618/envs/vllm_env/bin/activate`. When using local mode, it uses `/scratch/pg06/vm4618/huggingface_cache` in offline mode and the model must already be present in that cache. API mode instead requires `OPENCODE_API_KEY` and outbound HTTPS access from the job.
 
 The 72B model is sharded across four GPUs using `tensor_parallel_size: 4`.
 There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the
@@ -56,7 +64,7 @@ There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the
 | `pipeline/TemporalPipeline.py` | Temporal section analysis pipeline |
 | `pipeline/ConfigLoader.py` | Shared JSON configuration loader |
 | `pipeline/frame_parser.py` | Splits numerically named frame images into sections |
-| `pipeline/AIParser.py` | Local vLLM wrapper for text and multi-image calls |
+| `pipeline/AIParser.py` | Configurable local vLLM or OpenAI-compatible API wrapper |
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
 | `configs/*.json` | Pipeline configuration files |
 | `test_vlm.py` | VLM prototype/test script |
@@ -65,7 +73,7 @@ There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the
 
 ## Sparse-Event Pipeline
 
-The pipeline reads a JSON configuration, creates a `FrameParser`, and prepares an `AIParser` using the configured model settings. Its intended flow is:
+The pipeline reads a JSON configuration, creates a `FrameParser`, and prepares an `AIParser` using the complete configuration. The `backend` setting selects local vLLM or the OpenAI-compatible Responses API. Its intended flow is:
 
 1. Load `configs/sparse_events.json`.
 2. Sort and sample the input frames.
@@ -83,24 +91,6 @@ filter will be added as the next stage.
 
 The sparse-event configuration is stored in `configs/sparse_events.json`:
 
-```json
-{
-    "task": 1,
-    "frames_dir": "/scratch/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-11-56/camera",
-    "sections_dir": "./sections",
-    "output": "./events",
-    "frames_per_section": 10,
-    "step": 12,
-    "model": "Qwen/Qwen2.5-VL-72B-Instruct",
-    "temperature": 0.2,
-    "max_tokens": 100,
-    "enforce_eager": true,
-    "dtype": "bfloat16",
-    "max_model_len": 4096,
-    "gpu_memory_utilization": 0.9,
-    "tensor_parallel_size": 4
-}
-```
 
 The `task` value selects the prompt:
 
@@ -147,7 +137,10 @@ Use this process when choosing a value:
 | `output` | Final JSON results directory. Use scratch storage for large runs. |
 | `frames_per_section` | Images sent in one VLM request. Lower values reduce memory; `5-10` is a useful starting range. |
 | `step` | Keeps every Nth sorted frame. Higher values reduce compute but lose temporal detail. |
-| `model` | Must be a VLM compatible with vLLM. The current model is `Qwen/Qwen2.5-VL-72B-Instruct`. |
+| `model` | Local model identifier or API model identifier, depending on `backend`. | "gpt-5.6-luna", "Qwen/Qwen2.5-VL-72B-Instruct"
+| `backend` | `local` loads vLLM; `api` uses the OpenAI-compatible Responses API. |
+| `api_base_url` | API base URL or full Responses endpoint. The `/responses` suffix is normalized automatically. |
+| `api_key_env` | Environment variable containing the API key. Do not put the key in JSON. |
 | `temperature` | Use `0.0-0.2` for stable JSON; higher values produce more variation. |
 | `max_tokens` | Maximum generated output tokens. Increase if responses are truncated. |
 | `enforce_eager` | `true` is usually safer; `false` may improve speed but can require more memory. |
@@ -155,6 +148,29 @@ Use this process when choosing a value:
 | `gpu_memory_utilization` | Usually `0.85-0.9`. Leave some memory for CUDA and image processing. |
 | `tensor_parallel_size` | Number of GPUs used by one model instance. It must match the PBS GPU allocation; current value is `4`. |
 | `move` | Set `true` only if input frames may be moved instead of copied. Defaults to `false`. |
+
+### API Backend
+
+Set the following values in the selected configuration:
+
+```json
+{
+    "backend": "api",
+    "model": "gpt-5.6-luna",
+    "api_base_url": "https://opencode.ai/zen/go/v1/responses",
+    "api_key_env": "OPENCODE_API_KEY"
+}
+```
+
+Then export the key using the configured environment variable:
+
+```bash
+export OPENCODE_API_KEY="your-api-key"
+python main.py --mode sparse
+```
+
+The API backend sends the prompt and every image in a section as a single
+Responses API request. The model must support image inputs.
 
 ## Frame Sections
 
