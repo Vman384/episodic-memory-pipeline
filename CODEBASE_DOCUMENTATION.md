@@ -25,7 +25,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 3. **Sparse Event Pipeline** (`pipeline/SparseEventPipeline.py`) — `SparseEventPipeline` reads a JSON config file, creates `FrameParser` and `AIParser`, partitions frames, resolves the task prompt, queries the VLM, and writes results.
 
-4. **Top-Level CLI Dispatcher** (`main.py`) — Accepts `--mode` values for sparse event, temporal, spatial, and counting benchmarks. Only `sparse` currently dispatches to a pipeline; the remaining modes print a not-implemented message.
+4. **Top-Level CLI Dispatcher** (`main.py`) — Accepts `--mode` values for sparse event, temporal, spatial, and counting benchmarks. `sparse` and `temporal` dispatch to their current pipelines; spatial and counting remain placeholders.
 
 5. **Prototype/Test Script** (`test_vlm.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. It reads video via Decord, chunks into 300-frame segments, and generates descriptions and change-detection QA drafts via few-shot prompting.
 
@@ -35,7 +35,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 ### What Is Not Yet Implemented
 
-- **Temporal pipeline** — the mode is reserved by the CLI but no pipeline implementation exists.
+- **Temporal timeline filter** — section-level VLM extraction is implemented; LLM timeline consolidation is not yet implemented.
 - The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
 - `vllm.pbs` runs the prototype script rather than the top-level mode dispatcher.
 - A **User Interface**, **Hybrid Search Module**, and **Reporting frontend** are not implemented.
@@ -60,8 +60,10 @@ episodic-memory-pipeline/
 │   ├── AIParser.py
 │   ├── frame_parser.py
 │   ├── SparseEventPipeline.py
+│   ├── TemporalPipeline.py
 │   └── prompts/
-│       ├── temporal.txt
+│       ├── temporal_vlm.txt
+│       ├── temporal_llm_filter.txt
 │       └── sparse_event_prompt.txt
 ├── boreas-*/                       (sample frame data)
 ├── configs/                        (pipeline configuration files)
@@ -104,7 +106,7 @@ episodic-memory-pipeline/
 python main.py --mode sparse
 ```
 
-The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse` imports `pipeline/SparseEventPipeline.py`, passes it `configs/sparse_events.json`, and calls `run()`. The other modes are placeholders that print a not-implemented message.
+The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse` imports `pipeline/SparseEventPipeline.py`, while `temporal` imports `pipeline/TemporalPipeline.py` and uses `pipeline/prompts/temporal_vlm.txt`. Spatial and counting remain placeholders.
 
 **Functions:**
 
@@ -112,7 +114,7 @@ The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse
 |----------|---------|
 | `main()` | Parses `--mode` and dispatches to the selected benchmark mode. |
 
-**Status:** Active dispatcher. Only the sparse-event branch is connected to a pipeline.
+**Status:** Active dispatcher. Sparse-event and section-level temporal branches are connected to pipelines.
 
 ---
 
@@ -264,6 +266,20 @@ Configuration loading belongs to `pipeline/SparseEventPipeline.py`, which reads 
 
 ---
 
+### `pipeline/TemporalPipeline.py`
+
+**Purpose:** Runs the first temporal pipeline stage. It loads the temporal
+configuration, partitions frames into sections, sends each section to the VLM
+using `temporal_vlm.txt`, and saves the raw section responses.
+
+**Output:** Writes one `result.json` per section and an aggregated
+`all_results.json` under the configured `output` directory.
+
+**Status:** Section-level VLM extraction implemented. LLM timeline filtering is
+the next stage.
+
+---
+
 ### `pipeline/ConfigLoader.py`
 
 **Purpose:** Shared configuration component used by pipeline entry points.
@@ -318,20 +334,28 @@ The class is invoked by `main.py` when the user selects
 | `task` | Prompt file | Purpose |
 |--------|-------------|---------|
 | 1 | `prompts/sparse_event_prompt.txt` | Sparse event localisation |
-| 2 | `prompts/temporal.txt` | Full scene description |
+| 2 | `prompts/temporal_vlm.txt` | Temporal section description |
 
 **Status:** Implemented. Configuration loading, frame partitioning, prompt
 resolution, VLM calls, and output writing are active.
 
 ---
 
-### `pipeline/prompts/temporal.txt`
+### `pipeline/prompts/temporal_vlm.txt`
 
-**Purpose:** Full-narrative VLM prompt for the temporal pipeline's Stage 1. Asks the VLM to describe everything observable in a section of dashcam footage — terrain, road conditions, weather, lighting, notable objects, and changes/transitions — rather than filtering for rare events only. The resulting structured JSON (`narrative.json`) is designed to feed the upcoming `timeline_builder.py`.
+**Purpose:** Section-level VLM prompt for the temporal pipeline. Asks the VLM to describe the section and record timestamped objects and events in chronological order.
 
-**Output JSON schema:** `{summary, terrain, road_conditions, weather, lighting, notable_objects[], changes[], interesting_events[]}`
+**Output JSON schema:** `{summary, terrain, road_conditions, weather, lighting, notable_objects[], events[]}`
 
 **Status:** Complete.
+
+---
+
+### `pipeline/prompts/temporal_llm_filter.txt`
+
+**Purpose:** Planned LLM prompt for merging section-level temporal observations into a single ordered timeline.
+
+**Status:** Prompt draft; not used by the current pipeline stage.
 
 ---
 
@@ -354,7 +378,7 @@ resolution, VLM calls, and output writing are active.
 | File | task | Purpose |
 |------|------|---------|
 | `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`) |
-| `narrative_pass.json` | 2 | Full scene description (uses `prompts/temporal.txt`) |
+| `narrative_pass.json` | 2 | Temporal section extraction (uses `prompts/temporal_vlm.txt`) |
 
 **Status:** Complete.
 
@@ -362,12 +386,13 @@ resolution, VLM calls, and output writing are active.
 
 ## Architecture: Local VLM Implementations
 
-The codebase contains a prototype and an active sparse-event pipeline wrapper:
+The codebase contains a prototype, an active sparse-event pipeline wrapper, and a section-level temporal pipeline:
 
 | Approach | File | Model | Interface |
 |----------|------|-------|-----------|
 | **Prototype** | `test_vlm.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
 | **Pipeline wrapper** | `pipeline/AIParser.py` | Configured local vision-language model | Direct `vllm.LLM()` class |
+| **Temporal section pipeline** | `pipeline/TemporalPipeline.py` | Configured local vision-language model | Section VLM calls with persisted JSON responses |
 
 The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrapper reads pre-extracted frame folders and sends all frames in each section to a local vLLM model.
 
@@ -392,17 +417,19 @@ The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrap
 | Component | Status |
 |-----------|--------|
 | Project design/spec | Reference context |
-| Top-level mode dispatcher (`main.py`) | Sparse-event branch connected; other modes pending |
+| Top-level mode dispatcher (`main.py`) | Sparse and temporal branches connected |
 | Prototype (`test_vlm.py`) | Reference implementation |
 | Frame parser (`frame_parser.py`) | Complete |
 | AI parser (`pipeline/AIParser.py`) | Implemented local vLLM wrapper |
 | Sparse event pipeline (`pipeline/SparseEventPipeline.py`) | Implemented sparse-event workflow |
-| Narrative prompt (`prompts/temporal.txt`) | Complete |
+| Temporal pipeline (`pipeline/TemporalPipeline.py`) | Section VLM extraction implemented; timeline filter pending |
+| Temporal VLM prompt (`prompts/temporal_vlm.txt`) | Complete |
+| Temporal LLM filter prompt (`prompts/temporal_llm_filter.txt`) | Draft |
 | Sparse event prompt (`prompts/sparse_event_prompt.txt`) | Complete |
 | Example configs (`configs/*.json`) | Complete |
 | Legacy HPC job script (`vllm.pbs`) | Exists for the old prototype |
 | Sparse-event HPC job script (`sparse_event.pbs`) | Current PBS wrapper; requests four GPUs for the 72B model |
-| Temporal pipeline | Not yet implemented |
+| Temporal timeline builder and question generation | Not yet implemented |
 | Benchmark categories 2–4 | Not yet implemented |
 | User Interface | Not yet implemented |
 | Hybrid Search Module | Not yet implemented |

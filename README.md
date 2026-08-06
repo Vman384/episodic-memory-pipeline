@@ -9,7 +9,7 @@ The top-level runner accepts four benchmark modes. Only `sparse` is currently co
 | Mode | Status |
 |------|--------|
 | `sparse` | Connected to `SparseEventPipeline` |
-| `temporal` | Not implemented |
+| `temporal` | Section-level VLM extraction implemented; timeline filtering pending |
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
@@ -53,6 +53,7 @@ There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the
 |------|---------|
 | `main.py` | CLI dispatcher for the benchmark modes |
 | `pipeline/SparseEventPipeline.py` | Sparse-event pipeline class |
+| `pipeline/TemporalPipeline.py` | Temporal section analysis pipeline |
 | `pipeline/ConfigLoader.py` | Shared JSON configuration loader |
 | `pipeline/frame_parser.py` | Splits numerically named frame images into sections |
 | `pipeline/AIParser.py` | Local vLLM wrapper for text and multi-image calls |
@@ -73,6 +74,10 @@ The pipeline reads a JSON configuration, creates a `FrameParser`, and prepares a
 5. Write per-section and aggregated results.
 
 The pipeline loads the model once, partitions frames, sends each section to the VLM, and writes one JSON result per section plus `all_results.json`.
+
+The temporal mode currently performs the same sectioning step and uses
+`pipeline/prompts/temporal_vlm.txt` to save raw VLM responses. The LLM timeline
+filter will be added as the next stage.
 
 ## Configuration
 
@@ -102,7 +107,7 @@ The `task` value selects the prompt:
 | Task | Prompt | Purpose |
 |------|--------|---------|
 | `1` | `pipeline/prompts/sparse_event_prompt.txt` | Sparse event localisation |
-| `2` | `pipeline/prompts/temporal.txt` | Full scene description |
+| `2` | `pipeline/prompts/temporal_vlm.txt` | Temporal section description |
 
 ## Configuration Guide
 

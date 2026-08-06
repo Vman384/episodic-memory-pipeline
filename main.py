@@ -46,7 +46,15 @@ def main():
         pipeline.run()
 
     elif mode == BenchmarkMode.TEMPORAL:
-        print("Temporal pipeline not implemented yet.")
+        from pipeline.TemporalPipeline import TemporalPipeline
+
+        prompt_path = Path("pipeline/prompts/temporal_vlm.txt")
+        if not prompt_path.is_file():
+            raise SystemExit(f"Prompt file not found: {prompt_path}")
+
+        prompt = prompt_path.read_text()
+        pipeline = TemporalPipeline(MODE_CONFIG[mode], prompt)
+        pipeline.run()
 
     elif mode == BenchmarkMode.SPATIAL:
         print("Spatial pipeline not implemented yet.")

@@ -1,41 +1,37 @@
-You are analyzing a series of chronologically ordered frames from one
-section of a longer dashcam video from a vehicle driving through forest,
-rural road, and tunnel environments.
+You are analyzing chronologically ordered frames from one section of a longer
+dashcam video. The vehicle may be driving through forest, rural road, or tunnel
+environments.
 
-Your job is to provide a comprehensive description of what takes place
-in this section.
+Describe the section accurately and preserve the order of events. Do not invent
+events that are not supported by the frames.
 
-Respond with ONLY a JSON object (no markdown, no commentary, no extra
-text outside the JSON).
+Respond with ONLY a JSON object. Do not include markdown or extra commentary.
 
 {
-    "summary": "A one-paragraph overview of the entire section covering
-                the setting, what the vehicle is doing, and the general
-                flow of the scene.",
+    "summary": "A concise description of the section and its overall flow.",
     "terrain": "one of: forest, rural, tunnel, mixed, or other",
-    "road_conditions": "description of road surface, width, markings,
-                        shoulder, curves, etc.",
-    "weather": "one of: clear, overcast, rain, fog, snow, night, or
-               other",
-    "lighting": "one of: daylight, dusk, night, tunnel_lighting, or
-                other",
-    "notable_objects/events": [
-        "        
+    "road_conditions": "Description of the road, markings, curves, and shoulder.",
+    "weather": "one of: clear, overcast, rain, fog, snow, night, or other",
+    "lighting": "one of: daylight, dusk, night, tunnel_lighting, or other",
+    "notable_objects": [
         {
-            "frame": "Name of the frame file where this event occurs.",
-            "event_description": "Description of the unusual event.",
-            "why_interesting": "Why this stands out from normal driving."
-        }"
+            "first_frame": "Exact frame filename where the object first appears.",
+            "last_frame": "Exact frame filename where the object was last visible.",
+            "description": "Description of the object and its location."
+        }
     ],
-    "start_frame": [" List of starting frames for each notable objects or interesting events, when notable_objects/events occured],
-    "end_frame": [" List of ending frames for each notable objects or interesting events, in the same index as when notable_objects/events occured]
+    "events": [
+        {
+            "start_frame": "Exact frame filename where the event starts.",
+            "end_frame": "Exact frame filename where the event ends.",
+            "description": "What happened in chronological order."
+        }
+    ]
 }
 
 Rules:
-- Use the exact frame filename as it appears in the section folder.
-- If nothing changes within the section, return an empty changes list.
-- If no interesting events occur, return an empty interesting_events
-  list (most sections will be empty here).
-- Include enough detail in notable_objects and changes that someone
-  reading only your output could reconstruct the temporal order of
-  what happened.
+- Use exact frame filenames from the section folder.
+- Keep events in chronological order.
+- Return an empty array when no notable objects or events are present.
+- Treat normal, unchanged driving as part of the summary rather than inventing
+  events for it.
