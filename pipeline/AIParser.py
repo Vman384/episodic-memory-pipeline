@@ -72,6 +72,10 @@ class AIParser:
             if not api_base_url:
                 raise ValueError(f" API Base URL not provided!")
 
+            # The OpenAI SDK appends /responses to the configured base URL.
+            # Accept either the base URL or the full Responses endpoint.
+            api_base_url = api_base_url.rstrip("/").removesuffix("/responses")
+
             # create client to connect to API provider
             self.client = OpenAI(
                 api_key=api_key,
@@ -88,12 +92,10 @@ class AIParser:
         """Return text from an OpenAI Responses API response."""
         return response.output_text
 
-    def _call_api(self, content: str | list[dict]) -> str:
+    def _call_api(self, input_data: str | list[dict]) -> str:
         response = self.client.responses.create(
             model=self.model_name,
-            input=[{"role": "user", "content": content}]
-            if isinstance(content, list)
-            else content,
+            input=input_data,
             temperature=self.temperature,
             max_output_tokens=self.max_tokens,
         )
@@ -136,13 +138,14 @@ class AIParser:
         if self.backend == "api":
             # The Responses API expects the prompt and images in one ordered
             # content list. Local file paths cannot be sent to the API directly.
-            content = [{"type": "input_text", "text": prompt}]
+            image_content = []
 
             for image_path in image_paths:
                 # Encode each local frame as a base64 data URL for the request.
-                encoded_image = base64.b64encode(image_path.read_bytes()).decode(
-                    "ascii"
-                )
+                with open(image_path, "rb") as image_file:
+                    encoded_image = base64.b64encode(image_file.read()).decode(
+                        "utf-8"
+                    )
 
                 # Quick check of file type to ensure it's an image
                 media_type = self.IMAGE_MEDIA_TYPES.get(image_path.suffix.lower())
@@ -151,7 +154,7 @@ class AIParser:
                     raise ValueError(f"Unsupported image type: {image_path.suffix}")
 
                 # Add the frame after the prompt, preserving chronological order.
-                content.append(
+                image_content.append(
                     {
                         "type": "input_image",
                         "image_url": f"data:{media_type};base64,{encoded_image}",
@@ -160,7 +163,17 @@ class AIParser:
 
             # The API branch has already serialized the images, so skip the
             # PIL/vLLM conversion below.
-            return self._call_api(content)
+            return self._call_api(
+                [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "input_text", "text": prompt},
+                            *image_content,
+                        ],
+                    }
+                ]
+            )
 
         images = []
         for image_path in image_paths:
