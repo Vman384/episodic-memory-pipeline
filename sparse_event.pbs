@@ -18,8 +18,10 @@ cd "$PBS_O_WORKDIR"
 # enter virutal environment for dependencies
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
+# export for running local llm
 export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
 
+# export for running API calls
 source "$PBS_O_WORKDIR/.env"
 export OPENCODE_API_KEY
 
