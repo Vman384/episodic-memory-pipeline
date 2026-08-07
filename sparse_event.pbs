@@ -20,6 +20,14 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
 
+source "$PBS_O_WORKDIR/.env"
+export OPENCODE_API_KEY
+
+if [[ -z "$OPENCODE_API_KEY" ]]; then
+    echo "OPENCODE_API_KEY is not set"
+    exit 1
+fi
+
 # 2. Fix C++ Header Paths (Missing Python.h)
 export CPATH="/apps/python3/3.11.7/include/python3.11:$(python3 -c "import sysconfig; print(sysconfig.get_path('include'))"):$CPATH"
 export CPLUS_INCLUDE_PATH=$CPATH
