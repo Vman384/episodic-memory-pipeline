@@ -6,7 +6,6 @@ from pipeline.ConfigLoader import ConfigLoader
 from pipeline.frame_parser import FrameParser
 
 
-
 class TemporalPipeline:
     """
     Pipeline to asssess temporal events
@@ -58,7 +57,10 @@ class TemporalPipeline:
         output_dir = Path(config["output"])
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        print(f"[2/2] Querying VLM (model={config['model']}) ...")
+        print(
+            f"[2/2] Querying VLM (backend={config.get('backend', 'local')}, "
+            f"model={config['model']}) ..."
+        )
 
         all_results = []
 

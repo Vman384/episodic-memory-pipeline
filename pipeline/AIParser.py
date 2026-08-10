@@ -1,9 +1,4 @@
-import base64
-import os
 from pathlib import Path
-from dotenv import load_dotenv
-
-from PIL import Image
 
 
 class AIParser:
@@ -54,7 +49,10 @@ class AIParser:
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-        else:
+        elif backend == "api":
+            import os
+
+            from dotenv import load_dotenv
             from openai import OpenAI
 
             # get api key from environment file
@@ -136,6 +134,8 @@ class AIParser:
             raise ValueError(f"No image frames found in folder: {folder}")
 
         if self.backend == "api":
+            import base64
+
             # The Responses API expects the prompt and images in one ordered
             # content list. Local file paths cannot be sent to the API directly.
             image_content = []
@@ -174,6 +174,8 @@ class AIParser:
                     }
                 ]
             )
+
+        from PIL import Image
 
         images = []
         for image_path in image_paths:

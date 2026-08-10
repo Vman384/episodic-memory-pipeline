@@ -35,7 +35,7 @@ Run commands from the repository root because configuration paths are relative t
 python main.py --mode sparse
 ```
 
-The sparse mode uses `configs/sparse_events.json` by default. The other accepted modes currently print a not-implemented message:
+The sparse mode uses `configs/sparse_events.json` by default, which currently selects the API backend. The temporal mode uses `configs/narrative_pass.json`, which currently selects local vLLM. The other accepted modes currently print a not-implemented message:
 
 ```bash
 python main.py --mode temporal

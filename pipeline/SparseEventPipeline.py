@@ -45,7 +45,10 @@ class SparseEventPipeline:
 
         print(f"  Created {len(sections)} sections in {config['sections_dir']}")
 
-        print(f"[2/2] Querying VLM (model={config['model']}) ...")
+        print(
+            f"[2/2] Querying VLM (backend={config.get('backend', 'local')}, "
+            f"model={config['model']}) ..."
+        )
 
         output_dir = Path(config["output"])
         output_dir.mkdir(parents=True, exist_ok=True)

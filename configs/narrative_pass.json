@@ -1,8 +1,8 @@
 {
     "task": 2,
     "frames_dir": "/scratch/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-11-56/camera",
-    "sections_dir": "/scratch/pg06/FYP2026S1_3473/sections",
-    "output": "/scratch/pg06/FYP2026S1_3473/narratives",
+    "sections_dir": "/scratch/pg06/FYP2026S1_3473/temporal_outputs/sections",
+    "output": "/scratch/pg06/FYP2026S1_3473/temporal_outputs/narratives",
     "frames_per_section": 10,
     "step": 12,
     "model": "Qwen/Qwen2.5-VL-72B-Instruct",
