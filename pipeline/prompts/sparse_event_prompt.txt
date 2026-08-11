@@ -11,13 +11,13 @@ Respond with ONLY a JSON object. If nothing noteworthy happens, return an
 empty interesting_events list.
 
 {
-    "interesting_events": [
-        {
-            "section_name": "the section name",
-            "frame": "the exact frame filename",
-            "event_description": "what happened",
-            "why_interesting": "why this is unusual",
-            "terrain": "forest, rural, tunnel, or other"
-        }
-    ]
+  "interesting_events": [
+    {
+      "section_name": "the section name",
+      "frame": "the exact frame filename",
+      "event_description": "what happened",
+      "why_interesting": "why this is unusual",
+      "terrain": "forest, rural, tunnel, or other"
+    }
+  ]
 }
