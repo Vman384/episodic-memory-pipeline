@@ -4,6 +4,7 @@ RULES:
 
 1. Do not over engineer anything, only implement what was told.
 2. Follow the KISS principle, Keep it simple, stupid.
+3. Update the documentations in CODEBASE_DOCUMENTATION.md, README.md when code is written that makes the documentation outdated.
 
 `Task Context`: Develop an episodic memory benchmark. This benchmark aims to target 4 distinct categories, namely:
      - **Sparse event localisation**

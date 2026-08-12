@@ -90,26 +90,35 @@ class AIParser:
         """Return text from an OpenAI Responses API response."""
         return response.output_text
 
-    def _call_api(self, input_data: str | list[dict]) -> str:
+    def _call_api(self, input_data: str | list[dict], max_tokens: int | None = None) -> str:
         response = self.client.responses.create(
             model=self.model_name,
             input=input_data,
             temperature=self.temperature,
-            max_output_tokens=self.max_tokens,
+            max_output_tokens=max_tokens if max_tokens is not None else self.max_tokens,
         )
         return self._get_api_text(response)
 
-    def call_llm(self, prompt: str) -> str:
+    def call_llm(self, prompt: str, max_tokens: int | None = None) -> str:
         """
         Generate a response from a text prompt.
         """
 
         if self.backend == "api":
-            return self._call_api(prompt)
+            return self._call_api(prompt, max_tokens=max_tokens)
+
+        sampling_params = self.sampling_params
+        if max_tokens is not None:
+            from vllm import SamplingParams
+
+            sampling_params = SamplingParams(
+                temperature=self.temperature,
+                max_tokens=max_tokens,
+            )
 
         outputs = self.model.generate(
             prompt,
-            sampling_params=self.sampling_params,
+            sampling_params=sampling_params,
         )
         return self._get_text(outputs)
 

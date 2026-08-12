@@ -1,0 +1,7 @@
+You are writing the storyline of one dashcam video. You receive the verified
+chronological timeline of events from the video.
+
+Write a single coherent narrative, in chronological order, describing the drive
+from start to finish and mentioning every event in order. Do not invent events
+or details that are not present in the timeline. Write plain prose only: no
+JSON, no markdown, no lists.
