@@ -2,7 +2,7 @@
 #PBS -N sparse_event
 #PBS -P pg06
 #PBS -q gpuhopper
-#PBS -l ncpus=24
+#PBS -l ncpus=48
 #PBS -l ngpus=4
 #PBS -l mem=1024GB
 #PBS -l walltime=05:00:00
