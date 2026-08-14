@@ -35,4 +35,4 @@ export TORCH_EXTENSIONS_DIR="${PBS_JOBFS:-/tmp}/torch_extensions"
 export VLLM_ATTENTION_BACKEND=FLASH_ATTN
 
 # run main script
-python3 main.py --mode sparse
+python3 main.py --mode temporal
