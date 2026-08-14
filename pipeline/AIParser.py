@@ -33,9 +33,12 @@ class AIParser:
         self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 
         if backend == "local":
-            # Import vLLM only when it is actually needed. API-only jobs do not
-            # need CUDA, vLLM, or a local model cache.
+            from transformers import AutoProcessor
             from vllm import LLM, SamplingParams
+
+            # Set environment to 1 to ensure local model is fully offline
+            os.environ["HF_HUB_OFFLINE"] = "1"
+            os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
             self.model = LLM(
                 model=model,
@@ -49,32 +52,28 @@ class AIParser:
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
+            # Load tokenizer/processor to generate chat templates and image markers
+            self.processor = AutoProcessor.from_pretrained(
+                model,
+                local_files_only = True # ensure GADI doesn't attempt to access internet.
+            )
+
         elif backend == "api":
             import os
-
             from dotenv import load_dotenv
             from openai import OpenAI
 
-            # get api key from environment file
             load_dotenv()
-
             api_key = os.getenv(config.get("api_key_env"))
             if not api_key:
-                raise ValueError(
-                    f"API mode requires an API key"
-                )
+                raise ValueError("API mode requires an API key")
 
-            # Connect to Opencode endpoint
             api_base_url = config.get("api_base_url")
-
             if not api_base_url:
-                raise ValueError(f" API Base URL not provided!")
+                raise ValueError("API Base URL not provided!")
 
-            # The OpenAI SDK appends /responses to the configured base URL.
-            # Accept either the base URL or the full Responses endpoint.
             api_base_url = api_base_url.rstrip("/").removesuffix("/responses")
 
-            # create client to connect to API provider
             self.client = OpenAI(
                 api_key=api_key,
                 base_url=api_base_url,
@@ -103,7 +102,6 @@ class AIParser:
         """
         Generate a response from a text prompt.
         """
-
         if self.backend == "api":
             return self._call_api(prompt, max_tokens=max_tokens)
 
@@ -132,37 +130,28 @@ class AIParser:
 
         image_paths = []
         for path in folder.iterdir():
-
-            # checking if path has an image file
             if path.is_file() and path.suffix.lower() in self.image_extensions:
                 image_paths.append(path)
 
-        # sort image based on their timestamps
         image_paths.sort(key=lambda path: int(path.stem))
         if not image_paths:
             raise ValueError(f"No image frames found in folder: {folder}")
 
+        # ----------------------------------------------------
+        # BACKEND: API
+        # ----------------------------------------------------
         if self.backend == "api":
             import base64
 
-            # The Responses API expects the prompt and images in one ordered
-            # content list. Local file paths cannot be sent to the API directly.
             image_content = []
-
             for image_path in image_paths:
-                # Encode each local frame as a base64 data URL for the request.
                 with open(image_path, "rb") as image_file:
-                    encoded_image = base64.b64encode(image_file.read()).decode(
-                        "utf-8"
-                    )
+                    encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
 
-                # Quick check of file type to ensure it's an image
                 media_type = self.IMAGE_MEDIA_TYPES.get(image_path.suffix.lower())
-                
                 if not media_type:
                     raise ValueError(f"Unsupported image type: {image_path.suffix}")
 
-                # Add the frame after the prompt, preserving chronological order.
                 image_content.append(
                     {
                         "type": "input_image",
@@ -170,8 +159,6 @@ class AIParser:
                     }
                 )
 
-            # The API branch has already serialized the images, so skip the
-            # PIL/vLLM conversion below.
             return self._call_api(
                 [
                     {
@@ -184,6 +171,9 @@ class AIParser:
                 ]
             )
 
+        # ----------------------------------------------------
+        # BACKEND: LOCAL (vLLM)
+        # ----------------------------------------------------
         from PIL import Image
 
         images = []
@@ -191,9 +181,28 @@ class AIParser:
             with Image.open(image_path) as image:
                 images.append(image.copy())
 
+        # 1. Structure the message matching Hugging Face / Qwen VL format
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    *[{"type": "image", "image": img} for img in images],
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ]
+
+        # 2. Inject official placeholder tokens and chat tags
+        formatted_prompt = self.processor.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+
+        # 3. Pass formatted prompt alongside images to vLLM
         outputs = self.model.generate(
             {
-                "prompt": prompt,
+                "prompt": formatted_prompt,
                 "multi_modal_data": {"image": images},
             },
             sampling_params=self.sampling_params,
