@@ -73,7 +73,7 @@ episodic-memory-pipeline/
 ├── boreas-*/                       (sample frame data)
 ├── configs/                        (pipeline configuration files)
 │   ├── sparse_events.json
-│   └── narrative_pass.json
+│   └── .temporal_events.json
 ```
 
 ---
@@ -209,7 +209,7 @@ construction. Question generation must be run separately after reviewing
 
 **Current status:** The script is not ready for the supplied local temporal
 configuration. It requests one CPU and 4 GB of memory without a GPU, while
-`configs/narrative_pass.json` uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
+`configs/temporal_events.json` uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 `tensor_parallel_size: 4`. It also requires `OPENCODE_API_KEY` even though the
 current temporal configuration uses the local backend. Update the PBS queue,
 GPU, memory, and environment setup before submitting it.
@@ -506,7 +506,7 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | File | task | Purpose |
 |------|------|---------|
 | `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`) |
-| `narrative_pass.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
+| `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 
 The current temporal example uses `frames_per_section: 10`, `step: 15`,
 `max_tokens: 512`, `merge_window: 50`, `storyline_max_tokens: 1024`,

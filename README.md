@@ -35,7 +35,7 @@ Run commands from the repository root because configuration paths are relative t
 python main.py --mode sparse
 ```
 
-The sparse mode uses `configs/sparse_events.json` by default. The temporal mode uses `configs/narrative_pass.json` and runs extraction followed by timeline construction when no stage is specified. The temporal stages can be run independently:
+The sparse mode uses `configs/sparse_events.json` by default. The temporal mode uses `configs/temporal_events.json` and runs extraction followed by timeline construction when no stage is specified. The temporal stages can be run independently:
 
 ```bash
 python main.py --mode temporal --stage extract
@@ -73,7 +73,7 @@ There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the
 `temporal_event.pbs` invokes `python3 main.py --mode temporal`, which uses the
 default extract-plus-timeline behavior. Its current PBS resources and API-key
 check do not match the supplied local temporal configuration: it requests no
-GPU and requires `OPENCODE_API_KEY` even though `narrative_pass.json` uses local
+GPU and requires `OPENCODE_API_KEY` even though `temporal_events.json` uses local
 vLLM. Review and update that script before submitting a local temporal job.
 
 ## Structure
@@ -142,7 +142,7 @@ VLM output.
 ## Configuration
 
 The sparse-event configuration is stored in `configs/sparse_events.json`; the
-temporal configuration is stored in `configs/narrative_pass.json`.
+temporal configuration is stored in `configs/temporal_events.json`.
 
 
 The `task` value identifies the benchmark category. The top-level `--mode`

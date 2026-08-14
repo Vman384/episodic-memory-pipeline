@@ -13,7 +13,7 @@ class BenchmarkMode(Enum):
 
 MODE_CONFIG = {
     BenchmarkMode.SPARSE_EVENT: "configs/sparse_events.json",
-    BenchmarkMode.TEMPORAL: "configs/narrative_pass.json",
+    BenchmarkMode.TEMPORAL: "configs/temporal_events.json",
     BenchmarkMode.SPATIAL: None,
     BenchmarkMode.COUNTING: None,
 }
