@@ -2,8 +2,8 @@
 #PBS -N sparse_event
 #PBS -P pg06
 #PBS -q gpuhopper
-#PBS -l ncpus=2
 #PBS -l ncpus=24
+#PBS -l ngpus=4
 #PBS -l mem=1024GB
 #PBS -l walltime=05:00:00
 #PBS -l storage=scratch/pg06
@@ -20,15 +20,7 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 # export for running local llm
 export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
-
-# export for running API calls
-source "$PBS_O_WORKDIR/.env"
-export OPENCODE_API_KEY
-
-if [[ -z "$OPENCODE_API_KEY" ]]; then
-    echo "OPENCODE_API_KEY is not set"
-    exit 1
-fi
+export HF_HUB_OFFLINE=1
 
 # 2. Fix C++ Header Paths (Missing Python.h)
 export CPATH="/apps/python3/3.11.7/include/python3.11:$(python3 -c "import sysconfig; print(sysconfig.get_path('include'))"):$CPATH"
