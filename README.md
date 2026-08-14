@@ -13,7 +13,7 @@ The top-level runner accepts four benchmark modes. `sparse` and `temporal` are c
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
-Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses the API backend. The supplied temporal configuration uses local vLLM and requires `vllm`, the configured model in the Hugging Face cache, and the GPUs required by `tensor_parallel_size`.
+Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event and temporal configurations both use local vLLM and require `vllm`, the configured model in the Hugging Face cache, and the GPUs required by `tensor_parallel_size`.
 
 ## Setup
 
@@ -24,8 +24,8 @@ pip install -r requirements.txt
 ```
 
 The current mode dispatcher does not require a `.env` file. API mode requires
-the environment variable named by `api_key_env` in the selected configuration.
-For the supplied API configuration, set `OPENCODE_API_KEY` before running.
+the environment variable named by `api_key_env` in the selected configuration;
+set `OPENCODE_API_KEY` only if you switch a configuration to the `api` backend.
 
 ## Run A Benchmark Mode
 
@@ -64,7 +64,7 @@ On Gadi, submit the current sparse-event job with:
 qsub sparse_event.pbs
 ```
 
-The PBS script sources `/scratch/pg06/vm4618/envs/vllm_env/bin/activate`. When using local mode, it uses `/scratch/pg06/vm4618/huggingface_cache` in offline mode and the model must already be present in that cache. API mode instead requires `OPENCODE_API_KEY` and outbound HTTPS access from the job.
+The PBS script sources `/scratch/pg06/vm4618/envs/vllm_env/bin/activate`, requests four GPUs, and runs local vLLM with `HF_HOME=/scratch/pg06/FYP2026S1_3473/huggingface_cache` in offline mode; the model must already be present in that cache. Gadi compute nodes have no internet access, so the `api` backend cannot run from a PBS job; run API mode from a machine with network access instead.
 
 The 72B model is sharded across four GPUs using `tensor_parallel_size: 4`.
 There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the

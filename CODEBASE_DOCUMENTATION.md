@@ -187,9 +187,9 @@ python3 main.py --mode sparse
 
 Submit it from the repository root with `qsub sparse_event.pbs`.
 
-**Resources:** 24 CPUs, 4 GPUs, 512 GB memory, and a five-hour walltime.
+**Resources:** 24 CPUs, 4 GPUs, 1024 GB memory, and a five-hour walltime.
 
-**Prerequisites:** Local mode requires `vllm`, the model must already be present in `/scratch/pg06/vm4618/huggingface_cache`, and four GPUs must be available. The job explicitly runs Hugging Face in offline mode because compute nodes cannot access the network. API mode requires `openai`, the configured API key environment variable, and approved outbound HTTPS access instead.
+**Prerequisites:** Requires `vllm`, four GPUs, and the model already present in `/scratch/pg06/FYP2026S1_3473/huggingface_cache`. The job runs Hugging Face in offline mode because Gadi compute nodes cannot access the network; the `api` backend therefore cannot be used from a PBS job.
 
 ---
 
@@ -534,7 +534,7 @@ The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrap
 
 ## Known Issues & Missing Pieces
 
-1. **GPU/model environment is required for the supplied temporal config** — The local environment does not include vLLM, and the pipeline requires four GPUs plus access to the cached `Qwen/Qwen2.5-VL-72B-Instruct` model. API mode avoids the local model requirement but still needs an API key and an image-capable model.
+1. **GPU/model environment is required for the supplied configs** — The local environment does not include vLLM, and both supplied configurations use local vLLM, requiring four GPUs plus access to the cached `Qwen/Qwen2.5-VL-72B-Instruct` model. API mode avoids the local model requirement but still needs an API key, an image-capable model, and a machine with internet access (Gadi compute nodes do not have it).
 
 2. **`vllm.pbs` runs the prototype** — The PBS script invokes `test_vlm.py`, not the mode dispatcher in `main.py`.
 
