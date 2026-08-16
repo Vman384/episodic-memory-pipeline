@@ -195,6 +195,12 @@ class TemporalPipeline:
                 results.append(json.load(result_file))
         return results
 
+    def _output_dir(self) -> Path:
+        """Return the configured output directory, creating it if needed."""
+        output_dir = Path(self.config["output"])
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir
+
     def _build_timeline(self) -> None:
         """Sort section events by frame timestamp and merge them with the LLM."""
         # Load and normalize all extracted section events.

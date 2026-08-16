@@ -39,7 +39,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 - The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
 - `vllm.pbs` runs the prototype script rather than the top-level mode dispatcher.
-- `temporal_event.pbs` has resource and API-key settings that do not match the supplied local temporal configuration and requires review before use.
+- `temporal_event.pbs` runs the API-backed temporal configuration and forwards exported environment variables to the PBS job.
 - A **User Interface**, **Hybrid Search Module**, and **Reporting frontend** are not implemented.
 - No test suite, CI/CD, Dockerfile, or Makefile.
 
@@ -189,7 +189,7 @@ Submit it from the repository root with `qsub sparse_event.pbs`.
 
 **Resources:** 24 CPUs, 4 GPUs, 1024 GB memory, and a five-hour walltime.
 
-**Prerequisites:** Requires `vllm`, four GPUs, and the model already present in `/scratch/pg06/FYP2026S1_3473/huggingface_cache`. The job runs Hugging Face in offline mode because Gadi compute nodes cannot access the network; the `api` backend therefore cannot be used from a PBS job.
+**Prerequisites:** Requires `vllm`, four GPUs, and the model already present in `/scratch/pg06/FYP2026S1_3473/huggingface_cache`. This is the local/offline job; API runs should use `temporal_event.pbs` instead.
 
 ---
 
@@ -207,12 +207,10 @@ With no `--stage`, this invokes temporal extraction followed by timeline
 construction. Question generation must be run separately after reviewing
 `timeline.json`.
 
-**Current status:** The script is not ready for the supplied local temporal
-configuration. It requests one CPU and 4 GB of memory without a GPU, while
-`configs/temporal_events.json` uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
-`tensor_parallel_size: 4`. It also requires `OPENCODE_API_KEY` even though the
-current temporal configuration uses the local backend. Update the PBS queue,
-GPU, memory, and environment setup before submitting it.
+**Current status:** The script is configured for the API-backed temporal
+configuration. It requests CPU and memory only, forwards the submission
+environment with `#PBS -V`, and relies on `OPENCODE_API_KEY` or `.env` for
+authentication. It does not load CUDA or a local Hugging Face model.
 
 ---
 
@@ -287,6 +285,7 @@ The relevant configuration keys are:
 | `backend` | `local` for vLLM or `api` for the OpenAI-compatible Responses API |
 | `model` | Local model path/name or API model identifier |
 | `temperature` | Sampling temperature |
+| `reasoning_effort` | Optional Responses API reasoning effort, such as `low` or `none` |
 | `max_tokens` | Maximum generated output tokens |
 | `enforce_eager` | vLLM CUDA graph setting used in local mode |
 | `dtype` | vLLM model data type used in local mode |
@@ -396,9 +395,11 @@ The class is invoked by `main.py` when the user selects
 | `output` | Intended final VLM results directory | (required) |
 | `frames_per_section` | Max frames per section | `100` |
 | `step` | Keep every Nth frame | `1` |
-| `model` | Local vLLM model name or path | (required) |
-| `temperature` | Sampling temperature | `0.2` |
-| `max_tokens` | Default maximum generated tokens. Used by VLM calls and LLM calls without an override | `100` |
+| `model` | Local vLLM model name/path or API model identifier | (required) |
+| `backend` | `local` for vLLM or `api` for the Responses API | `local` |
+| `temperature` | Sampling temperature; set to `null` to omit it from API requests | (optional) |
+| `reasoning_effort` | Responses API reasoning effort, such as `low` or `none` | (optional) |
+| `max_tokens` | Default maximum generated output tokens. Used by VLM calls and LLM calls without an override | `100` |
 | `merge_window` | Maximum sorted events supplied to one temporal merge call | `50` |
 | `storyline_max_tokens` | Maximum tokens for the temporal storyline call | (optional) |
 | `question_max_tokens` | Maximum tokens for temporal question generation | (optional) |
@@ -407,13 +408,15 @@ The class is invoked by `main.py` when the user selects
 | `max_model_len` | Maximum model context length | `4096` |
 | `gpu_memory_utilization` | Fraction of GPU memory available to vLLM | `0.9` |
 | `tensor_parallel_size` | Number of GPUs used to shard the model | `1` |
+| `api_base_url` | API base URL or full `/responses` endpoint | (optional) |
+| `api_key_env` | Environment variable containing the API key | (optional) |
 
 **Configuration selection guide:**
 
 - `frames_per_section` controls how many images are sent in one VLM request. Lower values reduce memory use; start around `5-10` for high-resolution frames.
 - `step` keeps every Nth frame after sorting. Increase it to reduce compute, at the cost of temporal detail.
 - `max_model_len` is the total token budget for the prompt, visual image tokens, and generated output. It is not a duration or frame count. Start at `4096`; increase to `8192` if requests are too long, or reduce it and/or the section size if GPU memory is exhausted.
-- `max_tokens` reserves the output portion of the context budget. The temporal example uses `512` for section JSON extraction because its response schema includes summaries, objects, and events. Temporal storyline and question calls use `storyline_max_tokens` and `question_max_tokens`.
+- `max_tokens` reserves the output portion of the context budget. For reasoning API models, it includes hidden reasoning tokens as well as visible output. The temporal API example uses `2048` for section JSON extraction. Temporal storyline and question calls use `storyline_max_tokens` and `question_max_tokens`.
 - `dtype` controls numerical precision. `bfloat16` is appropriate for the current Qwen2.5-VL model on Hopper GPUs; `half` uses FP16.
 - `gpu_memory_utilization` should usually remain around `0.85-0.9` so CUDA and image-processing allocations have room.
 - `tensor_parallel_size` is the number of GPUs used by one model instance. It must match the GPU allocation; the current 72B PBS job uses `4`.
@@ -509,7 +512,8 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 
 The current temporal example uses `frames_per_section: 10`, `step: 15`,
-`max_tokens: 512`, `merge_window: 50`, `storyline_max_tokens: 1024`,
+no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
+`merge_window: 50`, `storyline_max_tokens: 1024`,
 `question_max_tokens: 2048`, `max_model_len: 8192`, and
 `tensor_parallel_size: 4`.
 
@@ -525,16 +529,16 @@ a staged temporal-order pipeline:
 | Approach | File | Model | Interface |
 |----------|------|-------|-----------|
 | **Prototype** | `test_vlm.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
-| **Pipeline wrapper** | `pipeline/AIParser.py` | Configured local vision-language model | Direct `vllm.LLM()` class |
+| **Pipeline wrapper** | `pipeline/AIParser.py` | Configured local vision-language model or API model | Direct `vllm.LLM()` class or OpenAI Responses API |
 | **Temporal pipeline** | `pipeline/TemporalPipeline.py` | Configured local vision-language model or API | Resumable section extraction, timestamp-sorted timeline, storyline, and reviewed question generation |
 
-The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrapper reads pre-extracted frame folders and sends all frames in each section to a local vLLM model.
+The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrapper reads pre-extracted frame folders and sends all frames in each section to the configured local or API backend.
 
 ---
 
 ## Known Issues & Missing Pieces
 
-1. **GPU/model environment is required for the supplied configs** — The local environment does not include vLLM, and both supplied configurations use local vLLM, requiring four GPUs plus access to the cached `Qwen/Qwen2.5-VL-72B-Instruct` model. API mode avoids the local model requirement but still needs an API key, an image-capable model, and a machine with internet access (Gadi compute nodes do not have it).
+1. **Backend-specific environment is required** — The sparse configuration uses local vLLM and requires four GPUs plus access to the cached `Qwen/Qwen2.5-VL-72B-Instruct` model. The temporal configuration uses the OpenCode Go API and requires a valid `OPENCODE_API_KEY`, network access, and an image-capable model.
 
 2. **`vllm.pbs` runs the prototype** — The PBS script invokes `test_vlm.py`, not the mode dispatcher in `main.py`.
 
@@ -556,7 +560,7 @@ The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrap
 | Top-level mode dispatcher (`main.py`) | Sparse and temporal branches connected |
 | Prototype (`test_vlm.py`) | Reference implementation |
 | Frame parser (`frame_parser.py`) | Complete |
-| AI parser (`pipeline/AIParser.py`) | Implemented local vLLM wrapper |
+| AI parser (`pipeline/AIParser.py`) | Implemented local vLLM and OpenAI-compatible API wrapper |
 | Sparse event pipeline (`pipeline/SparseEventPipeline.py`) | Implemented sparse-event workflow |
 | Temporal pipeline (`pipeline/TemporalPipeline.py`) | Extract, timeline, storyline, and question stages implemented |
 | Temporal VLM prompt (`prompts/temporal_vlm.txt`) | Complete |
@@ -567,7 +571,7 @@ The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrap
 | Sparse-event HPC job script (`sparse_event.pbs`) | Current PBS wrapper; requests four GPUs for the 72B model |
 | Temporal storyline prompt (`prompts/temporal_storyline.txt`) | Complete |
 | Temporal question prompt (`prompts/temporal_question_gen.txt`) | Complete |
-| Temporal PBS job script (`temporal_event.pbs`) | Exists but requires resource and environment updates for local temporal inference |
+| Temporal PBS job script (`temporal_event.pbs`) | API-backed temporal wrapper; no GPU required |
 | Temporal question generation | Implemented; requires human-reviewed timeline |
 | Benchmark categories 2–4 | Not yet implemented |
 | User Interface | Not yet implemented |

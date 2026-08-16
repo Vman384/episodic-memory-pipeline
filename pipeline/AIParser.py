@@ -19,7 +19,7 @@ class AIParser:
     def __init__(self, config: dict):
         backend = config.get("backend", "local").lower()
         model = config.get("model")
-        temperature = config.get("temperature", 0.2)
+        temperature = config.get("temperature")
         max_tokens = config.get("max_tokens", 100)
 
         if backend not in {"local", "api"}:
@@ -30,7 +30,9 @@ class AIParser:
         self.backend = backend
         self.model_name = model
         self.temperature = temperature
+        self.local_temperature = 0.2 if temperature is None else temperature
         self.max_tokens = max_tokens
+        self.reasoning_effort = config.get("reasoning_effort")
         self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 
         if backend == "local":
@@ -50,7 +52,7 @@ class AIParser:
                 tensor_parallel_size=config.get("tensor_parallel_size", 1),
             )
             self.sampling_params = SamplingParams(
-                temperature=temperature,
+                temperature=self.local_temperature,
                 max_tokens=max_tokens,
             )
             # Load tokenizer/processor to generate chat templates and image markers
@@ -78,6 +80,7 @@ class AIParser:
                 api_key=api_key,
                 base_url=api_base_url,
             )
+            self.api_base_url = api_base_url
 
     @staticmethod
     def _get_text(outputs) -> str:
@@ -90,12 +93,36 @@ class AIParser:
         return response.output_text
 
     def _call_api(self, input_data: str | list[dict], max_tokens: int | None = None) -> str:
-        response = self.client.responses.create(
-            model=self.model_name,
-            input=input_data,
-            temperature=self.temperature,
-            max_output_tokens=max_tokens if max_tokens is not None else self.max_tokens,
-        )
+        request = {
+            "model": self.model_name,
+            "input": input_data,
+            "max_output_tokens": max_tokens
+            if max_tokens is not None
+            else self.max_tokens,
+        }
+
+        if self.temperature is not None:
+            request["temperature"] = self.temperature
+        if self.reasoning_effort:
+            request["reasoning"] = {"effort": self.reasoning_effort}
+
+        try:
+            response = self.client.responses.create(**request)
+        except Exception as error:
+            status_code = getattr(error, "status_code", None)
+            response = getattr(error, "response", None)
+            if status_code is None:
+                status_code = getattr(response, "status_code", None)
+            details = getattr(response, "text", None) or str(error)
+            request_id = getattr(error, "request_id", None)
+            if not request_id:
+                headers = getattr(response, "headers", {})
+                request_id = headers.get("x-request-id")
+            request_info = f" request_id={request_id}" if request_id else ""
+            raise RuntimeError(
+                f"API request failed for model {self.model_name} at "
+                f"{self.api_base_url} (status={status_code}{request_info}): {details}"
+            ) from error
         return self._get_api_text(response)
 
     def call_llm(self, prompt: str, max_tokens: int | None = None) -> str:
@@ -110,7 +137,7 @@ class AIParser:
             from vllm import SamplingParams
 
             sampling_params = SamplingParams(
-                temperature=self.temperature,
+                temperature=self.local_temperature,
                 max_tokens=max_tokens,
             )
 

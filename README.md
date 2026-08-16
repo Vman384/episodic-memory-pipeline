@@ -13,7 +13,7 @@ The top-level runner accepts four benchmark modes. `sparse` and `temporal` are c
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
-Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event and temporal configurations both use local vLLM and require `vllm`, the configured model in the Hugging Face cache, and the GPUs required by `tensor_parallel_size`.
+Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses local vLLM; the supplied temporal configuration uses the OpenCode Go Responses API with `gpt-5.6-luna` and does not require a local VLM or GPUs.
 
 ## Setup
 
@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 The current mode dispatcher does not require a `.env` file. API mode requires
 the environment variable named by `api_key_env` in the selected configuration;
-set `OPENCODE_API_KEY` only if you switch a configuration to the `api` backend.
+the supplied temporal configuration uses `OPENCODE_API_KEY`.
 
 ## Run A Benchmark Mode
 
@@ -64,17 +64,16 @@ On Gadi, submit the current sparse-event job with:
 qsub sparse_event.pbs
 ```
 
-The PBS script sources `/scratch/pg06/vm4618/envs/vllm_env/bin/activate`, requests four GPUs, and runs local vLLM with `HF_HOME=/scratch/pg06/FYP2026S1_3473/huggingface_cache` in offline mode; the model must already be present in that cache. Gadi compute nodes have no internet access, so the `api` backend cannot run from a PBS job; run API mode from a machine with network access instead.
+The sparse-event PBS script sources `/scratch/pg06/vm4618/envs/vllm_env/bin/activate`, requests four GPUs, and runs local vLLM with `HF_HOME=/scratch/pg06/FYP2026S1_3473/huggingface_cache` in offline mode; the model must already be present in that cache.
 
 The 72B model is sharded across four GPUs using `tensor_parallel_size: 4`.
 There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the
 72B Qwen vision-language model used here.
 
 `temporal_event.pbs` invokes `python3 main.py --mode temporal`, which uses the
-default extract-plus-timeline behavior. Its current PBS resources and API-key
-check do not match the supplied local temporal configuration: it requests no
-GPU and requires `OPENCODE_API_KEY` even though `temporal_events.json` uses local
-vLLM. Review and update that script before submitting a local temporal job.
+default extract-plus-timeline behavior. It runs the API backend, so no GPU or
+Hugging Face model cache is required. Export `OPENCODE_API_KEY` before `qsub`
+or provide it through the repository's local `.env` file.
 
 ## Structure
 
@@ -91,7 +90,7 @@ vLLM. Review and update that script before submitting a local temporal job.
 | `test_vlm.py` | VLM prototype/test script |
 | `vllm.pbs` | Legacy PBS job script for the prototype |
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
-| `temporal_event.pbs` | Temporal PBS job script; resource settings require review |
+| `temporal_event.pbs` | API-backed temporal PBS job script |
 
 ## Sparse-Event Pipeline
 
@@ -198,6 +197,7 @@ Use this process when choosing a value:
 | `api_base_url` | API base URL or full Responses endpoint. The `/responses` suffix is normalized automatically. |
 | `api_key_env` | Environment variable containing the API key. Do not put the key in JSON. |
 | `temperature` | Use `0.0-0.2` for stable JSON; higher values produce more variation. |
+| `reasoning_effort` | API reasoning effort, such as `low` or `none`; omit when unsupported. |
 | `max_tokens` | Maximum generated output tokens. Increase if responses are truncated. |
 | `merge_window` | Maximum number of sorted events supplied to one timeline-merge call. The temporal configuration uses `50`. |
 | `storyline_max_tokens` | Output limit for the temporal storyline call. |
@@ -209,7 +209,7 @@ Use this process when choosing a value:
 | `move` | Set `true` only if input frames may be moved instead of copied. Defaults to `false`. |
 
 The supplied temporal configuration currently uses `frames_per_section: 10`,
-`step: 15`, `temperature: 0.4`, `max_tokens: 512`, `merge_window: 50`,
+`step: 15`, no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`, `merge_window: 50`,
 `storyline_max_tokens: 1024`, `question_max_tokens: 2048`,
 `max_model_len: 8192`, and `tensor_parallel_size: 4`.
 
@@ -222,7 +222,9 @@ Set the following values in the selected configuration:
     "backend": "api",
     "model": "gpt-5.6-luna",
     "api_base_url": "https://opencode.ai/zen/go/v1/responses",
-    "api_key_env": "OPENCODE_API_KEY"
+    "api_key_env": "OPENCODE_API_KEY",
+    "temperature": null,
+    "reasoning_effort": "low"
 }
 ```
 
@@ -230,11 +232,18 @@ Then export the key using the configured environment variable:
 
 ```bash
 export OPENCODE_API_KEY="your-api-key"
-python main.py --mode sparse
+python main.py --mode temporal --stage extract
 ```
 
 The API backend sends the prompt and every image in a section as a single
-Responses API request. The model must support image inputs.
+Responses API request. `gpt-5.6-luna` supports image inputs. For GPT-5.6
+reasoning models, the temporal configuration omits `temperature`; its
+`max_tokens` value includes both reasoning and visible output tokens.
+
+If an API call fails, the pipeline reports the model, endpoint, HTTP status,
+response body, and provider request ID when available. A 401 indicates a key
+or subscription problem; a 5xx response should be retried and reported to the
+provider with the request ID.
 
 ## Frame Sections
 
