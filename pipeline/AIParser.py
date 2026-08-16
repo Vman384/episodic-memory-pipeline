@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 
@@ -55,11 +56,10 @@ class AIParser:
             # Load tokenizer/processor to generate chat templates and image markers
             self.processor = AutoProcessor.from_pretrained(
                 model,
-                local_files_only = True # ensure GADI doesn't attempt to access internet.
+                local_files_only=True,
             )
 
         elif backend == "api":
-            import os
             from dotenv import load_dotenv
             from openai import OpenAI
 
