@@ -38,7 +38,6 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 ### What Is Not Yet Implemented
 
 - The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
-- `vllm.pbs` runs the prototype script rather than the top-level mode dispatcher.
 - `temporal_event.pbs` runs the API-backed temporal configuration and forwards exported environment variables to the PBS job.
 - A **User Interface**, **Hybrid Search Module**, and **Reporting frontend** are not implemented.
 - No test suite, CI/CD, Dockerfile, or Makefile.
@@ -113,7 +112,7 @@ python main.py --mode sparse
 
 The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse` imports `pipeline/SparseEventPipeline.py`, while `temporal` imports `pipeline/TemporalPipeline.py` and loads four temporal prompts. Spatial and counting remain placeholders.
 
-The optional `--stage` argument applies to temporal mode:
+The optional `--stage` argument applies to `temporal` mode:
 
 ```bash
 python main.py --mode temporal --stage extract
