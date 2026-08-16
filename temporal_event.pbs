@@ -1,10 +1,9 @@
 #!/bin/bash
 #PBS -N temporal_event
 #PBS -P pg06
-#PBS -q gpuhopper
-#PBS -l ncpus=48
-#PBS -l ngpus=4
-#PBS -l mem=1024GB
+#PBS -q copyq
+#PBS -l ncpus=1
+#PBS -l mem=8GB
 #PBS -l walltime=05:00:00
 #PBS -l storage=scratch/pg06
 #PBS -l wd
