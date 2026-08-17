@@ -43,7 +43,7 @@ python main.py --mode temporal --stage timeline
 python main.py --mode temporal --stage questions
 ```
 
-The expected temporal review workflow is:
+The temporal review workflow is:
 
 1. Run `--stage extract` to create section summaries. Existing section results are reused.
 2. Run `--stage timeline` to sort events by frame timestamp, merge duplicate or continuing events, and write `timeline.json` and `storyline.txt`.
@@ -58,23 +58,6 @@ python main.py --mode spatial
 python main.py --mode counting
 ```
 
-On Gadi, submit the current sparse-event job with:
-
-```bash
-qsub sparse_event.pbs
-```
-
-The sparse-event PBS script sources `/scratch/pg06/vm4618/envs/vllm_env/bin/activate`, requests four GPUs, and runs local vLLM with `HF_HOME=/scratch/pg06/FYP2026S1_3473/huggingface_cache` in offline mode; the model must already be present in that cache.
-
-The 72B model is sharded across four GPUs using `tensor_parallel_size: 4`.
-There is no official Qwen2.7 VLM model name; `Qwen2.5-VL-72B-Instruct` is the
-72B Qwen vision-language model used here.
-
-`temporal_event.pbs` invokes `python3 main.py --mode temporal`, which uses the
-default extract-plus-timeline behavior. It runs the API backend, so no GPU or
-Hugging Face model cache is required. Export `OPENCODE_API_KEY` before `qsub`
-or provide it through the repository's local `.env` file.
-
 ## Structure
 
 | Path | Purpose |
@@ -87,8 +70,6 @@ or provide it through the repository's local `.env` file.
 | `pipeline/AIParser.py` | Configurable local vLLM or OpenAI-compatible API wrapper |
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
 | `configs/*.json` | Pipeline configuration files |
-| `test_vlm.py` | VLM prototype/test script |
-| `vllm.pbs` | Legacy PBS job script for the prototype |
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | API-backed temporal PBS job script |
 
@@ -152,66 +133,71 @@ selects the pipeline and its prompt files:
 | `1` | `pipeline/prompts/sparse_event_prompt.txt` | Sparse event localisation |
 | `2` | `pipeline/prompts/temporal_vlm.txt` | Temporal section extraction |
 
-## Configuration Guide
+## Config Guide
 
-### `max_model_len`
+The JSON configuration controls frame sampling, output locations, and model
+inference. Paths are interpreted relative to the directory from which the
+command is run unless an absolute path is provided.
 
-`max_model_len` is the maximum number of tokens in one VLM request, including:
+### Spatial
 
-```text
-text prompt tokens + visual tokens from all images + generated output tokens
-```
+The spatial pipeline is not implemented yet, so there is no runnable spatial
+configuration file. When spatial support is added, use the shared settings
+below and choose values based on the spatial detail needed by the benchmark:
 
-It is not the video length and it does not directly represent the number of
-frames. More frames and higher-resolution images consume more visual tokens.
-The model's theoretical context limit is an upper bound, not a value that will
-necessarily fit in GPU memory. A larger value also reserves more KV-cache
-memory. The current Qwen2.5-VL model configuration advertises a much larger
-maximum position length, but that does not mean the full value is practical for
-10 high-resolution images on one request.
+| Parameter | Meaning and guidance |
+|-----------|----------------------|
+| `task` | Identifies the benchmark category. Keep the value defined by the spatial pipeline when it is available. |
+| `frames_dir` | Directory containing the numbered input frames. Point this to the camera frames for the video being evaluated. |
+| `sections_dir` | Directory where sampled frames are grouped into sections. Use a separate directory for each run so results are not mixed. |
+| `output` | Directory for model results. Use a location with enough space for one result per section and the aggregate output. |
+| `frames_per_section` | Maximum frames sent to the model in one request. Start small enough to fit the model context, then increase it if spatial references need more surrounding frames. |
+| `step` | Sampling interval after frames are sorted. Use `1` to keep every frame; use a larger value to reduce redundant frames, but keep enough samples to judge distances and landmarks. |
+| `move` | If `true`, moves frames into sections; if `false` or omitted, copies them. Keep it `false` when the original frames must be preserved. |
+| `model` | Model used for the run, such as `Qwen/Qwen2.5-VL-72B-Instruct`. Pick a vision-language model that supports image inputs and has enough context for each section. |
+| `backend` | Inference backend: `local` for vLLM or `api` for the OpenAI-compatible API. Choose `local` for an available local model and GPUs, otherwise use `api`. |
+| `api_base_url` | OpenAI-compatible API endpoint, used only with `backend: "api"`. Set it to the endpoint provided by the API service. |
+| `api_key_env` | Name of the environment variable containing the API key, used only with the API backend. Choose any variable name, then export that variable before running. |
+| `temperature` | Controls response variation. Use a low value, such as `0` to `0.4`, for consistent spatial observations and comparisons. |
+| `max_tokens` | Maximum generated response length. Set it high enough for the requested spatial explanation, but avoid a large value that adds unnecessary cost or latency. |
+| `reasoning_effort` | API reasoning level, when supported. Use a lower value for faster runs or a higher value when distance and location reasoning needs more deliberation. |
+| `enforce_eager` | Local vLLM execution setting. Keep `true` unless the selected local model and vLLM setup support a different execution mode. |
+| `dtype` | Local model numeric precision, such as `bfloat16`. Use the precision supported by the hardware to balance memory use and quality. |
+| `max_model_len` | Maximum local model context length. Set it large enough for the prompt and all section images, within the model and GPU limits. |
+| `gpu_memory_utilization` | Fraction of GPU memory allocated to vLLM. Start around `0.9` and lower it if model loading or other GPU processes run out of memory. |
+| `tensor_parallel_size` | Number of GPUs across which a local model is split. Set it to the number of compatible GPUs allocated to the job. |
 
-Use this process when choosing a value:
+### Temporal
 
-1. Start with `4096` for a small section such as the current 10-frame setup.
-2. If vLLM reports that the prompt is too long, increase it to `8192` or
-   higher, provided the model and GPUs support it.
-3. If vLLM runs out of memory, reduce `frames_per_section`, increase `step`,
-   reduce image resolution, or lower `max_model_len`.
-4. Keep `max_tokens` within the context budget. The temporal configuration uses
-   `512` for section JSON extraction because its schema includes summaries,
-   objects, and events. Storyline and question calls use their own output
-   limits.
+Temporal runs use `configs/temporal_events.json`. The most important choices
+are `step` and `frames_per_section`: use smaller sampling intervals for short
+events and larger sections only when the model can handle the added context.
 
-### Other Parameters
+| Parameter | Meaning and guidance |
+|-----------|----------------------|
+| `task` | Set to `2` for temporal section extraction. |
+| `frames_dir` | Directory containing the numbered camera frames. Set this to the frames from the video under evaluation. |
+| `sections_dir` | Directory where sampled frames are grouped into temporal sections. Use a fresh directory when changing sampling settings. |
+| `output` | Directory for section results, `timeline.json`, `storyline.txt`, and `questions.json`. Use a separate output directory for each experiment. |
+| `frames_per_section` | Number of sampled frames grouped into one extraction request. Increase it for wider context, but keep it within the model's image/context limits; `5` is the supplied starting point. |
+| `step` | Number of input frames skipped between samples. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed; `15` is the supplied starting point. |
+| `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
+| `model` | Model used for extraction and later temporal stages, such as `gpt-5.6-luna`. Pick a model that accepts the selected backend and image inputs. |
+| `backend` | Use `api` for the supplied Responses API configuration or `local` for a local vLLM model. The backend must match the model and available infrastructure. |
+| `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
+| `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
+| `temperature` | Controls generation variation. Keep it `null` for the supplied reasoning-model API configuration; use a low value when the selected backend supports temperature and deterministic extraction is preferred. |
+| `reasoning_effort` | API reasoning effort. Use `low` for faster extraction, or increase it when the model needs more effort to distinguish event order. |
+| `max_tokens` | Maximum response length for each section extraction. Increase it if event lists are being truncated; lower it to reduce cost when responses are short. |
+| `merge_window` | Number of chronologically sorted events sent to the timeline-merging model at once. Increase it to give the merger more context, but keep it within the model's context limit; `50` is the supplied starting point. |
+| `storyline_max_tokens` | Maximum length of the generated chronological storyline. Choose a value large enough to describe all reviewed events without excessive prose. |
+| `question_max_tokens` | Maximum length of generated temporal questions. Increase it when generating many questions or detailed evidence fields. |
+| `enforce_eager` | Local vLLM execution setting. Keep `true` unless the selected local model and vLLM setup support another mode. |
+| `dtype` | Local model numeric precision. Use a hardware-supported value such as `bfloat16` to balance memory use and quality. |
+| `max_model_len` | Maximum local model context length. Increase it only when the model and available GPU memory can support the larger context. |
+| `gpu_memory_utilization` | Fraction of GPU memory allocated to vLLM. Start around `0.9` and lower it if the local model does not fit. |
+| `tensor_parallel_size` | Number of GPUs used by local vLLM. Set it to the number of compatible GPUs assigned to the run. |
 
-| Parameter | Selection guidance |
-|-----------|--------------------|
-| `task` | Benchmark category metadata: `1` is sparse-event localisation; `2` is temporal/narrative. |
-| `frames_dir` | Use an absolute path on Gadi when the data is outside the repository. |
-| `sections_dir` | Intermediate frame sections. Use scratch storage for large runs. |
-| `output` | Final JSON results directory. Use scratch storage for large runs. |
-| `frames_per_section` | Images sent in one VLM request. Lower values reduce memory; `5-10` is a useful starting range. |
-| `step` | Keeps every Nth sorted frame. Higher values reduce compute but lose temporal detail. |
-| `model` | Local model identifier or API model identifier, depending on `backend`. |
-| `backend` | `local` loads vLLM; `api` uses the OpenAI-compatible Responses API. |
-| `api_base_url` | API base URL or full Responses endpoint. The `/responses` suffix is normalized automatically. |
-| `api_key_env` | Environment variable containing the API key. Do not put the key in JSON. |
-| `temperature` | Use `0.0-0.2` for stable JSON; higher values produce more variation. |
-| `reasoning_effort` | API reasoning effort, such as `low` or `none`; omit when unsupported. |
-| `max_tokens` | Maximum generated output tokens. Increase if responses are truncated. |
-| `merge_window` | Maximum number of sorted events supplied to one timeline-merge call. The temporal configuration uses `50`. |
-| `storyline_max_tokens` | Output limit for the temporal storyline call. |
-| `question_max_tokens` | Output limit for temporal question generation. |
-| `enforce_eager` | `true` is usually safer; `false` may improve speed but can require more memory. |
-| `dtype` | Use `bfloat16` on Hopper GPUs for the current Qwen model; use `half` when FP16 is required. |
-| `gpu_memory_utilization` | Usually `0.85-0.9`. Leave some memory for CUDA and image processing. |
-| `tensor_parallel_size` | Number of GPUs used by one model instance. It must match the PBS GPU allocation; current value is `4`. |
-| `move` | Set `true` only if input frames may be moved instead of copied. Defaults to `false`. |
-
-The supplied temporal configuration currently uses `frames_per_section: 10`,
-`step: 15`, no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`, `merge_window: 50`,
-`storyline_max_tokens: 1024`, `question_max_tokens: 2048`,
-`max_model_len: 8192`, and `tensor_parallel_size: 4`.
 
 ### API Backend
 
@@ -270,10 +256,6 @@ For a temporal run, the output is:
     section_0000_output/result.json
     section_0001_output/result.json
 ```
-
-`questions.json` is created only by the explicit `questions` stage. Sparse-event
-runs write `all_results.json` and per-section results but do not create the
-temporal timeline, storyline, or questions files.
 
 ## Full Documentation
 

@@ -85,7 +85,7 @@ episodic-memory-pipeline/
 
 **Purpose:** The project context defines the goal of benchmarking VLM episodic memory with long-form egocentric dashcam footage across sparse-event, temporal-order, spatial-reasoning, and counting tasks.
 
-**Status:** Reference context. Sparse-event and temporal modes have connected pipelines. Temporal extraction, timeline construction, storyline generation, and question generation are implemented; human review remains part of the intended data-creation workflow.
+ Reference context. Sparse-event and temporal modes have connected pipelines. Temporal extraction, timeline construction, storyline generation, and question generimplemented; human review remains part of the intended data-creation workflow.
 
 ---
 
@@ -130,7 +130,7 @@ With no `--stage`, temporal mode runs `extract` followed by `timeline`. The
 |----------|---------|
 | `main()` | Parses `--mode` and dispatches to the selected benchmark mode. |
 
-**Status:** Active dispatcher. Sparse-event and all temporal stages are connected; spatial and counting are placeholders.
+ Active dispatcher. Sparse-event and all temporal stages are connected; spatial and counting are pla
 
 ---
 
@@ -140,7 +140,6 @@ With no `--stage`, temporal mode runs `extract` followed by `timeline`. The
 
 **Contents:** Documents `main.py`, `pipeline/frame_parser.py`, `pipeline/AIParser.py`, `pipeline/SparseEventPipeline.py`, `pipeline/TemporalPipeline.py`, temporal stages, and the current configuration files. The quick start uses `python main.py --mode sparse`.
 
-**Status:** Current.
 
 ---
 
@@ -170,7 +169,7 @@ With no `--stage`, temporal mode runs `extract` followed by `timeline`. The
 - **Modules:** `python3/3.11.7`, `cuda/12.2.2`
 - **Entry point:** Activates the environment and runs `python main.py`
 
-**Status:** Exists, but currently invokes `python main.py` without the required `--mode` argument.
+ Exists, but currently invokes `python main.py` without the required `--mode`
 
 ---
 
@@ -261,7 +260,7 @@ temporal-order benchmark pipelines.
 |----------|-------------|---------|
 | `--config` | Required JSON config file containing all frame-processing settings | (required) |
 
-**Status:** Complete.
+
 
 ---
 
@@ -311,7 +310,7 @@ Configuration loading belongs to the pipeline classes, which read the JSON file 
 ...
 ```
 
-**Status:** Implemented for local vLLM and OpenAI-compatible API backends. Text
+ Implemented for local vLLM and OpenAI-compatible API back
 calls support an optional per-call `max_tokens` override for longer storyline
 and question-generation responses.
 
@@ -360,7 +359,7 @@ events are retained for review.
 question is expected to contain a type, options, answer indices, event IDs, and
 frame evidence for review and later grading.
 
-**Status:** Implemented, with human review required for benchmark-quality
+ Implemented, with human review required for benchma
 timeline and question artifacts.
 
 ---
@@ -430,7 +429,7 @@ top-level `--mode` selects the pipeline and prompt files:
 | 1 | `prompts/sparse_event_prompt.txt` | Sparse event localisation |
 | 2 | `prompts/temporal_vlm.txt` | Temporal section extraction |
 
-**Status:** Implemented. Configuration loading, frame partitioning, prompt
+ Implemented. Configuration loading, frame partitioni
 resolution, VLM calls, timeline construction, and output writing are active.
 
 ---
@@ -441,7 +440,7 @@ resolution, VLM calls, timeline construction, and output writing are active.
 
 **Output JSON schema:** `{summary, terrain, road_conditions, weather, lighting, notable_objects[], events[]}`
 
-**Status:** Complete.
+
 
 ---
 
@@ -454,7 +453,7 @@ computed order and not invent events.
 **Output JSON schema:** `{events[]}` with `event_id`, `section`, `start_frame`,
 `end_frame`, `description`, `uncertain`, and `notes` fields.
 
-**Status:** Used by `TemporalPipeline.py` for windowed timeline consolidation.
+ Used by `TemporalPipeline.py` for windowed timeline cons
 
 ---
 
@@ -466,7 +465,7 @@ adding unsupported details.
 
 **Output:** Plain text written to `storyline.txt`.
 
-**Status:** Complete.
+
 
 ---
 
@@ -484,7 +483,7 @@ human-verified `timeline.json`.
 Questions include `event_ids`, `frame_evidence`, `options`, and
 `answer_indices` so they can be reviewed and later graded programmatically.
 
-**Status:** Complete.
+
 
 ---
 
@@ -494,7 +493,7 @@ Questions include `event_ids`, `frame_evidence`, `options`, and
 
 **Output JSON schema:** `{interesting_events[]}`
 
-**Status:** Complete.
+
 
 ---
 
@@ -516,24 +515,8 @@ no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
 `question_max_tokens: 2048`, `max_model_len: 8192`, and
 `tensor_parallel_size: 4`.
 
-**Status:** Complete.
 
----
 
-## Architecture: Local VLM Implementations
-
-The codebase contains a prototype, an active sparse-event pipeline wrapper, and
-a staged temporal-order pipeline:
-
-| Approach | File | Model | Interface |
-|----------|------|-------|-----------|
-| **Prototype** | `test_vlm.py` | Qwen2-VL-7B (vision + text) | Direct `vllm.LLM()` class, offline HF cache |
-| **Pipeline wrapper** | `pipeline/AIParser.py` | Configured local vision-language model or API model | Direct `vllm.LLM()` class or OpenAI Responses API |
-| **Temporal pipeline** | `pipeline/TemporalPipeline.py` | Configured local vision-language model or API | Resumable section extraction, timestamp-sorted timeline, storyline, and reviewed question generation |
-
-The prototype (`test_vlm.py`) reads video directly via Decord. The pipeline wrapper reads pre-extracted frame folders and sends all frames in each section to the configured local or API backend.
-
----
 
 ## Known Issues & Missing Pieces
 
