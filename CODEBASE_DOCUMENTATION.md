@@ -376,9 +376,9 @@ dictionary.
 ### `pipeline/SparseEventPipeline.py`
 
 **Purpose:** Defines `SparseEventPipeline`, which loads configuration through
-`ConfigLoader`, creates `FrameParser` and `AIParser`, splits frames into
-sections, queries each section with the prompt supplied by `main.py`, and
-persists the results.
+`ConfigLoader`, creates `FrameParser` and `AIParser`, reuses existing section
+directories or splits frames into sections, queries each section with the prompt
+supplied by `main.py`, and persists the results.
 
 The class is invoked by `main.py` when the user selects
 `--mode sparse`.

@@ -10,10 +10,10 @@
     "api_base_url": "https://opencode.ai/zen/go/v1/responses",
     "api_key_env": "OPENCODE_API_KEY",
     "temperature": 0.4,
-    "max_tokens": 1000,
+    "max_tokens": 3000,
     "enforce_eager": true,
     "dtype": "bfloat16",
-    "max_model_len": 25000,
+    "max_model_len": 50000,
     "gpu_memory_utilization": 0.9,
     "tensor_parallel_size": 4
 }
