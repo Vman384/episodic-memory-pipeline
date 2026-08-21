@@ -163,6 +163,21 @@ class AIParser:
         if not image_paths:
             raise ValueError(f"No image frames found in folder: {folder}")
 
+        # Keep the original filenames available to the VLM. Image payloads do
+        # not preserve the local filenames on their own.
+        frame_manifest = "\n".join(
+            f"Frame {index}: {image_path.name}"
+            for index, image_path in enumerate(image_paths, start=1)
+        )
+        prompt_with_manifest = (
+            f"{prompt}\n\n"
+            "The images are provided in the same order as this frame filename "
+            "manifest:\n"
+            f"{frame_manifest}\n"
+            "Use the exact filenames from this manifest in your response. "
+            "Do not create replacement filenames."
+        )
+
         # ----------------------------------------------------
         # BACKEND: API
         # ----------------------------------------------------
@@ -190,7 +205,7 @@ class AIParser:
                     {
                         "role": "user",
                         "content": [
-                            {"type": "input_text", "text": prompt},
+                            {"type": "input_text", "text": prompt_with_manifest},
                             *image_content,
                         ],
                     }
@@ -213,7 +228,7 @@ class AIParser:
                 "role": "user",
                 "content": [
                     *[{"type": "image", "image": img} for img in images],
-                    {"type": "text", "text": prompt},
+                    {"type": "text", "text": prompt_with_manifest},
                 ],
             }
         ]

@@ -289,6 +289,10 @@ python3 run_timeframe_converter.py
 Use `--timeline` and `--output` to select different paths. The source frame
 directory must be available, and frame names must contain numeric timestamps.
 
+During VLM extraction, the ordered filenames from each section are included in
+the prompt so temporal events can refer to the original frame files instead of
+invented labels.
+
 ## Full Documentation
 
 See [CODEBASE_DOCUMENTATION.md](CODEBASE_DOCUMENTATION.md) for a detailed breakdown of the codebase and implementation status.

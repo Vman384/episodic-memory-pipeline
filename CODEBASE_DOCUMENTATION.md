@@ -339,7 +339,7 @@ The relevant configuration keys are:
 | Method | Purpose |
 |--------|---------|
 | `call_llm(prompt, max_tokens=None)` → `str` | Sends a text prompt to the selected backend and returns generated text. An optional per-call token limit overrides the configured default. |
-| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by numeric filename, sends them together to the selected backend, and returns generated text. |
+| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by numeric filename, includes an in-memory ordered filename manifest in the prompt, sends them together to the selected backend, and returns generated text. |
 
 Configuration loading belongs to the pipeline classes, which read the JSON file and pass the complete dictionary into the `AIParser` constructor. In API mode, the API key is read from the environment variable named by `api_key_env`; it is not stored in configuration files.
 
