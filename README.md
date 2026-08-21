@@ -65,6 +65,7 @@ python main.py --mode counting
 | `main.py` | CLI dispatcher for the benchmark modes |
 | `pipeline/SparseEventPipeline.py` | Sparse-event pipeline class |
 | `pipeline/TemporalPipeline.py` | Staged temporal extraction, timeline, storyline, and question pipeline |
+| `pipeline/timeframe_converter.py` | Converts timestamped event frame ranges into elapsed video seconds |
 | `pipeline/ConfigLoader.py` | Shared JSON configuration loader |
 | `pipeline/frame_parser.py` | Splits numerically named frame images into sections |
 | `pipeline/AIParser.py` | Configurable local vLLM or OpenAI-compatible API wrapper |
@@ -255,6 +256,24 @@ For a temporal run, the output is:
     questions.json
     section_0000_output/result.json
     section_0001_output/result.json
+```
+
+## Frame Time Conversion
+
+`TimeframeConverter` converts the `start_frame` and `end_frame` values from
+temporal events into elapsed seconds. It uses the earliest numeric frame
+timestamp in `frames_dir` as time zero; frame filenames are expected to be
+microsecond timestamps.
+
+```python
+from pipeline.timeframe_converter import TimeframeConverter
+
+converter = TimeframeConverter("/path/to/frames")
+seconds = converter.timeframe_to_seconds(
+    "1733343593917869.png",
+    "1733343596067826.png",
+)
+# {"start_seconds": 0.0, "end_seconds": 2.149957}
 ```
 
 ## Full Documentation

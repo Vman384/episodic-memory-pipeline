@@ -21,19 +21,21 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, and copy/move semantics.
 
-2. **AI Parser** (`pipeline/AIParser.py`) — Configurable local vLLM or OpenAI-compatible API wrapper. `call_llm` handles text prompts and `call_vlm` handles multiple images from a section directory.
+2. **Timeframe Converter** (`pipeline/timeframe_converter.py`) — Converts temporal event `start_frame` and `end_frame` values into elapsed video seconds relative to the earliest frame in the source directory.
 
-3. **Sparse Event Pipeline** (`pipeline/SparseEventPipeline.py`) — `SparseEventPipeline` reads a JSON config file, creates `FrameParser` and `AIParser`, partitions frames, resolves the task prompt, queries the VLM, and writes results.
+3. **AI Parser** (`pipeline/AIParser.py`) — Configurable local vLLM or OpenAI-compatible API wrapper. `call_llm` handles text prompts and `call_vlm` handles multiple images from a section directory.
 
-4. **Temporal Pipeline** (`pipeline/TemporalPipeline.py`) — Provides resumable section extraction, timestamp-sorted timeline construction, windowed LLM merging, storyline generation, and question generation from a human-reviewed timeline.
+4. **Sparse Event Pipeline** (`pipeline/SparseEventPipeline.py`) — `SparseEventPipeline` reads a JSON config file, creates `FrameParser` and `AIParser`, partitions frames, resolves the task prompt, queries the VLM, and writes results.
 
-5. **Top-Level CLI Dispatcher** (`main.py`) — Accepts `--mode` values for sparse event, temporal, spatial, and counting benchmarks. The temporal branch also accepts `--stage extract|timeline|questions`; spatial and counting remain placeholders.
+5. **Temporal Pipeline** (`pipeline/TemporalPipeline.py`) — Provides resumable section extraction, timestamp-sorted timeline construction, windowed LLM merging, storyline generation, and question generation from a human-reviewed timeline.
 
-6. **Prototype/Test Script** (`test_vlm.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. It reads video via Decord, chunks into 300-frame segments, and generates descriptions and change-detection QA drafts via few-shot prompting.
+6. **Top-Level CLI Dispatcher** (`main.py`) — Accepts `--mode` values for sparse event, temporal, spatial, and counting benchmarks. The temporal branch also accepts `--stage extract|timeline|questions`; spatial and counting remain placeholders.
 
-7. **Legacy HPC Job Script** (`vllm.pbs`) — PBS batch script for the old prototype on NCI's Gadi cluster.
+7. **Prototype/Test Script** (`test_vlm.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. It reads video via Decord, chunks into 300-frame segments, and generates descriptions and change-detection QA drafts via few-shot prompting.
 
-8. **Sparse-Event HPC Job Script** (`sparse_event.pbs`) — PBS batch script for the current sparse-event CLI.
+8. **Legacy HPC Job Script** (`vllm.pbs`) — PBS batch script for the old prototype on NCI's Gadi cluster.
+
+9. **Sparse-Event HPC Job Script** (`sparse_event.pbs`) — PBS batch script for the current sparse-event CLI.
 
 ### What Is Not Yet Implemented
 
@@ -61,6 +63,7 @@ episodic-memory-pipeline/
 │   ├── ConfigLoader.py
 │   ├── AIParser.py
 │   ├── frame_parser.py
+│   ├── timeframe_converter.py
 │   ├── SparseEventPipeline.py
 │   ├── TemporalPipeline.py
 │   └── prompts/
@@ -261,6 +264,25 @@ temporal-order benchmark pipelines.
 | `--config` | Required JSON config file containing all frame-processing settings | (required) |
 
 
+
+---
+
+### `pipeline/timeframe_converter.py`
+
+**Purpose:** Converts numeric frame timestamps from temporal event outputs into
+elapsed seconds in the overall video. The earliest numeric frame in the source
+directory is treated as time zero, and timestamps are interpreted as
+microseconds.
+
+**Class: `TimeframeConverter`**
+
+| Method | Purpose |
+|--------|---------|
+| `frame_to_seconds(frame)` → `float` | Convert one frame filename or timestamp to elapsed seconds. |
+| `timeframe_to_seconds(start_frame, end_frame)` → `dict` | Return `start_seconds` and `end_seconds` for one temporal event. |
+
+The class is currently a standalone utility; timeline output is not modified
+automatically.
 
 ---
 
@@ -542,6 +564,7 @@ no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
 | Top-level mode dispatcher (`main.py`) | Sparse and temporal branches connected |
 | Prototype (`test_vlm.py`) | Reference implementation |
 | Frame parser (`frame_parser.py`) | Complete |
+| Timeframe converter (`timeframe_converter.py`) | Implemented standalone utility |
 | AI parser (`pipeline/AIParser.py`) | Implemented local vLLM and OpenAI-compatible API wrapper |
 | Sparse event pipeline (`pipeline/SparseEventPipeline.py`) | Implemented sparse-event workflow |
 | Temporal pipeline (`pipeline/TemporalPipeline.py`) | Extract, timeline, storyline, and question stages implemented |
