@@ -66,6 +66,7 @@ python main.py --mode counting
 | `pipeline/SparseEventPipeline.py` | Sparse-event pipeline class |
 | `pipeline/TemporalPipeline.py` | Staged temporal extraction, timeline, storyline, and question pipeline |
 | `pipeline/timeframe_converter.py` | Converts timestamped event frame ranges into elapsed video seconds |
+| `run_timeframe_converter.py` | Applies timeframe conversion to events in `timeline.json` |
 | `pipeline/ConfigLoader.py` | Shared JSON configuration loader |
 | `pipeline/frame_parser.py` | Splits numerically named frame images into sections |
 | `pipeline/AIParser.py` | Configurable local vLLM or OpenAI-compatible API wrapper |
@@ -278,6 +279,15 @@ seconds = converter.timeframe_to_seconds(
 )
 # {"start_seconds": 0.0, "end_seconds": 2.149957}
 ```
+
+To convert a timeline file and write a new copy with the seconds added:
+
+```bash
+python3 run_timeframe_converter.py
+```
+
+Use `--timeline` and `--output` to select different paths. The source frame
+directory must be available, and frame names must contain numeric timestamps.
 
 ## Full Documentation
 

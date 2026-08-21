@@ -53,6 +53,7 @@ episodic-memory-pipeline/
 ├── .gitignore
 ├── main.py
 ├── README.md
+├── run_timeframe_converter.py
 ├── requirements.txt
 ├── test_vlm.py
 ├── vllm.pbs
@@ -283,6 +284,24 @@ microseconds.
 
 The class is currently a standalone utility; timeline output is not modified
 automatically.
+
+---
+
+### `run_timeframe_converter.py`
+
+**Purpose:** Reads `timeline.json`, converts every event's `start_frame` and
+`end_frame` with `TimeframeConverter`, and writes the result to
+`timeline_with_seconds.json`.
+
+**Usage:**
+
+```bash
+python3 run_timeframe_converter.py
+python3 run_timeframe_converter.py --timeline input.json --output output.json
+```
+
+The source frame directory must be available and contain numeric timestamp
+filenames.
 
 ---
 
