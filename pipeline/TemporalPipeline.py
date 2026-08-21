@@ -125,6 +125,41 @@ class TemporalPipeline:
             self._generate_questions()
 
 
+    def _load_section_manifest(self) -> dict:
+        """Load the per-section seconds manifest written by FrameParser."""
+        manifest_path = Path(self.config["sections_dir"]) / "sections.json"
+        if not manifest_path.is_file():
+            print(f"  Warning: section manifest not found at {manifest_path}")
+            return {}
+        with open(manifest_path) as manifest_file:
+            return json.load(manifest_file)
+
+    def _events_with_seconds(self, section_result: dict, manifest: dict) -> list[dict]:
+        """Parse a section's VLM response into events carrying section seconds.
+
+        Seconds come from the section manifest written at frame-parsing time,
+        so the model never has to produce exact timestamps itself.
+        """
+        section_name = section_result.get("section")
+        section_info = (manifest.get("sections") or {}).get(section_name, {})
+        parsed = parse_json_response(section_result.get("response", ""))
+        if not isinstance(parsed, dict):
+            return []
+
+        events = []
+        for event in parsed.get("events", []):
+            events.append(
+                {
+                    "section": section_name,
+                    "start_frame": event.get("start_frame"),
+                    "end_frame": event.get("end_frame"),
+                    "description": event.get("description"),
+                    "start_seconds": section_info.get("start_seconds"),
+                    "end_seconds": section_info.get("end_seconds"),
+                }
+            )
+        return events
+
     def _extract(self) -> None:
         """Split frames into sections and summarise each one with the VLM.
 
@@ -136,6 +171,9 @@ class TemporalPipeline:
 
         sections = self.frame_parser.create_section_dir()
         print(f"  Created {len(sections)} sections in {config['sections_dir']}")
+
+        # Per-section elapsed seconds, computed from frame timestamps.
+        manifest = self._load_section_manifest()
 
         # Keep intermediate results in the configured output directory.
         output_dir = Path(self.config["output"])
@@ -153,7 +191,14 @@ class TemporalPipeline:
             # Reuse completed sections after an interrupted run.
             if result_path.is_file():
                 with open(result_path) as result_file:
-                    all_results.append(json.load(result_file))
+                    section_result = json.load(result_file)
+                if "events" not in section_result:
+                    section_result["events"] = self._events_with_seconds(
+                        section_result, manifest
+                    )
+                    with open(result_path, "w") as result_file:
+                        json.dump(section_result, result_file, indent=2)
+                all_results.append(section_result)
                 print(f"  [{index}/{len(sections)}] {curr_section.name} (cached)")
                 continue
 
@@ -162,6 +207,10 @@ class TemporalPipeline:
             section_result = {
                 "section": curr_section.name,
                 "response": response,
+                "events": self._events_with_seconds(
+                    {"section": curr_section.name, "response": response},
+                    manifest,
+                ),
             }
 
             # make and store the result
@@ -208,24 +257,22 @@ class TemporalPipeline:
         section_results = self._load_section_results()
         print(f"[timeline] Loaded {len(section_results)} section results")
 
+        # Per-section elapsed seconds, computed from frame timestamps.
+        manifest = self._load_section_manifest()
+
         events = []
         unparsed = 0
         for section_result in section_results:
-            parsed = parse_json_response(section_result["response"])
-            if not isinstance(parsed, dict):
-                unparsed += 1
-                continue
-
-            # Retain only fields needed by later timeline stages.
-            for event in parsed.get("events", []):
-                events.append(
-                    {
-                        "section": section_result["section"],
-                        "start_frame": event.get("start_frame"),
-                        "end_frame": event.get("end_frame"),
-                        "description": event.get("description"),
-                    }
-                )
+            # Prefer the parsed events (with seconds) stored by the extract
+            # stage; fall back to parsing the raw response for older results.
+            section_events = section_result.get("events")
+            if not isinstance(section_events, list):
+                parsed = parse_json_response(section_result.get("response", ""))
+                if not isinstance(parsed, dict):
+                    unparsed += 1
+                    continue
+                section_events = self._events_with_seconds(section_result, manifest)
+            events.extend(section_events)
 
         if unparsed:
             print(
@@ -264,6 +311,13 @@ class TemporalPipeline:
         # Renumber events after merging changes their sequence.
         for event_id, event in enumerate(merged_events, start=1):
             event["event_id"] = event_id
+
+        # Re-attach per-section seconds in case the merge model altered them.
+        section_infos = manifest.get("sections") or {}
+        for event in merged_events:
+            section_info = section_infos.get(event.get("section"), {})
+            event["start_seconds"] = section_info.get("start_seconds")
+            event["end_seconds"] = section_info.get("end_seconds")
 
         # Persist the merged timeline for review and later stages.
         output_dir = self._output_dir()

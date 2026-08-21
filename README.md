@@ -95,15 +95,17 @@ plus `all_results.json`.
 The temporal pipeline targets temporal-order recall. It uses the following
 stages:
 
-1. **Extract:** `FrameParser` samples and partitions frames. `AIParser.call_vlm`
-   produces one structured JSON response per section. Existing
-   `<output>/section_NNNN_output/result.json` files are skipped, allowing an
-   interrupted extraction job to resume.
+1. **Extract:** `FrameParser` samples and partitions frames and writes
+   `sections.json` with each section's elapsed start/end seconds. `AIParser.call_vlm`
+   produces one structured JSON response per section. Each section's parsed
+   events are stored with the section's `start_seconds`/`end_seconds` attached.
+   Existing `<output>/section_NNNN_output/result.json` files are skipped,
+   allowing an interrupted extraction job to resume.
 2. **Timeline:** Section events are parsed, sorted in Python by the numeric
    timestamp in `start_frame`, and sent to the LLM in windows controlled by
    `merge_window`. The LLM only merges continuing or duplicate observations;
-   it is instructed not to reorder or invent events. The result is written to
-   `timeline.json`.
+   it is instructed not to reorder or invent events. Per-section seconds are
+   re-attached after merging. The result is written to `timeline.json`.
 3. **Storyline:** The merged timeline is converted into chronological prose in
    `storyline.txt` for human review.
 4. **Questions:** After `timeline.json` has been reviewed and corrected by a
@@ -246,6 +248,12 @@ sections/
     section_0001/
 ```
 
+While creating sections it also writes a `sections.json` manifest next to the
+section directories. Each section maps to its first/last frame and the elapsed
+start/end seconds of that window relative to the first sampled frame of the
+video. These seconds are computed from the real frame timestamps, so later
+stages know the time range of every section without relying on model output.
+
 Set `move` to `true` in the configuration to move frames instead of copying them. It defaults to `false` when omitted.
 
 ## Intended Output
@@ -261,6 +269,12 @@ For a temporal run, the output is:
     section_0000_output/result.json
     section_0001_output/result.json
 ```
+
+Each `result.json` stores the raw VLM response plus a parsed `events` list.
+Every event carries `start_seconds` and `end_seconds` taken from the section's
+`start_seconds`/`end_seconds` window in `sections.json`, so a model only needs
+to name the section and the time range is already known. `timeline.json` events
+carry the same seconds after merging.
 
 ## Frame Time Conversion
 
@@ -288,6 +302,8 @@ python3 run_timeframe_converter.py
 
 Use `--timeline` and `--output` to select different paths. The source frame
 directory must be available, and frame names must contain numeric timestamps.
+For temporal runs this conversion is redundant: per-section seconds are already
+computed at frame-parsing time and attached to every event.
 
 During VLM extraction, the ordered filenames from each section are included in
 the prompt so temporal events can refer to the original frame files instead of

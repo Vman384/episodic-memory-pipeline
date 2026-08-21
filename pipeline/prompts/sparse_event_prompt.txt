@@ -21,3 +21,16 @@ empty interesting_events list.
     }
   ]
 }
+
+Rules:
+- The user message includes an ordered frame filename manifest. The first image
+  corresponds to the first manifest entry, the second image to the second
+  entry, and so on.
+- Use exact frame filenames from the section folder.
+- Use only filenames from the manifest for `first_frame`, `last_frame`,
+  `start_frame`, and `end_frame`. Never invent names such as `image1.jpg` or
+  `frame_0001.jpg`.
+- Keep events in chronological order.
+- Return an empty array when no notable objects or events are present.
+- Treat normal, unchanged driving as part of the summary rather than inventing
+  events for it.

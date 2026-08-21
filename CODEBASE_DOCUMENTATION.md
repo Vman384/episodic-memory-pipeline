@@ -256,7 +256,7 @@ temporal-order benchmark pipelines.
 
 | Method | Purpose |
 |--------|---------|
-| `create_section_dir()` | Sorts frame files by numeric stem, applies step sampling, partitions into per-section directories, and copies (or moves) files. Returns list of created section directory paths. |
+| `create_section_dir()` | Sorts frame files by numeric stem, applies step sampling, partitions into per-section directories, and copies (or moves) files. Also writes a `sections.json` manifest mapping each section to its first/last frame and elapsed start/end seconds relative to the first sampled frame. Returns list of created section directory paths. |
 
 **CLI Interface:**
 
@@ -282,8 +282,11 @@ microseconds.
 | `frame_to_seconds(frame)` → `float` | Convert one frame filename or timestamp to elapsed seconds. |
 | `timeframe_to_seconds(start_frame, end_frame)` → `dict` | Return `start_seconds` and `end_seconds` for one temporal event. |
 
-The class is currently a standalone utility; timeline output is not modified
-automatically.
+For temporal runs the conversion is redundant: per-section seconds are computed
+from the actual frame timestamps when `FrameParser` builds the sections and
+attached to every event in each section's `result.json` and in `timeline.json`,
+so the model never has to produce exact timestamps itself. The class remains a
+standalone utility for manual conversion.
 
 ---
 
@@ -351,6 +354,11 @@ Configuration loading belongs to the pipeline classes, which read the JSON file 
 ...
 ```
 
+Each `result.json` contains the raw VLM `response` string plus a parsed `events`
+list where every event carries `start_seconds` and `end_seconds` taken from its
+section's window in the `sections.json` manifest written by `FrameParser`. The
+seconds are derived from the actual frame timestamps, never from model output.
+
  Implemented for local vLLM and OpenAI-compatible API back
 calls support an optional per-call `max_tokens` override for longer storyline
 and question-generation responses.
@@ -369,8 +377,8 @@ timeline.
 
 | Stage | Behavior |
 |-------|----------|
-| `extract` | Creates frame sections, queries the VLM with `temporal_vlm.txt`, writes one result per section, and skips existing results for resumability. |
-| `timeline` | Loads persisted section results, parses their `events` arrays, sorts them by numeric `start_frame`, merges events in LLM windows, and writes `timeline.json` and `storyline.txt`. |
+| `extract` | Creates frame sections, queries the VLM with `temporal_vlm.txt`, writes one result per section, and skips existing results for resumability. Parsed events from each response are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json`. |
+| `timeline` | Loads persisted section results, parses their `events` arrays, sorts them by numeric `start_frame`, merges events in LLM windows, re-attaches per-section seconds after merging, and writes `timeline.json` and `storyline.txt`. |
 | `questions` | Loads `timeline.json`, intended to be human-reviewed first, and writes generated temporal questions to `questions.json`. |
 
 When no stage is supplied, the pipeline runs `extract` followed by `timeline`.

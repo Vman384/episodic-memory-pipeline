@@ -7,6 +7,11 @@ import json
 import shutil
 from pathlib import Path
 
+try:
+    from pipeline.timeframe_converter import TimeframeConverter
+except ImportError:
+    from timeframe_converter import TimeframeConverter
+
 
 class FrameParser:
     """Partition video frames into numbered section directories.
@@ -92,6 +97,10 @@ class FrameParser:
         Existing section directories are reused.  Existing files with the
         same names are replaced, making repeated runs deterministic.  An
         empty input directory returns an empty list without creating output.
+
+        A ``sections.json`` manifest is written next to the section
+        directories, mapping each section to its first/last frame and elapsed
+        start/end seconds relative to the first sampled frame of the video.
         """
         frame_paths = self._get_frame_paths()[:: self.step_size]
         if not frame_paths:
@@ -104,20 +113,49 @@ class FrameParser:
         # make a new output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
         section_dirs: list[Path] = []
+        section_manifest = {}
 
+        # Reuse the shared converter for all per-section second math.
+        converter = TimeframeConverter(self.frames_dir)
+        video_start_timestamp = converter.video_start_timestamp
         for section_index, start in enumerate(range(0, len(frame_paths), self.frames_per_section)):
 
+            section_frames = frame_paths[start : start + self.frames_per_section]
             section_dir = self.output_dir / f"section_{section_index:04d}"
             section_dir.mkdir(parents=True, exist_ok=True)
             section_dirs.append(section_dir)
 
-            for frame_path in frame_paths[start : start + self.frames_per_section]:
+            for frame_path in section_frames:
                 destination = section_dir / frame_path.name
                 # Depending on params, either we move the actual frames themselves or we make a copy
                 if self.move:
                     shutil.move(str(frame_path), str(destination))
                 else:
                     shutil.copy2(frame_path, destination)
+
+            # Per-section elapsed seconds relative to the first sampled frame.
+            seconds = converter.timeframe_to_seconds(
+                section_frames[0].name,
+                section_frames[-1].name,
+            )
+            section_manifest[f"section_{section_index:04d}"] = {
+                "start_frame": section_frames[0].name,
+                "end_frame": section_frames[-1].name,
+                "start_seconds": seconds["start_seconds"],
+                "end_seconds": seconds["end_seconds"],
+            }
+
+        manifest_path = self.output_dir / "sections.json"
+        with open(manifest_path, "w") as manifest_file:
+            json.dump(
+                {
+                    "frames_dir": str(self.frames_dir),
+                    "video_start_timestamp": video_start_timestamp,
+                    "sections": section_manifest,
+                },
+                manifest_file,
+                indent=2,
+            )
 
         return section_dirs
 
