@@ -15,7 +15,7 @@ class TimeframeConverter:
             raise ValueError(f"No timestamped frames found in {self.frames_dir}")
         self.video_start_timestamp = frame_timestamps[0]
 
-    def _frame_timestamps(self) -> list[int]:
+    def _frame_timestamps(self):
         """
         Return numeric frame timestamps in chronological order.
         """
@@ -40,7 +40,7 @@ class TimeframeConverter:
         except ValueError as error:
             raise ValueError(f"Frame must have a numeric filename: {frame}") from error
 
-    def frame_to_seconds(self, frame) -> float:
+    def frame_to_seconds(self, frame):
         """Return a frame's elapsed time in seconds from the video start."""
         timestamp = self._timestamp(frame)
         return (timestamp - self.video_start_timestamp) / self.MICROSECONDS_PER_SECOND
