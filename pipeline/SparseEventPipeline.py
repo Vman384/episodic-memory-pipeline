@@ -40,10 +40,18 @@ class SparseEventPipeline:
 
         print(f"[1/2] Splitting frames ({config['frames_dir']}) into sections ...")
 
-        # Create each section directories for segregated frames
-        sections = self.frame_parser.create_section_dir()
-
-        print(f"  Created {len(sections)} sections in {config['sections_dir']}")
+        sections_dir = Path(config["sections_dir"])
+        sections = sorted(
+            section for section in sections_dir.glob("section_*") if section.is_dir()
+        )
+        if sections:
+            print(
+                f"  Reusing {len(sections)} existing sections in {config['sections_dir']}"
+            )
+        else:
+            # Create each section directory for segregated frames.
+            sections = self.frame_parser.create_section_dir()
+            print(f"  Created {len(sections)} sections in {config['sections_dir']}")
 
         print(
             f"[2/2] Querying VLM (backend={config.get('backend', 'local')}, "

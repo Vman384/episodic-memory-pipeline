@@ -1,21 +1,28 @@
 #!/bin/bash
 #PBS -N temporal_event
 #PBS -P pg06
-#PBS -q copyq
-#PBS -l ncpus=1
-#PBS -l mem=8GB
-#PBS -l walltime=05:00:00
+#PBS -q gpuhopper
+#PBS -l ncpus=48
+#PBS -l ngpus=4
+#PBS -l mem=1024GB
+#PBS -l walltime=01:30:00
 #PBS -l storage=scratch/pg06
 #PBS -l wd
 #PBS -V
 
 module load python3/3.11.7
+module load cuda/12.2.2
 
 # cd to the right directory
 cd "$PBS_O_WORKDIR"
 
-# Enter the environment containing the OpenAI client and pipeline dependencies.
+# Enter the environment containing the local vLLM pipeline dependencies.
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
+# Use the shared model cache and prevent model resolution from making network requests.
+export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
 # run main script
-python3 main.py --mode temporal --stage timeline
+python3 main.py --mode temporal

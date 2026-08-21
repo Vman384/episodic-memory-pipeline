@@ -79,12 +79,15 @@ python main.py --mode counting
 The pipeline reads a JSON configuration, creates a `FrameParser`, and prepares an `AIParser` using the complete configuration. The `backend` setting selects local vLLM or the OpenAI-compatible Responses API. Its intended flow is:
 
 1. Load `configs/sparse_events.json`.
-2. Sort and sample the input frames.
-3. Copy or move frames into section directories.
+2. Sort and sample the input frames, unless section directories already exist
+   in `sections_dir`.
+3. Copy or move frames into section directories when they do not already exist.
 4. Query the VLM for each section using the task prompt.
 5. Write per-section and aggregated results.
 
-The pipeline loads the model once, partitions frames, sends each section to the VLM, and writes one JSON result per section plus `all_results.json`.
+The pipeline loads the model once, reuses existing `section_*` directories when
+available, sends each section to the VLM, and writes one JSON result per section
+plus `all_results.json`.
 
 ## Temporal Pipeline
 

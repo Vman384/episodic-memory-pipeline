@@ -7,7 +7,6 @@ class AIParser:
     Interface for local vLLM and OpenAI-compatible API inference.
     """
 
-    API_BASE_URL = "https://opencode.ai/zen/go/v1/responses"
     IMAGE_MEDIA_TYPES = {
         ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg",
@@ -36,12 +35,12 @@ class AIParser:
         self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 
         if backend == "local":
-            from transformers import AutoProcessor
-            from vllm import LLM, SamplingParams
-
-            # Set environment to 1 to ensure local model is fully offline
+            # Set offline mode before importing libraries that may resolve models.
             os.environ["HF_HUB_OFFLINE"] = "1"
             os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+            from transformers import AutoProcessor
+            from vllm import LLM, SamplingParams
 
             self.model = LLM(
                 model=model,
