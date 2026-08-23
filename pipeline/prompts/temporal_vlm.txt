@@ -38,6 +38,5 @@ Rules:
   `start_frame`, and `end_frame`. Never invent names such as `image1.jpg` or
   `frame_0001.jpg`.
 - Keep events in chronological order.
-- Return an empty array when no notable objects or events are present.
 - Treat normal, unchanged driving as part of the summary rather than inventing
   events for it.
