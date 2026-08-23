@@ -24,3 +24,19 @@ class ConfigLoader:
             raise ValueError("Configuration file must contain a JSON object")
 
         return config
+
+class PipelineConfig(TypedDict):
+    """Configuration required by the counting pipeline."""
+
+    frames_dir: str
+    sampled_frames_dir: str
+    sampled_indices: list[int]
+    model: str
+    output: str
+    backend: NotRequired[str]
+
+class CountingPipelineConfig(PipelineConfig):
+    """Configuration required by the counting pipeline."""
+
+    CLIPModelmodel: str
+    CLIPProcessormodel: str

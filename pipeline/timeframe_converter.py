@@ -11,6 +11,8 @@ class TimeframeConverter:
     def __init__(self, frames_dir):
         self.frames_dir = Path(frames_dir).expanduser()
         frame_timestamps = self._frame_timestamps()
+        if not self.frames_dir.is_dir():
+            raise FileNotFoundError(f"Frame directory not found: {self.frames_dir}")
         if not frame_timestamps:
             raise ValueError(f"No timestamped frames found in {self.frames_dir}")
         self.video_start_timestamp = frame_timestamps[0]
@@ -19,9 +21,6 @@ class TimeframeConverter:
         """
         Return numeric frame timestamps in chronological order.
         """
-        if not self.frames_dir.is_dir():
-            raise FileNotFoundError(f"Frame directory not found: {self.frames_dir}")
-
         timestamps = []
         for frame_path in self.frames_dir.iterdir():
             if not frame_path.is_file():

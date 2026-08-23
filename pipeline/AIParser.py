@@ -1,10 +1,14 @@
+import base64
+import json
 import os
+import re
 from pathlib import Path
 
 
 class AIParser:
     """
-    Interface for local vLLM and OpenAI-compatible API inference.
+    Interface for local vLLM and OpenAI-compatible API inference,
+    with structured output parsing for object detection and bounding boxes.
     """
 
     IMAGE_MEDIA_TYPES = {
@@ -125,9 +129,7 @@ class AIParser:
         return self._get_api_text(response)
 
     def call_llm(self, prompt: str, max_tokens: int | None = None) -> str:
-        """
-        Generate a response from a text prompt.
-        """
+        """Generate a response from a text prompt."""
         if self.backend == "api":
             return self._call_api(prompt, max_tokens=max_tokens)
 
@@ -147,9 +149,7 @@ class AIParser:
         return self._get_text(outputs)
 
     def call_vlm(self, prompt: str, folder_path: str | Path) -> str:
-        """
-        Generate a response from a prompt and all frames in a folder.
-        """
+        """Generate a response from a prompt and all frames in a folder."""
         folder = Path(folder_path)
         if not folder.is_dir():
             raise FileNotFoundError(f"Frame folder not found: {folder}")
@@ -159,12 +159,10 @@ class AIParser:
             if path.is_file() and path.suffix.lower() in self.image_extensions:
                 image_paths.append(path)
 
-        image_paths.sort(key=lambda path: int(path.stem))
+        image_paths.sort(key=lambda path: int(path.stem) if path.stem.isdigit() else path.stem)
         if not image_paths:
             raise ValueError(f"No image frames found in folder: {folder}")
 
-        # Keep the original filenames available to the VLM. Image payloads do
-        # not preserve the local filenames on their own.
         frame_manifest = "\n".join(
             f"Frame {index}: {image_path.name}"
             for index, image_path in enumerate(image_paths, start=1)
@@ -182,8 +180,6 @@ class AIParser:
         # BACKEND: API
         # ----------------------------------------------------
         if self.backend == "api":
-            import base64
-
             image_content = []
             for image_path in image_paths:
                 with open(image_path, "rb") as image_file:
@@ -222,7 +218,6 @@ class AIParser:
             with Image.open(image_path) as image:
                 images.append(image.copy())
 
-        # 1. Structure the message matching Hugging Face / Qwen VL format
         messages = [
             {
                 "role": "user",
@@ -233,14 +228,12 @@ class AIParser:
             }
         ]
 
-        # 2. Inject official placeholder tokens and chat tags
         formatted_prompt = self.processor.apply_chat_template(
             messages,
             tokenize=False,
             add_generation_prompt=True,
         )
 
-        # 3. Pass formatted prompt alongside images to vLLM
         outputs = self.model.generate(
             {
                 "prompt": formatted_prompt,
@@ -249,3 +242,71 @@ class AIParser:
             sampling_params=self.sampling_params,
         )
         return self._get_text(outputs)
+
+    # PARSING METHODS (Added for Object Detection & SAM 2 Support)
+    def parse_objects(self, response_text: str) -> list[str]:
+        """
+        Parses raw VLM output into a list of detected object strings.
+        Expected formats: JSON list ['red car', 'blue car'] or plain text.
+        """
+        try:
+            # Clean markdown codeblocks
+            clean_text = re.sub(r"```(?:json)?\s*([\s\S]*?)\s*```", r"\1", response_text).strip()
+            data = json.loads(clean_text)
+            if isinstance(data, list):
+                return [str(item).lower().strip() for item in data]
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+        # Fallback: line-by-line comma/bullet parsing
+        objects = []
+        for line in response_text.splitlines():
+            line = re.sub(r"^[\d\.\-\*\s]+", "", line).strip()
+            if line:
+                for item in line.split(","):
+                    cleaned = item.strip().lower()
+                    if cleaned:
+                        objects.append(cleaned)
+        return list(set(objects))
+
+    def parse_objects_with_boxes(
+        self, 
+        response_text: str, 
+        image_size: tuple[int, int] | None = None
+    ) -> list[tuple[str, list[int]]]:
+        """
+        Parses raw VLM response into a list of tuples: [("class_name", [x_min, y_min, x_max, y_max]), ...]
+        Handles JSON arrays of dicts or lists. Also normalizes 0-1000 scale boxes to pixel sizes if image_size is given.
+        """
+        results = []
+        try:
+            clean_text = re.sub(r"```(?:json)?\s*([\s\S]*?)\s*```", r"\1", response_text).strip()
+            data = json.loads(clean_text)
+
+            if isinstance(data, list):
+                for item in data:
+                    label, box = None, None
+                    if isinstance(item, dict):
+                        label = item.get("label") or item.get("class") or item.get("name")
+                        box = item.get("bbox") or item.get("box_2d") or item.get("box")
+                    elif isinstance(item, (list, tuple)) and len(item) == 2:
+                        label, box = item[0], item[1]
+
+                    if label and box and len(box) == 4:
+                        box = [int(coord) for coord in box]
+                        
+                        # Scale 0-1000 normalized coordinates (e.g., Qwen2-VL standard) if image size supplied
+                        if image_size and max(box) <= 1000 and any(c > 1 for c in box):
+                            width, height = image_size
+                            box = [
+                                int((box[0] / 1000.0) * width),
+                                int((box[1] / 1000.0) * height),
+                                int((box[2] / 1000.0) * width),
+                                int((box[3] / 1000.0) * height),
+                            ]
+                            
+                        results.append((str(label).lower().strip(), box))
+        except (json.JSONDecodeError, TypeError, KeyError):
+            pass
+
+        return results

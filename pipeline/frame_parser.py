@@ -184,3 +184,25 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+def format_timestamp(seconds):
+    """Converts seconds into MM:SS format."""
+    minutes = int(seconds // 60)
+    secs = int(seconds % 60)
+    return f"{minutes:02d}:{secs:02d}"
+
+def sample_frames_from_indices(vr, start_idx, end_idx, num_samples=8, max_size=(448, 448)):
+    """Uniformly samples frames and resizes them to drastically cut visual token usage."""
+    total_chunk_frames = end_idx - start_idx
+    step = max(1, total_chunk_frames // num_samples)
+    selected_indices = list(range(start_idx, end_idx, step))[:num_samples]
+    
+    batch = vr.get_batch(selected_indices).asnumpy()
+    frames = []
+    for frame in batch:
+        img = Image.fromarray(frame)
+        # Downscale image preserving aspect ratio
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        frames.append(img)
+    return frames 

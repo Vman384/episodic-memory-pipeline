@@ -15,7 +15,7 @@ MODE_CONFIG = {
     BenchmarkMode.SPARSE_EVENT: "configs/sparse_events.json",
     BenchmarkMode.TEMPORAL: "configs/temporal_events.json",
     BenchmarkMode.SPATIAL: None,
-    BenchmarkMode.COUNTING: None,
+    BenchmarkMode.COUNTING: "configs/counting_events.json",
 }
 
 
@@ -76,7 +76,23 @@ def main():
         print("Spatial pipeline not implemented yet.")
 
     elif mode == BenchmarkMode.COUNTING:
-        print("Counting pipeline not implemented yet.")
+        config_path = MODE_CONFIG[mode]
+        config = ConfigLoader(config_path).load()
+        prompt_path = Path("pipeline/prompts/sparse_event_prompt.txt")
+        if not prompt_path.is_file():
+            raise SystemExit(f"Prompt file not found: {prompt_path}")
+
+        prompt = prompt_path.read_text()
+        ai_parser = AIParser(self.config=self.config)
+        frame_parser = FrameParser(
+            frames_dir=config["frames_dir"],
+            output_dir=config["sections_dir"],
+            frames_per_section=config["frames_per_section"],
+            step_size=config["step"],
+            move=config.get("move", False),
+        )
+        pipeline = CountingPipeline(config, prompt, frame_parser=frame_parser, ai_parser=ai_parser)
+        pipeline.run()
 
     else:
         print(f"Unknown mode: {mode}, enter a valid mode 1-4")
