@@ -2,7 +2,7 @@
 #PBS -N temporal_event_questions
 #PBS -P pg06
 #PBS -q copyq
-#PBS -l ncpus=4
+#PBS -l ncpus=1
 #PBS -l mem=20GB
 #PBS -l walltime=00:30:00
 #PBS -l storage=scratch/pg06
