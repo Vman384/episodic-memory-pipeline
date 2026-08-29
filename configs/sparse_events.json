@@ -11,6 +11,8 @@
     "api_key_env": "OPENCODE_API_KEY",
     "temperature": 0.4,
     "max_tokens": 3000,
+    "review_window": 50,
+    "question_max_tokens": 3000,
     "enforce_eager": true,
     "dtype": "bfloat16",
     "max_model_len": 50000,

@@ -7,14 +7,12 @@ from pathlib import Path
 class BenchmarkMode(Enum):
     SPARSE_EVENT = "sparse"
     TEMPORAL = "temporal"
-    SPATIAL = "spatial"
     COUNTING = "counting"
 
 
 MODE_CONFIG = {
     BenchmarkMode.SPARSE_EVENT: "configs/sparse_events.json",
     BenchmarkMode.TEMPORAL: "configs/temporal_events.json",
-    BenchmarkMode.SPATIAL: None,
     BenchmarkMode.COUNTING: None,
 }
 
@@ -32,9 +30,13 @@ def main():
         "--stage",
         type=str,
         default=None,
-        choices=["extract", "timeline", "questions"],
-        help="Temporal pipeline stage. By default temporal runs extract then "
-        "timeline. Run questions only after a human has reviewed timeline.json.",
+        choices=["extract", "timeline", "review", "questions"],
+        help=(
+            "Sparse and temporal pipeline stage. By default sparse runs extract "
+            "then review, and temporal runs extract then timeline. Run "
+            "questions only after a human has reviewed events.json or "
+            "timeline.json."
+        ),
     )
 
     args = parser.parse_args()
@@ -44,14 +46,20 @@ def main():
     if mode == BenchmarkMode.SPARSE_EVENT:
         from pipeline.SparseEventPipeline import SparseEventPipeline
 
-        config_path = MODE_CONFIG[mode]
-        prompt_path = Path("pipeline/prompts/sparse_event_prompt.txt")
-        if not prompt_path.is_file():
-            raise SystemExit(f"Prompt file not found: {prompt_path}")
+        prompt_files = {
+            "prompt": "pipeline/prompts/sparse_event_prompt.txt",
+            "filter_prompt": "pipeline/prompts/sparse_event_filter.txt",
+            "question_prompt": "pipeline/prompts/sparse_event_question_gen.txt",
+        }
+        prompts = {}
+        for prompt_name, prompt_file in prompt_files.items():
+            prompt_path = Path(prompt_file)
+            if not prompt_path.is_file():
+                raise SystemExit(f"Prompt file not found: {prompt_path}")
+            prompts[prompt_name] = prompt_path.read_text()
 
-        prompt = prompt_path.read_text()
-        pipeline = SparseEventPipeline(config_path, prompt)
-        pipeline.run()
+        pipeline = SparseEventPipeline(MODE_CONFIG[mode], **prompts)
+        pipeline.run(stage=args.stage)
 
     elif mode == BenchmarkMode.TEMPORAL:
         from pipeline.TemporalPipeline import TemporalPipeline
@@ -71,9 +79,6 @@ def main():
 
         pipeline = TemporalPipeline(MODE_CONFIG[mode], **prompts)
         pipeline.run(stage=args.stage)
-
-    elif mode == BenchmarkMode.SPATIAL:
-        print("Spatial pipeline not implemented yet.")
 
     elif mode == BenchmarkMode.COUNTING:
         print("Counting pipeline not implemented yet.")

@@ -25,7 +25,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 3. **AI Parser** (`pipeline/AIParser.py`) — Configurable local vLLM or OpenAI-compatible API wrapper. `call_llm` handles text prompts and `call_vlm` handles multiple images from a section directory.
 
-4. **Sparse Event Pipeline** (`pipeline/SparseEventPipeline.py`) — `SparseEventPipeline` reads a JSON config file, creates `FrameParser` and `AIParser`, partitions frames, resolves the task prompt, queries the VLM, and writes results.
+4. **Sparse Event Pipeline** (`pipeline/SparseEventPipeline.py`) — `SparseEventPipeline` reads a JSON config file, creates `FrameParser` and `AIParser`, partitions frames, and runs staged section extraction, LLM review/filtering, and question generation.
 
 5. **Temporal Pipeline** (`pipeline/TemporalPipeline.py`) — Provides resumable section extraction, timestamp-sorted timeline construction, windowed LLM merging, storyline generation, and question generation from a human-reviewed timeline.
 
@@ -72,7 +72,9 @@ episodic-memory-pipeline/
 │       ├── temporal_llm_filter.txt
 │       ├── temporal_storyline.txt
 │       ├── temporal_question_gen.txt
-│       └── sparse_event_prompt.txt
+│       ├── sparse_event_prompt.txt
+│       ├── sparse_event_filter.txt
+│       └── sparse_event_question_gen.txt
 ├── boreas-*/                       (sample frame data)
 ├── configs/                        (pipeline configuration files)
 │   ├── sparse_events.json
@@ -114,19 +116,32 @@ episodic-memory-pipeline/
 python main.py --mode sparse
 ```
 
-The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse` imports `pipeline/SparseEventPipeline.py`, while `temporal` imports `pipeline/TemporalPipeline.py` and loads four temporal prompts. Spatial and counting remain placeholders.
+The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse` imports `pipeline/SparseEventPipeline.py` and loads three sparse prompts, while `temporal` imports `pipeline/TemporalPipeline.py` and loads four temporal prompts. Spatial and counting remain placeholders.
 
-The optional `--stage` argument applies to `temporal` mode:
+The optional `--stage` argument applies to `sparse` and `temporal` mode:
 
 ```bash
+python main.py --mode sparse --stage extract
+python main.py --mode sparse --stage review
+python main.py --mode sparse --stage questions
+
 python main.py --mode temporal --stage extract
 python main.py --mode temporal --stage timeline
 python main.py --mode temporal --stage questions
 ```
 
-With no `--stage`, temporal mode runs `extract` followed by `timeline`. The
-`questions` stage is intentionally separate so a human can review and correct
+With no `--stage`, sparse mode runs `extract` followed by `review`, and
+temporal mode runs `extract` followed by `timeline`. The `questions` stages are
+intentionally separate so a human can review and correct `events.json` or
 `timeline.json` first.
+
+The bundled `run_temporal_questions.sh` script runs the `questions` stage for
+several already-completed Boreas lists in one go. It rewrites the per-list paths
+in `configs/temporal_events.json`, switches `backend` to `api` and `model` to
+`gpt-5.6-luna`, then invokes `main.py --mode temporal --stage questions` for each
+list, restoring the original config afterwards. Edit the `LISTS` array at the top
+of the script to change which lists are processed. It requires `OPENCODE_API_KEY`
+to be exported.
 
 **Functions:**
 
@@ -426,11 +441,48 @@ dictionary.
 
 **Purpose:** Defines `SparseEventPipeline`, which loads configuration through
 `ConfigLoader`, creates `FrameParser` and `AIParser`, reuses existing section
-directories or splits frames into sections, queries each section with the prompt
-supplied by `main.py`, and persists the results.
+directories or splits frames into sections, and runs the staged sparse-event
+workflow.
 
 The class is invoked by `main.py` when the user selects
 `--mode sparse`.
+
+**Stages:**
+
+| Stage | Behavior |
+|-------|----------|
+| `extract` | Creates frame sections, queries the VLM with `sparse_event_prompt.txt`, writes one result per section, and skips existing results for resumability. Parsed detections are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json` and a `frame_seconds` value computed from the detected frame's timestamp. |
+| `review` | Loads persisted section results, parses their `interesting_events` into detections, sorts them by numeric `frame`, merges duplicate observations and filters spurious detections in LLM windows, re-attaches seconds after merging, and writes `events.json`. |
+| `questions` | Loads `events.json`, intended to be human-reviewed first, and writes generated sparse questions to `questions.json`. |
+
+When no stage is supplied, the pipeline runs `extract` followed by `review`.
+The question stage is never included in the default run so that human review can
+occur between review and question generation.
+
+**Review behavior:** Detection ordering and event seconds are computed in
+Python from the numeric timestamp in each frame filename. The LLM is
+instructed only to merge duplicate observations, remove spurious detections
+(with reasons in a `removed` list), preserve order, and avoid inventing events.
+The `review_window` configuration controls how many sorted detections are sent
+in one merge request. Invalid model JSON is handled with a warning and the
+unmerged detections are retained for review.
+
+**Output:**
+
+```text
+<output>/
+    all_results.json
+    section_0000_output/result.json
+    section_0001_output/result.json
+    events.json
+    questions.json
+```
+
+`questions.json` is produced only by the `questions` stage. Each generated
+question carries a type, options, answer indices, event IDs, and frame
+evidence. Deceptive questions refer to an invented plausible false event
+(always answered "no"), and every invented false event is repeated in the
+top-level `false_events` array so a reviewer can confirm it never occurred.
 
 **Shared config file schema:**
 
@@ -447,9 +499,10 @@ The class is invoked by `main.py` when the user selects
 | `temperature` | Sampling temperature; set to `null` to omit it from API requests | (optional) |
 | `reasoning_effort` | Responses API reasoning effort, such as `low` or `none` | (optional) |
 | `max_tokens` | Default maximum generated output tokens. Used by VLM calls and LLM calls without an override | `100` |
+| `review_window` | Maximum sorted detections supplied to one sparse review call | `50` |
 | `merge_window` | Maximum sorted events supplied to one temporal merge call | `50` |
 | `storyline_max_tokens` | Maximum tokens for the temporal storyline call | (optional) |
-| `question_max_tokens` | Maximum tokens for temporal question generation | (optional) |
+| `question_max_tokens` | Maximum tokens for temporal/sparse question generation | (optional) |
 | `enforce_eager` | Disable CUDA graph capture | `true` |
 | `dtype` | Model data type | `"half"` |
 | `max_model_len` | Maximum model context length | `4096` |
@@ -478,8 +531,8 @@ top-level `--mode` selects the pipeline and prompt files:
 | 1 | `prompts/sparse_event_prompt.txt` | Sparse event localisation |
 | 2 | `prompts/temporal_vlm.txt` | Temporal section extraction |
 
- Implemented. Configuration loading, frame partitioni
-resolution, VLM calls, timeline construction, and output writing are active.
+ Implemented. Configuration loading, frame partitioning, prompt resolution,
+VLM calls, review/filtering, and question generation are active.
 
 ---
 
@@ -542,6 +595,43 @@ Questions include `event_ids`, `frame_evidence`, `options`, and
 
 **Output JSON schema:** `{interesting_events[]}`
 
+Used by `SparseEventPipeline.py` during the `extract` stage.
+
+---
+
+### `pipeline/prompts/sparse_event_filter.txt`
+
+**Purpose:** LLM prompt for reviewing a chronologically sorted list of sparse
+detections. It instructs the LLM to merge duplicate observations of the same
+rare event across section boundaries, remove detections that are not
+noteworthy, preserve the Python computed order, and not invent events.
+
+**Output JSON schema:** `{events[], removed[]}` with `event_id`, `section`,
+`frame`, `event_description`, `why_interesting`, `terrain`, `uncertain`, and
+`notes` fields.
+
+Used by `SparseEventPipeline.py` for windowed review in the `review` stage.
+
+---
+
+### `pipeline/prompts/sparse_event_question_gen.txt`
+
+**Purpose:** Generates sparse-event benchmark questions from the
+human-verified `events.json`.
+
+**Question types:**
+
+- `existence` — asks whether a real, verified event occurred during the drive.
+- `deceptive` — asks whether an invented plausible false event occurred; the
+  answer is always no.
+- `noteworthy` — asks which of several real events was the most unusual.
+- `temporal_perception` — asks in which section or around what elapsed time a
+  real event happened.
+
+Questions include `event_ids`, `frame_evidence`, `options`, and
+`answer_indices` so they can be reviewed and later graded programmatically.
+Every invented false event is repeated in the top-level `false_events` array
+with its rationale for human verification.
 
 
 ---
@@ -555,14 +645,16 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 
 | File | task | Purpose |
 |------|------|---------|
-| `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`) |
+| `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`, `sparse_event_filter.txt`, and `sparse_event_question_gen.txt`) |
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 
-The current temporal example uses `frames_per_section: 10`, `step: 15`,
-no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
-`merge_window: 50`, `storyline_max_tokens: 1024`,
-`question_max_tokens: 2048`, `max_model_len: 8192`, and
-`tensor_parallel_size: 4`.
+The current sparse example uses `frames_per_section: 5`, `step: 10`,
+`temperature: 0.4`, `max_tokens: 3000`, `review_window: 50`, and
+`question_max_tokens: 3000`. The current temporal example uses
+`frames_per_section: 10`, `step: 15`, no API `temperature`,
+`reasoning_effort: low`, `max_tokens: 2048`, `merge_window: 50`,
+`storyline_max_tokens: 1024`, `question_max_tokens: 2048`,
+`max_model_len: 8192`, and `tensor_parallel_size: 4`.
 
 
 
@@ -575,7 +667,11 @@ no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
 
 3. **Relative configuration paths** — `main.py` expects to be run from the repository root because the configured paths are relative.
 
-4. **Human review remains necessary** — LLM output is used to draft timelines and questions. `timeline.json` should be checked against source frames before running the question stage, and `questions.json` should be reviewed before benchmark use.
+4. **Human review remains necessary** — LLM output is used to draft sparse
+   events, timelines, and questions. `events.json` and `timeline.json` should
+   be checked against source frames before running the question stage, and
+   `questions.json` (including the listed `false_events`) should be reviewed
+   before benchmark use.
 
 5. **No test suite** — No unit tests, integration tests, or test framework configuration exists.
 
@@ -593,11 +689,13 @@ no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
 | Frame parser (`frame_parser.py`) | Complete |
 | Timeframe converter (`timeframe_converter.py`) | Implemented standalone utility |
 | AI parser (`pipeline/AIParser.py`) | Implemented local vLLM and OpenAI-compatible API wrapper |
-| Sparse event pipeline (`pipeline/SparseEventPipeline.py`) | Implemented sparse-event workflow |
+| Sparse event pipeline (`pipeline/SparseEventPipeline.py`) | Extract, review, and question stages implemented |
 | Temporal pipeline (`pipeline/TemporalPipeline.py`) | Extract, timeline, storyline, and question stages implemented |
 | Temporal VLM prompt (`prompts/temporal_vlm.txt`) | Complete |
 | Temporal LLM filter prompt (`prompts/temporal_llm_filter.txt`) | Implemented merge-only timeline prompt |
 | Sparse event prompt (`prompts/sparse_event_prompt.txt`) | Complete |
+| Sparse event filter prompt (`prompts/sparse_event_filter.txt`) | Implemented merge-and-filter review prompt |
+| Sparse event question prompt (`prompts/sparse_event_question_gen.txt`) | Complete |
 | Example configs (`configs/*.json`) | Complete |
 | Legacy HPC job script (`vllm.pbs`) | Exists for the old prototype |
 | Sparse-event HPC job script (`sparse_event.pbs`) | Current PBS wrapper; requests four GPUs for the 72B model |
@@ -605,6 +703,7 @@ no API `temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
 | Temporal question prompt (`prompts/temporal_question_gen.txt`) | Complete |
 | Temporal PBS job script (`temporal_event.pbs`) | API-backed temporal wrapper; no GPU required |
 | Temporal question generation | Implemented; requires human-reviewed timeline |
+| Sparse event question generation | Implemented; requires human-reviewed events list |
 | Benchmark categories 2–4 | Not yet implemented |
 | User Interface | Not yet implemented |
 | Hybrid Search Module | Not yet implemented |

@@ -8,7 +8,7 @@ The top-level runner accepts four benchmark modes. `sparse` and `temporal` are c
 
 | Mode | Status |
 |------|--------|
-| `sparse` | Connected to `SparseEventPipeline` |
+| `sparse` | Resumable extraction, review/filter, and question generation implemented |
 | `temporal` | Resumable extraction, timeline construction, storyline, and question generation implemented |
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
@@ -35,13 +35,34 @@ Run commands from the repository root because configuration paths are relative t
 python main.py --mode sparse
 ```
 
-The sparse mode uses `configs/sparse_events.json` by default. The temporal mode uses `configs/temporal_events.json` and runs extraction followed by timeline construction when no stage is specified. The temporal stages can be run independently:
+The sparse mode uses `configs/sparse_events.json` by default and runs extraction
+followed by review when no stage is specified. The temporal mode uses
+`configs/temporal_events.json` and runs extraction followed by timeline
+construction when no stage is specified. Either pipeline's stages can be run
+independently:
 
 ```bash
+python main.py --mode sparse --stage extract
+python main.py --mode sparse --stage review
+python main.py --mode sparse --stage questions
+
 python main.py --mode temporal --stage extract
 python main.py --mode temporal --stage timeline
 python main.py --mode temporal --stage questions
 ```
+
+The sparse review workflow is:
+
+1. Run `--stage extract` to detect noteworthy events per section. Existing
+   section results are reused.
+2. Run `--stage review` to sort detections by frame timestamp, merge
+   duplicates across section boundaries, filter spurious detections, and write
+   `events.json`.
+3. Review and edit `events.json` against the referenced frames.
+4. Run `--stage questions` to generate sparse-event questions from the
+   reviewed events.
+5. Review `questions.json` (including the listed `false_events`) before using
+   it as benchmark data.
 
 The temporal review workflow is:
 
@@ -50,6 +71,14 @@ The temporal review workflow is:
 3. Review and edit `timeline.json` against the referenced frames.
 4. Run `--stage questions` to generate temporal questions from the reviewed timeline.
 5. Review `questions.json` before using it as benchmark data.
+
+To run the `questions` stage for several already-completed lists in one go (using the API backend), use the bundled `run_temporal_questions.sh` script. It rewrites the per-list paths in `configs/temporal_events.json`, switches `backend` to `api` and `model` to `gpt-5.6-luna`, then runs `--stage questions` for each list in turn, restoring the original config afterwards:
+
+```bash
+./run_temporal_questions.sh
+```
+
+The script is intended to be run from the repository root and needs the `OPENCODE_API_KEY` exported (see the API configuration section below). Edit the `LISTS` array at the top of the script to change which lists are processed.
 
 The other accepted modes currently print a not-implemented message:
 
@@ -74,21 +103,41 @@ python main.py --mode counting
 | `configs/*.json` | Pipeline configuration files |
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | API-backed temporal PBS job script |
+| `run_temporal_questions.sh` | Runs the temporal `questions` stage across multiple Boreas lists via the API backend |
 
 ## Sparse-Event Pipeline
 
-The pipeline reads a JSON configuration, creates a `FrameParser`, and prepares an `AIParser` using the complete configuration. The `backend` setting selects local vLLM or the OpenAI-compatible Responses API. Its intended flow is:
+The sparse pipeline targets rare-event localisation and anti-hallucination. It
+uses the following stages:
 
-1. Load `configs/sparse_events.json`.
-2. Sort and sample the input frames, unless section directories already exist
-   in `sections_dir`.
-3. Copy or move frames into section directories when they do not already exist.
-4. Query the VLM for each section using the task prompt.
-5. Write per-section and aggregated results.
+1. **Extract:** `FrameParser` samples and partitions frames and writes
+   `sections.json` with each section's elapsed start/end seconds.
+   `AIParser.call_vlm` produces one structured JSON response per section.
+   Each section's parsed detections are stored with the section's
+   `start_seconds`/`end_seconds` and a `frame_seconds` value computed from the
+   detected frame's timestamp. Existing
+   `<output>/section_NNNN_output/result.json` files are skipped, allowing an
+   interrupted extraction job to resume.
+2. **Review:** Detections are parsed, sorted in Python by the numeric
+   timestamp in `frame`, and sent to the LLM in windows controlled by
+   `review_window`. The LLM merges duplicate observations of the same rare
+   event across a section boundary and filters out spurious detections (normal
+   driving, ordinary traffic, mundane scenery), reporting them in `removed`.
+   It is instructed not to reorder or invent events. Seconds are re-attached
+   after merging. The result is written to `events.json`.
+3. **Questions:** After `events.json` has been reviewed and corrected by a
+   human, the LLM generates existence, deceptive, noteworthy, and
+   temporal-perception questions in `questions.json`. Deceptive questions use
+   invented plausible false events that did not occur; every false event is
+   listed in `questions.json` as a `false_events` array for review.
 
-The pipeline loads the model once, reuses existing `section_*` directories when
-available, sends each section to the VLM, and writes one JSON result per section
-plus `all_results.json`.
+The sparse prompts are:
+
+| Prompt | Purpose |
+|--------|---------|
+| `pipeline/prompts/sparse_event_prompt.txt` | Detect noteworthy events per section with the VLM |
+| `pipeline/prompts/sparse_event_filter.txt` | Merge duplicate detections and filter spurious ones |
+| `pipeline/prompts/sparse_event_question_gen.txt` | Generate reviewed sparse-event questions |
 
 ## Temporal Pipeline
 
@@ -173,6 +222,37 @@ below and choose values based on the spatial detail needed by the benchmark:
 | `max_model_len` | Maximum local model context length. Set it large enough for the prompt and all section images, within the model and GPU limits. |
 | `gpu_memory_utilization` | Fraction of GPU memory allocated to vLLM. Start around `0.9` and lower it if model loading or other GPU processes run out of memory. |
 | `tensor_parallel_size` | Number of GPUs across which a local model is split. Set it to the number of compatible GPUs allocated to the job. |
+
+### Sparse
+
+Sparse runs use `configs/sparse_events.json`. The most important choices are
+`step` and `frames_per_section`: brief rare events disappear when sampling is
+too sparse, so sample more densely than for temporal runs where section
+coverage matters less.
+
+| Parameter | Meaning and guidance |
+|-----------|----------------------|
+| `task` | Set to `1` for sparse event localisation. |
+| `frames_dir` | Directory containing the numbered camera frames. Set this to the frames from the video under evaluation. |
+| `sections_dir` | Directory where sampled frames are grouped into sections. Use a fresh directory when changing sampling settings. |
+| `output` | Directory for section results, `events.json`, and `questions.json`. Use a separate output directory for each experiment. |
+| `frames_per_section` | Number of sampled frames grouped into one extraction request. Increase it for wider context, but keep it within the model's image/context limits; `5` is the supplied starting point. |
+| `step` | Number of input frames skipped between samples. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed. |
+| `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
+| `model` | Model used for extraction and later sparse stages. Pick a model that accepts the selected backend and image inputs. |
+| `backend` | Use `local` for the supplied vLLM configuration or `api` for a Responses API model. The backend must match the model and available infrastructure. |
+| `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
+| `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
+| `temperature` | Controls generation variation. Use a low value, such as `0.4`, for consistent detection; the supplied sparse configuration sets it explicitly. |
+| `reasoning_effort` | API reasoning effort, when supported. Use a lower value for faster extraction or a higher value when the model needs more effort to judge whether a detection is real. |
+| `max_tokens` | Maximum response length for each section extraction. Increase it if detection lists are being truncated. |
+| `review_window` | Number of chronologically sorted detections sent to the review model at once. Increase it to give the reviewer more context, but keep it within the model's context limit; `50` is the supplied starting point. |
+| `question_max_tokens` | Maximum length of generated sparse questions and false events. Increase it when generating many questions or detailed evidence fields. |
+| `enforce_eager` | Local vLLM execution setting. Keep `true` unless the selected local model and vLLM setup support another mode. |
+| `dtype` | Local model numeric precision. Use a hardware-supported value such as `bfloat16` to balance memory use and quality. |
+| `max_model_len` | Maximum local model context length. Increase it only when the model and available GPU memory can support the larger context. |
+| `gpu_memory_utilization` | Fraction of GPU memory allocated to vLLM. Start around `0.9` and lower it if the local model does not fit. |
+| `tensor_parallel_size` | Number of GPUs used by local vLLM. Set it to the number of compatible GPUs assigned to the run. |
 
 ### Temporal
 
@@ -270,11 +350,24 @@ For a temporal run, the output is:
     section_0001_output/result.json
 ```
 
+For a sparse-event run, the review stage replaces `timeline.json` with
+`events.json` and writes no storyline:
+
+```text
+<output>/
+    all_results.json
+    events.json
+    questions.json
+    section_0000_output/result.json
+    section_0001_output/result.json
+```
+
 Each `result.json` stores the raw VLM response plus a parsed `events` list.
 Every event carries `start_seconds` and `end_seconds` taken from the section's
 `start_seconds`/`end_seconds` window in `sections.json`, so a model only needs
-to name the section and the time range is already known. `timeline.json` events
-carry the same seconds after merging.
+to name the section and the time range is already known. Sparse events also
+carry `frame_seconds`, computed from the detected frame's own timestamp.
+`timeline.json`/`events.json` events carry the same seconds after merging.
 
 ## Frame Time Conversion
 
