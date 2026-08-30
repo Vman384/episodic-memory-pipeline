@@ -5,7 +5,7 @@
 #PBS -l ncpus=48
 #PBS -l ngpus=4
 #PBS -l mem=1024GB
-#PBS -l walltime=03:35:00
+#PBS -l walltime=00:30:00
 #PBS -l storage=scratch/pg06
 #PBS -l wd
 #PBS -V
@@ -46,7 +46,7 @@ trap 'printf "%s\n" "$ORIGINAL_CONFIG" > "$CONFIG"' EXIT
 
 for LIST in "${LISTS[@]}"; do
   echo "=============================================="
-  echo "Running filter + extract stage for: $LIST"
+  echo "Running questions stage for: $LIST"
   echo "=============================================="
 
   # Only the per-list paths differ between runs; backend/model are fixed.
@@ -63,6 +63,9 @@ config["frames_dir"] = f"{base}/boreas_dataset/{list_name}/camera"
 config["sections_dir"] = f"{base}/{list_name}/sparse_outputs/sections"
 config["output"] = f"{base}/{list_name}/sparse_outputs/events"
 
+# Questions is text-only, so use the API backend instead of spinning up vLLM.
+config["backend"] = "api"
+config["model"] = "gpt-5.6-luna"
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
