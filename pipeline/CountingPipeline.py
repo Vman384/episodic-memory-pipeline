@@ -8,23 +8,27 @@ import shutil
 import torch
 import torch.nn.functional as F
 from transformers import CLIPProcessor, CLIPModel
+import os
 
 # Import SAM 2 Predictor
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
 
 from pipeline.AIParser import AIParser
-from pipeline.ConfigLoader import ConfigLoader
 from pipeline.frame_parser import FrameParser
 from pipeline.frame_parser import sample_frames_from_indices
-from pipeline.config_loader import PipelineConfig
+from pipeline.ConfigLoader import CountingPipelineConfig
 
+
+os.environ["HF_HOME"] = "/scratch/pg06/vm4618/huggingface_cache"
+os.environ["HF_HUB_OFFLINE"] = "1"         # Force Hugging Face Hub offline
+os.environ["TRANSFORMERS_OFFLINE"] = "1"   # Force Transformers offline
 class CountingPipeline:
     """Coordinate configuration, frame parsing, and sparse-event VLM calls."""
 
     def __init__(
         self,
-        config: dict,
+        config: CountingPipelineConfig,
         prompt: str,
         frame_parser: FrameParser,
         ai_parser: AIParser,

@@ -1,0 +1,13 @@
+Analyze the provided image. Your task is to identify and locate ONLY the distinct physical objects that are clearly visible in the scene. 
+
+CRITICAL CONSTRAINTS:
+1. Do not guess, assume, or hallucinate objects that are not explicitly visible.
+2. Provide short, specific class names for the 'label' (e.g., "red car", "pedestrian", "traffic light").
+3. You must provide a bounding box for every object in absolute pixels using the format [x_min, y_min, x_max, y_max].
+4. Output NOTHING EXCEPT a valid JSON array. Do not include markdown formatting, conversational filler, or explanations.
+
+Expected Output Format:
+[
+  {"label": "example object 1", "box_2d": [120, 340, 480, 610]},
+  {"label": "example object 1", "box_2d": [50, 200, 300, 450]}
+]

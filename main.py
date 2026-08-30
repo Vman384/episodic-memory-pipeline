@@ -2,6 +2,9 @@ import argparse
 import sys
 from enum import Enum
 from pathlib import Path
+from pipeline.ConfigLoader import ConfigLoader
+from pipeline.AIParser import AIParser
+from pipeline.frame_parser import FrameParser
 
 
 class BenchmarkMode(Enum):
@@ -76,6 +79,7 @@ def main():
         print("Spatial pipeline not implemented yet.")
 
     elif mode == BenchmarkMode.COUNTING:
+        from pipeline.CountingPipeline import CountingPipeline
         config_path = MODE_CONFIG[mode]
         config = ConfigLoader(config_path).load()
         prompt_path = Path("pipeline/prompts/sparse_event_prompt.txt")
@@ -83,7 +87,7 @@ def main():
             raise SystemExit(f"Prompt file not found: {prompt_path}")
 
         prompt = prompt_path.read_text()
-        ai_parser = AIParser(self.config=self.config)
+        ai_parser = AIParser(config=config)
         frame_parser = FrameParser(
             frames_dir=config["frames_dir"],
             output_dir=config["sections_dir"],

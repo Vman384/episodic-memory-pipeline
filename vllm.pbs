@@ -26,4 +26,4 @@ module load cuda/12.2.2
 
 # 4. Activate your environment and run
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
-python main.py
+python main.py --mode counting
