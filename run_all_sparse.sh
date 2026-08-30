@@ -68,7 +68,7 @@ with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
 EOF
 
-  python3 main.py --mode sparse
+  python3 main.py --mode sparse --stage questions
 done
 
 echo "All lists done."
