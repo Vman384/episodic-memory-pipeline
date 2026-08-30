@@ -1,29 +1,36 @@
 #!/bin/bash
-#PBS -N temporal_event_questions
+#PBS -N sparse_event
 #PBS -P pg06
-#PBS -q copyq
-#PBS -l ncpus=1
-#PBS -l mem=20GB
-#PBS -l walltime=00:30:00
+#PBS -q gpuhopper
+#PBS -l ncpus=48
+#PBS -l ngpus=4
+#PBS -l mem=1024GB
+#PBS -l walltime=03:35:00
 #PBS -l storage=scratch/pg06
 #PBS -l wd
 #PBS -V
 
-# Run the temporal "questions" stage for multiple Boreas lists using the API
-# backend (gpt-5.6-luna). Each list must already have a human-reviewed
-# timeline.json produced by an earlier temporal extract/timeline run.
+
 set -euo pipefail
  
 module load python3/3.11.7
+module load cuda/12.2.2
 
+# cd to the right directory
 cd "$PBS_O_WORKDIR"
 
-# Enter the environment containing the API pipeline dependencies.
+# Enter the environment containing the local vLLM pipeline dependencies.
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
+
+# Use the shared model cache and prevent model resolution from making network requests.
+export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+
 
 # Boreas lists to process, in the order they were run.
 LISTS=(
-  "boreas-2025-07-18-14-55"
+#   "boreas-2025-07-18-14-55"
   "boreas-2024-12-03-13-13"
   "boreas-2024-12-03-13-34"
   "boreas-2024-12-04-11-45"
@@ -32,14 +39,14 @@ LISTS=(
 )
 
 BASE="/scratch/pg06/FYP2026S1_3473"
-CONFIG="configs/temporal_events.json"
+CONFIG="configs/sparse_events.json"
 # Keep the original config so we can restore it after the loop.
 ORIGINAL_CONFIG="$(cat "$CONFIG")"
 trap 'printf "%s\n" "$ORIGINAL_CONFIG" > "$CONFIG"' EXIT
 
 for LIST in "${LISTS[@]}"; do
   echo "=============================================="
-  echo "Running questions stage for: $LIST"
+  echo "Running filter + extract stage for: $LIST"
   echo "=============================================="
 
   # Only the per-list paths differ between runs; backend/model are fixed.
@@ -53,18 +60,15 @@ with open(config_path) as f:
     config = json.load(f)
 
 config["frames_dir"] = f"{base}/boreas_dataset/{list_name}/camera"
-config["sections_dir"] = f"{base}/{list_name}/temporal_outputs/sections"
-config["output"] = f"{base}/{list_name}/temporal_outputs/narratives"
+config["sections_dir"] = f"{base}/{list_name}/sparse_outputs/sections"
+config["output"] = f"{base}/{list_name}/sparse_outputs/events"
 
-# Switch to the API backend using the requested model.
-config["backend"] = "api"
-config["model"] = "gpt-5.6-luna"
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
 EOF
 
-  python3 main.py --mode temporal --stage questions
+  python3 main.py --mode sparse
 done
 
 echo "All lists done."
