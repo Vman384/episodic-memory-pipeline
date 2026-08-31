@@ -243,7 +243,8 @@ coverage matters less.
 | `backend` | Use `local` for the supplied vLLM configuration or `api` for a Responses API model. The backend must match the model and available infrastructure. |
 | `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
 | `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
-| `temperature` | Controls generation variation. Use a low value, such as `0.4`, for consistent detection; the supplied sparse configuration sets it explicitly. |
+| `temperature` | Local vLLM sampling temperature. Use a low value, such as `0.4`, for consistent detection; the supplied sparse configuration sets it explicitly. |
+| `api_temperature` | API sampling temperature, used only with the API backend. Keep it `null` for API models that do not accept the temperature parameter, such as `gpt-5.6-luna`. |
 | `reasoning_effort` | API reasoning effort, when supported. Use a lower value for faster extraction or a higher value when the model needs more effort to judge whether a detection is real. |
 | `max_tokens` | Maximum response length for each section extraction. Increase it if detection lists are being truncated. |
 | `review_window` | Number of chronologically sorted detections sent to the review model at once. Increase it to give the reviewer more context, but keep it within the model's context limit; `50` is the supplied starting point. |
@@ -273,7 +274,8 @@ events and larger sections only when the model can handle the added context.
 | `backend` | Use `api` for the supplied Responses API configuration or `local` for a local vLLM model. The backend must match the model and available infrastructure. |
 | `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
 | `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
-| `temperature` | Controls generation variation. Keep it `null` for the supplied reasoning-model API configuration; use a low value when the selected backend supports temperature and deterministic extraction is preferred. |
+| `temperature` | Local vLLM sampling temperature. Keep it `null` to use the local `0.2` default; use a low value when deterministic extraction is preferred. |
+| `api_temperature` | API sampling temperature, used only with the API backend. Keep it `null` for the supplied reasoning-model API configuration, which does not accept the temperature parameter. |
 | `reasoning_effort` | API reasoning effort. Use `low` for faster extraction, or increase it when the model needs more effort to distinguish event order. |
 | `max_tokens` | Maximum response length for each section extraction. Increase it if event lists are being truncated; lower it to reduce cost when responses are short. |
 | `merge_window` | Number of chronologically sorted events sent to the timeline-merging model at once. Increase it to give the merger more context, but keep it within the model's context limit; `50` is the supplied starting point. |
@@ -297,6 +299,7 @@ Set the following values in the selected configuration:
     "api_base_url": "https://opencode.ai/zen/go/v1/responses",
     "api_key_env": "OPENCODE_API_KEY",
     "temperature": null,
+    "api_temperature": null,
     "reasoning_effort": "low"
 }
 ```
@@ -310,8 +313,9 @@ python main.py --mode temporal --stage extract
 
 The API backend sends the prompt and every image in a section as a single
 Responses API request. `gpt-5.6-luna` supports image inputs. For GPT-5.6
-reasoning models, the temporal configuration omits `temperature`; its
-`max_tokens` value includes both reasoning and visible output tokens.
+reasoning models, the configuration omits `temperature`; API requests use
+`api_temperature`, which is omitted when `null`, and `max_tokens` includes
+both reasoning and visible output tokens.
 
 If an API call fails, the pipeline reports the model, endpoint, HTTP status,
 response body, and provider request ID when available. A 401 indicates a key

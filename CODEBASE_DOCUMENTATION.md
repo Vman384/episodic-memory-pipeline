@@ -341,7 +341,8 @@ The relevant configuration keys are:
 |-----|-------------|
 | `backend` | `local` for vLLM or `api` for the OpenAI-compatible Responses API |
 | `model` | Local model path/name or API model identifier |
-| `temperature` | Sampling temperature |
+| `temperature` | Local vLLM sampling temperature; falls back to `0.2` when `null` |
+| `api_temperature` | Responses API sampling temperature; omitted from the request when `null` or unset |
 | `reasoning_effort` | Optional Responses API reasoning effort, such as `low` or `none` |
 | `max_tokens` | Maximum generated output tokens |
 | `enforce_eager` | vLLM CUDA graph setting used in local mode |
@@ -496,7 +497,8 @@ top-level `false_events` array so a reviewer can confirm it never occurred.
 | `step` | Keep every Nth frame | `1` |
 | `model` | Local vLLM model name/path or API model identifier | (required) |
 | `backend` | `local` for vLLM or `api` for the Responses API | `local` |
-| `temperature` | Sampling temperature; set to `null` to omit it from API requests | (optional) |
+| `temperature` | Local vLLM sampling temperature; `null` falls back to `0.2` | (optional) |
+| `api_temperature` | Responses API sampling temperature; omitted from API requests when `null` or unset | (optional) |
 | `reasoning_effort` | Responses API reasoning effort, such as `low` or `none` | (optional) |
 | `max_tokens` | Default maximum generated output tokens. Used by VLM calls and LLM calls without an override | `100` |
 | `review_window` | Maximum sorted detections supplied to one sparse review call | `50` |
@@ -520,7 +522,7 @@ top-level `false_events` array so a reviewer can confirm it never occurred.
 - `dtype` controls numerical precision. `bfloat16` is appropriate for the current Qwen2.5-VL model on Hopper GPUs; `half` uses FP16.
 - `gpu_memory_utilization` should usually remain around `0.85-0.9` so CUDA and image-processing allocations have room.
 - `tensor_parallel_size` is the number of GPUs used by one model instance. It must match the GPU allocation; the current 72B PBS job uses `4`.
-- `temperature` controls output variation. Use `0.0-0.2` when reliable JSON is more important than diversity.
+- `temperature` controls local vLLM output variation. Use `0.0-0.2` when reliable JSON is more important than diversity. API requests use `api_temperature`, which must be `null` (or unset) for API models that do not accept the temperature parameter.
 - `frames_dir` can be an absolute path on Gadi. Relative `sections_dir` and `output` paths resolve from the job working directory.
 
 The `task` field identifies the configuration's benchmark category. The
@@ -649,12 +651,13 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 
 The current sparse example uses `frames_per_section: 5`, `step: 10`,
-`temperature: 0.4`, `max_tokens: 3000`, `review_window: 50`, and
-`question_max_tokens: 3000`. The current temporal example uses
-`frames_per_section: 10`, `step: 15`, no API `temperature`,
-`reasoning_effort: low`, `max_tokens: 2048`, `merge_window: 50`,
-`storyline_max_tokens: 1024`, `question_max_tokens: 2048`,
-`max_model_len: 8192`, and `tensor_parallel_size: 4`.
+`temperature: 0.4` (local), no `api_temperature`, `max_tokens: 3000`,
+`review_window: 50`, and `question_max_tokens: 3000`. The current temporal
+example uses `frames_per_section: 10`, `step: 15`, no `temperature` or
+`api_temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
+`merge_window: 50`, `storyline_max_tokens: 1024`,
+`question_max_tokens: 2048`, `max_model_len: 8192`, and
+`tensor_parallel_size: 4`.
 
 
 

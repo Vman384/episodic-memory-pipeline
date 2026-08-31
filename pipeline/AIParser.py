@@ -28,8 +28,8 @@ class AIParser:
 
         self.backend = backend
         self.model_name = model
-        self.temperature = temperature
         self.local_temperature = 0.2 if temperature is None else temperature
+        self.api_temperature = config.get("api_temperature")
         self.max_tokens = max_tokens
         self.reasoning_effort = config.get("reasoning_effort")
         self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
@@ -100,8 +100,8 @@ class AIParser:
             else self.max_tokens,
         }
 
-        if self.temperature is not None:
-            request["temperature"] = self.temperature
+        if self.api_temperature is not None:
+            request["temperature"] = self.api_temperature
         if self.reasoning_effort:
             request["reasoning"] = {"effort": self.reasoning_effort}
 

@@ -10,6 +10,7 @@
     "api_base_url": "https://opencode.ai/zen/go/v1/responses",
     "api_key_env": "OPENCODE_API_KEY",
     "temperature": null,
+    "api_temperature": null,
     "reasoning_effort": "low",
     "max_tokens": 3090,
     "merge_window": 50,
