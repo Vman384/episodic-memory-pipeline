@@ -38,7 +38,7 @@ class AIParser:
         self.reasoning_effort = config.get("reasoning_effort")
         self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 
-        if backend == "local":
+        if backend == "local" or backend == "local-image":
             # Set offline mode before importing libraries that may resolve models.
             os.environ["HF_HUB_OFFLINE"] = "1"
             os.environ["TRANSFORMERS_OFFLINE"] = "1"
@@ -147,33 +147,34 @@ class AIParser:
         )
         return self._get_text(outputs)
 
-    def call_vlm(self, prompt: str, folder_path: str | Path) -> str:
+    def call_vlm(self, prompt: str, folder_path: str | Path | None, video = None) -> str:
         """Generate a response from a prompt and all frames in a folder."""
-        folder = Path(folder_path)
-        if not folder.is_dir():
-            raise FileNotFoundError(f"Frame folder not found: {folder}")
+        if (self.backend == "api" or self.backend == "local-image") and folder_path != None:
+            folder = Path(folder_path)
+            if not folder.is_dir():
+                raise FileNotFoundError(f"Frame folder not found: {folder}")
 
-        image_paths = []
-        for path in folder.iterdir():
-            if path.is_file() and path.suffix.lower() in self.image_extensions:
-                image_paths.append(path)
+            image_paths = []
+            for path in folder.iterdir():
+                if path.is_file() and path.suffix.lower() in self.image_extensions:
+                    image_paths.append(path)
 
-        image_paths.sort(key=lambda path: int(path.stem) if path.stem.isdigit() else path.stem)
-        if not image_paths:
-            raise ValueError(f"No image frames found in folder: {folder}")
+            image_paths.sort(key=lambda path: int(path.stem) if path.stem.isdigit() else path.stem)
+            if not image_paths:
+                raise ValueError(f"No image frames found in folder: {folder}")
 
-        frame_manifest = "\n".join(
-            f"Frame {index}: {image_path.name}"
-            for index, image_path in enumerate(image_paths, start=1)
-        )
-        prompt_with_manifest = (
-            f"{prompt}\n\n"
-            "The images are provided in the same order as this frame filename "
-            "manifest:\n"
-            f"{frame_manifest}\n"
-            "Use the exact filenames from this manifest in your response. "
-            "Do not create replacement filenames."
-        )
+            frame_manifest = "\n".join(
+                f"Frame {index}: {image_path.name}"
+                for index, image_path in enumerate(image_paths, start=1)
+            )
+            prompt_with_manifest = (
+                f"{prompt}\n\n"
+                "The images are provided in the same order as this frame filename "
+                "manifest:\n"
+                f"{frame_manifest}\n"
+                "Use the exact filenames from this manifest in your response. "
+                "Do not create replacement filenames."
+            )
 
         # ----------------------------------------------------
         # BACKEND: API
@@ -206,46 +207,70 @@ class AIParser:
                     }
                 ]
             )
+        if self.backend == "local-image":
+            # ----------------------------------------------------
+            # BACKEND: LOCAL (vLLM)
+            # ----------------------------------------------------
+            # # Define target dimensions (width, height)
+            TARGET_SIZE = (448, 448)
+            from PIL import Image
+            images = []
+            for image_path in image_paths:
+                with Image.open(image_path) as image:
+                    # Resize image using high-quality Lanczos resampling
+                    resized_img = image.resize(TARGET_SIZE, Image.Resampling.LANCZOS)
+                    images.append(resized_img)
 
-        # ----------------------------------------------------
-        # BACKEND: LOCAL (vLLM)
-        # ----------------------------------------------------
-        from PIL import Image
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        *[{"type": "image", "image": img} for img in images],
+                        {"type": "text", "text": prompt_with_manifest},
+                    ],
+                }
+            ]
 
-        # Define target dimensions (width, height)
-        TARGET_SIZE = (448, 448)
+            formatted_prompt = self.processor.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
 
-        images = []
-        for image_path in image_paths:
-            with Image.open(image_path) as image:
-                # Resize image using high-quality Lanczos resampling
-                resized_img = image.resize(TARGET_SIZE, Image.Resampling.LANCZOS)
-                images.append(resized_img)
+            outputs = self.model.generate(
+                {
+                    "prompt": formatted_prompt,
+                    "multi_modal_data": {"image": images},
+                },
+                sampling_params=self.sampling_params,
+            )
+            return self._get_text(outputs)
+        else:
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        # 1. Pass the entire list of frames as a SINGLE video object
+                        {"type": "video", "video": video}, 
+                        {"type": "text", "text": prompt},
+                    ],
+                }
+            ]
+            
+            formatted_prompt = self.processor.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
 
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    *[{"type": "image", "image": img} for img in images],
-                    {"type": "text", "text": prompt_with_manifest},
-                ],
-            }
-        ]
-
-        formatted_prompt = self.processor.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True,
-        )
-
-        outputs = self.model.generate(
-            {
-                "prompt": formatted_prompt,
-                "multi_modal_data": {"image": images},
-            },
-            sampling_params=self.sampling_params,
-        )
-        return self._get_text(outputs)
+            outputs = self.model.generate(
+                {
+                    "prompt": formatted_prompt,
+                    "multi_modal_data": {"video": video},
+                },
+                sampling_params=self.sampling_params,
+            )
+            return self._get_text(outputs)
 
     # PARSING METHODS (Added for Object Detection & SAM 2 Support)
     def parse_objects(self, response_text: str) -> list[str]:

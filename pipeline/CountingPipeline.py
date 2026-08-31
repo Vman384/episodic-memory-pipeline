@@ -2,17 +2,19 @@ import json
 import os
 from pathlib import Path
 import shutil
-import numpy as np
-from PIL import Image
-import torch
-import torch.nn.functional as F
+import numpy as np # type: ignore
+from PIL import Image # type: ignore
+import torch # pyright: ignore[reportMissingImports]
+import torch.nn.functional as F # type: ignore
 import re
+from decord import VideoReader, cpu
+
 
 # Import SAM 3 and CLIP from Transformers
 from transformers import CLIPProcessor, CLIPModel, Sam3Processor, Sam3Model
 
 from pipeline.AIParser import AIParser
-from pipeline.frame_parser import FrameParser, sample_frames_from_indices
+from pipeline.frame_parser import FrameParser, format_timestamp, sample_frames_from_indices
 from pipeline.ConfigLoader import CountingPipelineConfig
 
 # Configure Hugging Face Cache Environment
@@ -79,42 +81,9 @@ class CountingPipeline:
         
         return frames[len(frames) // 2]
 
-    def isolate_objects_with_sam3(self, image: Image.Image, text_prompt: str) -> list:
-        """Uses SAM 3 to find and mask ALL instances of a text concept in the image."""
-        inputs = self.sam3_processor(
-            images=image, 
-            text=text_prompt, 
-            return_tensors="pt"
-        ).to(self.device)
-        
-        with torch.no_grad():
-            outputs = self.sam3_model(**inputs)
-            
-        # Post-process to get binary masks
-        target_sizes = [image.size[::-1]] # Format as (height, width)
-        results = self.sam3_processor.post_process_instance_segmentation(
-            outputs,
-            threshold=0.5,
-            mask_threshold=0.5,
-            target_sizes=target_sizes
-        )[0]
-        
-        isolated_crops = []
-        image_np = np.array(image.convert("RGB"))
-        
-        if "masks" in results:
-            masks = results["masks"].cpu().numpy() # Shape: (N, H, W)
-            for mask in masks:
-                # Zero out pixels outside the predicted foreground mask
-                isolated_image_np = image_np.copy()
-                isolated_image_np[~mask] = 0
-                isolated_crops.append(Image.fromarray(isolated_image_np))
-                
-        return isolated_crops
-
     def get_clip_embedding(self, image: Image.Image) -> torch.Tensor:
         """Extracts and L2-normalizes a CLIP visual embedding feature vector."""
-        inputs = self.clip_processor(images=image, return_tensors="pt").to(self.device)
+        inputs = self.clip_processor(images=image, return_tensors="pt").to(self.device) # type: ignore
         with torch.no_grad():
             image_features = self.clip_model.get_image_features(**inputs)
             
@@ -127,7 +96,7 @@ class CountingPipeline:
                 image_features = image_features[0]
                 
             # Now safe to apply PyTorch operations
-            image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+            image_features = image_features / image_features.norm(dim=-1, keepdim=True) # type: ignore
         return image_features.cpu()
 
     def is_unique(self, new_embedding: torch.Tensor, existing_embeddings: list) -> bool:
@@ -168,43 +137,74 @@ class CountingPipeline:
 
         return list(set(concepts))
 
+    def isolate_objects_with_sam3(self, images: list[Image.Image], text_prompt: str) -> list[Image.Image]:
+        """Uses SAM 3 to isolate text concepts across a batch of video frames."""
+        prompts = [text_prompt] * len(images)
+        
+        inputs = self.sam3_processor(
+            images=images, 
+            text=prompts, 
+            return_tensors="pt"
+        ).to(self.device)
+        
+        with torch.no_grad():
+            outputs = self.sam3_model(**inputs)
+            
+        target_sizes = [img.size[::-1] for img in images]
+        results = self.sam3_processor.post_process_instance_segmentation(
+            outputs,
+            threshold=0.5,
+            mask_threshold=0.5,
+            target_sizes=target_sizes
+        )
+        
+        isolated_crops = []
+        for img, res in zip(images, results):
+            if "masks" in res:
+                image_np = np.array(img.convert("RGB"))
+                masks = res["masks"].cpu().numpy()
+                for mask in masks:
+                    isolated_image_np = image_np.copy()
+                    isolated_image_np[~mask] = 0
+                    isolated_crops.append(Image.fromarray(isolated_image_np))
+                    
+        return isolated_crops
+    
     def run(self) -> None:
         """Executes the pipeline using VLM for discovery and SAM 3 for spatial tracking."""
-        sections_dir = Path(self.config["sections_dir"])
-        sections = sorted(
-            section for section in sections_dir.glob("section_*") if section.is_dir()
-        )
-        if sections:
-            print(
-                f"  Reusing {len(sections)} existing sections in {self.config['sections_dir']}"
-            )
-        else:
-            # Create each section directory for segregated frames.
-            sections = self.frame_parser.create_section_dir()
-            print(f"  Created {len(sections)} sections in {self.config['sections_dir']}")
+        vr = VideoReader(self.config["frames_dir"], ctx=cpu(0))
+        fps = vr.get_avg_fps()
+        total_frames = len(vr)
+        total_frames = len(vr) - self.config["step"]-5
+    
         output_dir = Path(self.config["output"])
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        for curr_section in sections:
-            section_path = Path(curr_section)
+        for start_frame in range(0, total_frames, self.config["frames_per_section"]):
+            end_frame = min(start_frame + self.config["frames_per_section"], total_frames)
+            
+            start_time_sec = start_frame / fps
+            end_time_sec = end_frame / fps
+            time_str = f"{format_timestamp(start_time_sec)} - {format_timestamp(end_time_sec)}"
+    
+            # Extract frames (Downscaled to 448x448 max, 8 samples per chunk)
+            pil_frames = sample_frames_from_indices(vr, start_frame, end_frame, num_samples=8, max_size=(448, 448))
             
             # 1. Ask VLM purely for a list of concepts (e.g. ["red car", "pedestrian"])
-            detection_response = self.ai_parser.call_vlm(self.prompt, section_path)
+            detection_response = self.ai_parser.call_vlm(self.prompt, folder_path=None, video=pil_frames)
             detected_concepts = self.parse_concept_list(detection_response)
 
             section_result = {
-                "section": section_path.name,
                 "concepts_detected": detected_concepts,
                 "is_unique_map": {},
+                "timestamp": time_str
             }
             
             # Use the middle frame as our anchor for SAM 3
-            frame_path = self.resolve_frame_path(section_path)
-            base_image = Image.open(frame_path).convert("RGB")
 
             for concept in detected_concepts:
                 # 2. SAM 3 dynamically searches for the text concept and returns masked crops
-                isolated_crops = self.isolate_objects_with_sam3(base_image, concept)
+                isolated_crops = self.isolate_objects_with_sam3(pil_frames, concept)
 
                 if not isolated_crops:
                     continue # SAM 3 didn't find anything matching the VLM's hallucination
@@ -226,15 +226,8 @@ class CountingPipeline:
 
                         class_dir = output_dir / concept.replace(" ", "_")
                         class_dir.mkdir(parents=True, exist_ok=True)
-                        
-                        dest_name = f"{section_path.name}_inst_{idx}"
-                        if section_path.is_dir():
-                            shutil.copytree(section_path, class_dir / dest_name, dirs_exist_ok=True)
-                        else:
-                            shutil.copy(section_path, class_dir / f"{dest_name}_{section_path.name}")
 
-            section_output_dir = output_dir / f"{section_path.name}_output"
-            self.write_json_output(section_output_dir, "result.json", section_result)
+            self.write_json_output(output_dir, "result.json", section_result)
             self.all_results.append(section_result)
 
         self.write_json_output(output_dir, "final_counts.json", self.object_counts)

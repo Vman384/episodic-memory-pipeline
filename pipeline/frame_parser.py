@@ -6,6 +6,8 @@ import argparse
 import json
 import shutil
 from pathlib import Path
+from PIL import Image
+
 
 try:
     from pipeline.timeframe_converter import TimeframeConverter
