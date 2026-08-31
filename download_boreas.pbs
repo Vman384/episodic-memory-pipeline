@@ -8,10 +8,17 @@
 #PBS -l storage=scratch/pg06
 #PBS -l wd
 
+module load python3/3.11.7
 
+cd "$PBS_O_WORKDIR"
+
+# run script for awscli
+source .venv/bin/activate
 
 root=/scratch/pg06/FYP2026S1_3473/boreas_dataset
 mkdir -p "$root"
+
+echo "Starting download..."
 
 for d in \
     boreas-2024-12-04-14-34 \
@@ -20,6 +27,9 @@ for d in \
     boreas-2025-07-18-11-53 \
     boreas-2024-12-04-14-38 \
     boreas-2025-02-15-16-58; do
+
     aws s3 sync "s3://boreas/$d" "$root/$d" \
         --exclude "*" --include "camera/*" --no-sign-request
 done
+
+echo "Download Completed"
