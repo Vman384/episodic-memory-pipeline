@@ -1,0 +1,25 @@
+#!/bin/bash
+#PBS -N boreas_download
+#PBS -P pg06
+#PBS -q copyq
+#PBS -l ncpus=1
+#PBS -l mem=8GB
+#PBS -l walltime=24:00:00
+#PBS -l storage=scratch/pg06
+#PBS -l wd
+
+module load awscli
+
+root=/scratch/pg06/FYP2026S1_3473/boreas_dataset
+mkdir -p "$root"
+
+for d in \
+    boreas-2024-12-04-14-34 \
+    boreas-2024-12-04-14-44 \
+    boreas-2024-12-23-17-01 \
+    boreas-2025-07-18-11-53 \
+    boreas-2024-12-04-14-38 \
+    boreas-2025-02-15-16-58; do
+    aws s3 sync "s3://boreas/$d" "$root/$d" \
+        --exclude "*" --include "camera/*" --no-sign-request
+done
