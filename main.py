@@ -2,7 +2,7 @@ import argparse
 import sys
 from enum import Enum
 from pathlib import Path
-from pipeline.ConfigLoader import ConfigLoader
+from pipeline.ConfigLoader import ConfigLoader, CountingPipelineConfig
 from pipeline.AIParser import AIParser
 from pipeline.frame_parser import FrameParser
 
@@ -81,13 +81,13 @@ def main():
     elif mode == BenchmarkMode.COUNTING:
         from pipeline.CountingPipeline import CountingPipeline
         config_path = MODE_CONFIG[mode]
-        config = ConfigLoader(config_path).load()
-        prompt_path = Path("pipeline/prompts/sparse_event_prompt.txt")
+        config: CountingPipelineConfig = ConfigLoader(config_path).load() # type: ignore
+        prompt_path = Path("pipeline/prompts/counting_prompt.txt")
         if not prompt_path.is_file():
             raise SystemExit(f"Prompt file not found: {prompt_path}")
 
         prompt = prompt_path.read_text()
-        ai_parser = AIParser(config=config)
+        ai_parser = AIParser(config=config) # type: ignore
         frame_parser = FrameParser(
             frames_dir=config["frames_dir"],
             output_dir=config["sections_dir"],

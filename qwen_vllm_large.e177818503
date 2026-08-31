@@ -1,0 +1,37 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=417982) Loading safetensors checkpoint shards:   0% Completed | 0/5 [00:00<?, ?it/s]
+(EngineCore pid=417982) Loading safetensors checkpoint shards:  20% Completed | 1/5 [00:13<00:54, 13.69s/it]
+(EngineCore pid=417982) Loading safetensors checkpoint shards:  40% Completed | 2/5 [00:16<00:22,  7.41s/it]
+(EngineCore pid=417982) Loading safetensors checkpoint shards:  60% Completed | 3/5 [00:19<00:10,  5.15s/it]
+(EngineCore pid=417982) Loading safetensors checkpoint shards:  80% Completed | 4/5 [00:20<00:03,  3.69s/it]
+(EngineCore pid=417982) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:21<00:00,  2.52s/it]
+(EngineCore pid=417982) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:21<00:00,  4.21s/it]
+(EngineCore pid=417982) 
+(EngineCore pid=417982) 2026-08-31 11:47:16,624 - INFO - autotuner.py:622 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(EngineCore pid=417982) 2026-08-31 11:47:16,770 - INFO - autotuner.py:641 - flashinfer.jit: [Autotuner]: Autotuning process ends
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 26334.33it/s]
+Loading weights:   0%|          | 0/1468 [00:00<?, ?it/s]Loading weights:  24%|██▎       | 348/1468 [00:00<00:00, 3038.17it/s]Loading weights:  44%|████▍     | 652/1468 [00:00<00:00, 834.55it/s] Loading weights:  55%|█████▌    | 809/1468 [00:01<00:01, 525.19it/s]Loading weights:  62%|██████▏   | 907/1468 [00:01<00:01, 442.59it/s]Loading weights:  67%|██████▋   | 977/1468 [00:01<00:01, 418.70it/s]Loading weights:  70%|███████   | 1034/1468 [00:02<00:01, 382.58it/s]Loading weights:  74%|███████▎  | 1081/1468 [00:02<00:01, 330.79it/s]Loading weights:  76%|███████▌  | 1119/1468 [00:02<00:01, 309.61it/s]Loading weights:  79%|███████▊  | 1155/1468 [00:02<00:00, 316.61it/s]Loading weights:  81%|████████  | 1189/1468 [00:02<00:00, 304.64it/s]Loading weights:  83%|████████▎ | 1221/1468 [00:02<00:00, 299.42it/s]Loading weights:  85%|████████▌ | 1254/1468 [00:02<00:00, 302.87it/s]Loading weights:  88%|████████▊ | 1285/1468 [00:03<00:00, 297.83it/s]Loading weights:  90%|████████▉ | 1318/1468 [00:03<00:00, 304.25it/s]Loading weights:  92%|█████████▏| 1349/1468 [00:03<00:00, 298.85it/s]Loading weights:  94%|█████████▍| 1380/1468 [00:03<00:00, 285.91it/s]Loading weights:  96%|█████████▌| 1409/1468 [00:03<00:00, 270.79it/s]Loading weights:  98%|█████████▊| 1438/1468 [00:03<00:00, 271.71it/s]Loading weights: 100%|██████████| 1468/1468 [00:03<00:00, 405.89it/s]
+Traceback (most recent call last):
+  File "/apps/python3/3.11.7/lib/python3.11/pathlib.py", line 1116, in mkdir
+    os.mkdir(self, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/counting_outputs/sections'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/565/vm4618/episodic-memory-pipeline/main.py", line 107, in <module>
+    main()
+  File "/home/565/vm4618/episodic-memory-pipeline/main.py", line 99, in main
+    pipeline.run()
+  File "/home/565/vm4618/episodic-memory-pipeline/pipeline/CountingPipeline.py", line 173, in run
+    sections = self.frame_parser.create_section_dir()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/565/vm4618/episodic-memory-pipeline/pipeline/frame_parser.py", line 114, in create_section_dir
+    self.output_dir.mkdir(parents=True, exist_ok=True)
+  File "/apps/python3/3.11.7/lib/python3.11/pathlib.py", line 1120, in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+  File "/apps/python3/3.11.7/lib/python3.11/pathlib.py", line 1116, in mkdir
+    os.mkdir(self, mode)
+PermissionError: [Errno 13] Permission denied: '/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/counting_outputs'

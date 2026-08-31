@@ -1,11 +1,11 @@
 {
     "task": 2,
-    "frames_dir": "/scratch/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-03-13-13/camera",
-    "sections_dir": "/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/counting_outputs/sections",
-    "output": "/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/counting_outputs/narratives",
-    "frames_per_section": 5,
+    "frames_dir": "/scratch/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-03-13-13/video.mp4",
+    "sections_dir": "/scratch/pg06/vm4618/boreas_outputs/sections",
+    "output": "/scratch/pg06/vm4618/boreas_outputs",
+    "frames_per_section": 30,
     "step": 10,
-    "model": "Qwen/Qwen2.5-VL-72B-Instruct",
+    "model": "/scratch/pg06/vm4618/huggingface_cache/hub/models--Qwen--Qwen2-VL-7B-Instruct/snapshots/eed13092ef92e448dd6875b2a00151bd3f7db0ac",
     "backend": "local",
     "api_base_url": "https://opencode.ai/zen/go/v1/responses",
     "api_key_env": "OPENCODE_API_KEY",
@@ -17,9 +17,10 @@
     "question_max_tokens": 3000,
     "enforce_eager": true,
     "dtype": "bfloat16",
-    "max_model_len": 50000,
+    "max_model_len": 32768,
     "gpu_memory_utilization": 0.9,
     "tensor_parallel_size": 4,
-    "CLIPModelmodel": "openai/clip-vit-base-patch32",
-    "CLIPProcessormodel": "openai/clip-vit-base-patch32"
+    "CLIPModelmodel": "/scratch/pg06/vm4618/hf_cache/hub/models--openai--clip-vit-base-patch32/snapshots/3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268",
+    "CLIPProcessormodel": "/scratch/pg06/vm4618/hf_cache/hub/models--openai--clip-vit-base-patch32/snapshots/3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268",
+    "sam3_model": "/scratch/pg06/vm4618/hf_cache/hub/models--facebook--sam3/snapshots/3c879f39826c281e95690f02c7821c4de09afae7"
 }

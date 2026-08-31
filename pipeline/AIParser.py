@@ -52,7 +52,6 @@ class AIParser:
                 dtype=config.get("dtype", "half"),
                 max_model_len=config.get("max_model_len", 4096),
                 gpu_memory_utilization=config.get("gpu_memory_utilization", 0.9),
-                tensor_parallel_size=config.get("tensor_parallel_size", 1),
             )
             self.sampling_params = SamplingParams(
                 temperature=self.local_temperature,
@@ -213,10 +212,15 @@ class AIParser:
         # ----------------------------------------------------
         from PIL import Image
 
+        # Define target dimensions (width, height)
+        TARGET_SIZE = (448, 448)
+
         images = []
         for image_path in image_paths:
             with Image.open(image_path) as image:
-                images.append(image.copy())
+                # Resize image using high-quality Lanczos resampling
+                resized_img = image.resize(TARGET_SIZE, Image.Resampling.LANCZOS)
+                images.append(resized_img)
 
         messages = [
             {

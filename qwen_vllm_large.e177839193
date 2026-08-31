@@ -1,0 +1,29 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=3268131) Loading safetensors checkpoint shards:   0% Completed | 0/5 [00:00<?, ?it/s]
+(EngineCore pid=3268131) Loading safetensors checkpoint shards:  20% Completed | 1/5 [00:13<00:55, 13.77s/it]
+(EngineCore pid=3268131) Loading safetensors checkpoint shards:  40% Completed | 2/5 [00:17<00:23,  7.71s/it]
+(EngineCore pid=3268131) Loading safetensors checkpoint shards:  60% Completed | 3/5 [00:18<00:09,  4.78s/it]
+(EngineCore pid=3268131) Loading safetensors checkpoint shards:  80% Completed | 4/5 [00:19<00:03,  3.40s/it]
+(EngineCore pid=3268131) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:20<00:00,  2.35s/it]
+(EngineCore pid=3268131) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:20<00:00,  4.06s/it]
+(EngineCore pid=3268131) 
+(EngineCore pid=3268131) 2026-08-31 15:38:46,640 - INFO - autotuner.py:622 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(EngineCore pid=3268131) 2026-08-31 15:38:46,801 - INFO - autotuner.py:641 - flashinfer.jit: [Autotuner]: Autotuning process ends
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 29516.98it/s]
+Loading weights:   0%|          | 0/1468 [00:00<?, ?it/s]Loading weights:  24%|██▍       | 350/1468 [00:00<00:00, 3282.56it/s]Loading weights:  46%|████▋     | 679/1468 [00:00<00:01, 752.97it/s] Loading weights:  57%|█████▋    | 843/1468 [00:01<00:01, 494.89it/s]Loading weights:  64%|██████▍   | 945/1468 [00:01<00:01, 428.37it/s]Loading weights:  69%|██████▉   | 1018/1468 [00:02<00:01, 395.12it/s]Loading weights:  73%|███████▎  | 1075/1468 [00:02<00:01, 354.42it/s]Loading weights:  76%|███████▋  | 1121/1468 [00:02<00:01, 341.86it/s]Loading weights:  79%|███████▉  | 1161/1468 [00:02<00:00, 336.52it/s]Loading weights:  82%|████████▏ | 1199/1468 [00:02<00:00, 322.02it/s]Loading weights:  84%|████████▍ | 1233/1468 [00:02<00:00, 303.09it/s]Loading weights:  86%|████████▌ | 1264/1468 [00:02<00:00, 289.25it/s]Loading weights:  88%|████████▊ | 1293/1468 [00:03<00:00, 287.27it/s]Loading weights:  90%|█████████ | 1328/1468 [00:03<00:00, 297.67it/s]Loading weights:  93%|█████████▎| 1358/1468 [00:03<00:00, 287.96it/s]Loading weights:  94%|█████████▍| 1387/1468 [00:03<00:00, 270.63it/s]Loading weights:  97%|█████████▋| 1418/1468 [00:03<00:00, 278.83it/s]Loading weights:  99%|█████████▉| 1453/1468 [00:03<00:00, 291.22it/s]Loading weights: 100%|██████████| 1468/1468 [00:03<00:00, 402.01it/s]
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:08<00:00,  8.56s/it]Rendering prompts: 100%|██████████| 1/1 [00:08<00:00,  8.56s/it]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:04<00:00,  4.97s/it, est. speed input: 6457.61 toks/s, output: 8.25 toks/s]Processed prompts: 100%|██████████| 1/1 [00:04<00:00,  4.97s/it, est. speed input: 6457.61 toks/s, output: 8.25 toks/s]Processed prompts: 100%|██████████| 1/1 [00:04<00:00,  4.97s/it, est. speed input: 6457.61 toks/s, output: 8.25 toks/s]
+Traceback (most recent call last):
+  File "/home/565/vm4618/episodic-memory-pipeline/main.py", line 107, in <module>
+    main()
+  File "/home/565/vm4618/episodic-memory-pipeline/main.py", line 99, in main
+    pipeline.run()
+  File "/home/565/vm4618/episodic-memory-pipeline/pipeline/CountingPipeline.py", line 207, in run
+    new_embedding = self.get_clip_embedding(crop)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/565/vm4618/episodic-memory-pipeline/pipeline/CountingPipeline.py", line 120, in get_clip_embedding
+    image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+                                      ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'BaseModelOutputWithPooling' object has no attribute 'norm'

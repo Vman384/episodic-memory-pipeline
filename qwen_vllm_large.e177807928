@@ -1,0 +1,24 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=3038671) Loading safetensors checkpoint shards:   0% Completed | 0/5 [00:00<?, ?it/s]
+(EngineCore pid=3038671) Loading safetensors checkpoint shards:  20% Completed | 1/5 [00:10<00:42, 10.67s/it]
+(EngineCore pid=3038671) Loading safetensors checkpoint shards:  40% Completed | 2/5 [00:12<00:15,  5.19s/it]
+(EngineCore pid=3038671) Loading safetensors checkpoint shards:  60% Completed | 3/5 [00:13<00:06,  3.38s/it]
+(EngineCore pid=3038671) Loading safetensors checkpoint shards:  80% Completed | 4/5 [00:14<00:02,  2.53s/it]
+(EngineCore pid=3038671) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:14<00:00,  1.75s/it]
+(EngineCore pid=3038671) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:14<00:00,  2.97s/it]
+(EngineCore pid=3038671) 
+(EngineCore pid=3038671) 2026-08-31 09:43:22,353 - INFO - autotuner.py:622 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(EngineCore pid=3038671) 2026-08-31 09:43:22,371 - INFO - autotuner.py:641 - flashinfer.jit: [Autotuner]: Autotuning process ends
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 28079.14it/s]
+Loading weights:   0%|          | 0/1468 [00:00<?, ?it/s]Loading weights:  25%|██▍       | 364/1468 [00:00<00:00, 3626.59it/s]Loading weights:  50%|████▉     | 727/1468 [00:00<00:00, 3015.57it/s]Loading weights:  71%|███████   | 1035/1468 [00:00<00:00, 2524.61it/s]Loading weights:  88%|████████▊ | 1297/1468 [00:00<00:00, 2224.70it/s]Loading weights: 100%|██████████| 1468/1468 [00:00<00:00, 2395.86it/s]
+Traceback (most recent call last):
+  File "/home/565/vm4618/episodic-memory-pipeline/main.py", line 107, in <module>
+    main()
+  File "/home/565/vm4618/episodic-memory-pipeline/main.py", line 99, in main
+    pipeline.run()
+  File "/home/565/vm4618/episodic-memory-pipeline/pipeline/CountingPipeline.py", line 165, in run
+    self.config["sampled_frames_dir"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'sampled_frames_dir'
