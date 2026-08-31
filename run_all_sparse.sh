@@ -63,6 +63,8 @@ config["output"] = f"{base}/{list_name}/sparse_outputs/events"
 # Questions is text-only, so use the API backend instead of spinning up vLLM.
 config["backend"] = "api"
 config["model"] = "gpt-5.6-luna"
+# gpt-5.6-luna does not accept the temperature parameter.
+config["temperature"] = None
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
