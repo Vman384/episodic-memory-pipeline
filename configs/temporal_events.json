@@ -1,8 +1,8 @@
 {
     "task": 2,
-    "frames_dir": "/scratch/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-03-13-13/camera",
-    "sections_dir": "/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/temporal_outputs/sections",
-    "output": "/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/temporal_outputs/narratives",
+    "frames_dir": "/scratch/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-07-18-15-12/camera",
+    "sections_dir": "/scratch/pg06/FYP2026S1_3473/boreas-2025-07-18-15-12/temporal_outputs/sections",
+    "output": "/scratch/pg06/FYP2026S1_3473/boreas-2025-07-18-15-12/temporal_outputs/narratives",
     "frames_per_section": 5,
     "step": 10,
     "model": "Qwen/Qwen2.5-VL-72B-Instruct",

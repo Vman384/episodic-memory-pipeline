@@ -1,10 +1,9 @@
 #!/bin/bash
-#PBS -N sparse_event
+#PBS -N sparse_event_questions
 #PBS -P pg06
-#PBS -q gpuhopper
-#PBS -l ncpus=48
-#PBS -l ngpus=4
-#PBS -l mem=1024GB
+#PBS -q copyq
+#PBS -l ncpus=1
+#PBS -l mem=4GB
 #PBS -l walltime=00:30:00
 #PBS -l storage=scratch/pg06
 #PBS -l wd
@@ -24,8 +23,6 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 # Use the shared model cache and prevent model resolution from making network requests.
 export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
-export HF_HUB_OFFLINE=1
-export TRANSFORMERS_OFFLINE=1
 
 
 # Boreas lists to process, in the order they were run.
