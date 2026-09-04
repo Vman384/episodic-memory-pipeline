@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N temporal_event
+#PBS -N sparse_event
 #PBS -P pg06
 #PBS -q copyq
 #PBS -l ncpus=1
@@ -27,4 +27,4 @@ export TRANSFORMERS_OFFLINE=1
 python3 main.py --mode sparse
 
 # run question stage right after
-python3 main.py --mode sparse --stage questions
+#python3 main.py --mode sparse --stage questions
