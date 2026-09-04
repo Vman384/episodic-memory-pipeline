@@ -1,4 +1,4 @@
-"""Sparse event localisation pipeline."""
+"""Sparse event localisation pipeline: extract, review, generate questions."""
 
 import json
 from pathlib import Path
@@ -16,6 +16,7 @@ def _frame_sort_key(event: dict):
     Frame filenames are epoch timestamps, so the numeric stem gives global
     chronological order. Events without a parseable frame go last.
     """
+    # Numeric frame names preserve order; invalid frames sort last.
     try:
         return (0, int(Path(str(event.get("frame", ""))).stem))
     except ValueError:
@@ -29,8 +30,8 @@ class SparseEventPipeline:
     Stages:
         extract   - split frames into sections and detect noteworthy events
                     with the VLM
-        review    - sort detections by frame, merge duplicates, filter
-                    spurious detections with the LLM, and write the
+        review    - sort detections by frame timestamp, merge duplicates,
+                    filter spurious detections with the LLM, and write the
                     human-reviewable events.json
         questions - generate sparse-event questions from the
                     human-verified events.json
@@ -56,10 +57,14 @@ class SparseEventPipeline:
         self.frame_converter = None
 
     def load_config(self) -> dict:
-        """Load the config and create the pipeline's helper classes."""
+        """
+        Load config from ConfigLoader and create instances of
+        helper classes
+        """
+        # Load shared pipeline settings.
         self.config = ConfigLoader(self.config_path).load()
 
-        # Initialise Frame parser from config
+        # Configure frame sectioning from the loaded settings.
         self.frame_parser = FrameParser(
             frames_dir=self.config["frames_dir"],
             output_dir=self.config["sections_dir"],
@@ -71,7 +76,7 @@ class SparseEventPipeline:
         # Convert frame filenames to elapsed seconds from real timestamps.
         self.frame_converter = TimeframeConverter(self.config["frames_dir"])
 
-        # Initialise AI parser from config
+        # Initialize the configured local or API backend.
         self.ai_parser = AIParser(config=self.config)
         return self.config
 
@@ -89,8 +94,10 @@ class SparseEventPipeline:
         self.load_config()
 
         if stage is None or stage == "extract":
+            # call VLM to extract section of files.
             self._extract()
         if stage is None or stage == "review":
+            # call LLM to review and filter detections.
             self._review()
         if stage == "questions":
             self._generate_questions()
@@ -143,11 +150,12 @@ class SparseEventPipeline:
         return events
 
     def _extract(self) -> None:
-        """
-        Split frames into sections and detect noteworthy events in each with
-        the VLM. Sections whose result.json already exists are skipped, so an
+        """Split frames into sections and detect noteworthy events with the VLM.
+
+        Sections whose result.json already exists are skipped, so an
         interrupted job can be resumed.
         """
+        # Split the source frames into model-sized sections.
         config = self.config
 
         sections = self.frame_parser.create_section_dir()
@@ -156,7 +164,8 @@ class SparseEventPipeline:
         # Per-section elapsed seconds, computed from frame timestamps.
         manifest = self._load_section_manifest()
 
-        output_dir = Path(config["output"])
+        # Keep intermediate results in the configured output directory.
+        output_dir = Path(self.config["output"])
         output_dir.mkdir(parents=True, exist_ok=True)
 
         print(
@@ -193,6 +202,7 @@ class SparseEventPipeline:
                 ),
             }
 
+            # make and store the result
             result_path.parent.mkdir(parents=True, exist_ok=True)
             with open(result_path, "w") as result_file:
                 json.dump(section_result, result_file, indent=2)
@@ -208,6 +218,7 @@ class SparseEventPipeline:
 
     def _load_section_results(self) -> list[dict]:
         """Load persisted section results from the extract stage."""
+        # Locate section outputs in chronological filename order.
         output_dir = Path(self.config["output"])
         result_paths = sorted(output_dir.glob("section_*_output/result.json"))
         if not result_paths:
@@ -215,6 +226,7 @@ class SparseEventPipeline:
                 f"No section results found in {output_dir}. Run the extract stage first."
             )
 
+        # Read each persisted section response.
         results = []
         for result_path in result_paths:
             with open(result_path) as result_file:
@@ -242,16 +254,13 @@ class SparseEventPipeline:
             event["frame_seconds"] = self._frame_seconds(event.get("frame"))
 
     def _review(self) -> None:
-        """
-        Sort detections by frame timestamp, merge duplicate observations and
-        filter spurious detections with the LLM, then write events.json for
-        human review.
-        """
-        # Load and normalise all extracted section detections.
+        """Sort detections by frame timestamp and merge them with the LLM."""
+        # Load and normalize all extracted section events.
         config = self.config
         section_results = self._load_section_results()
         print(f"[review] Loaded {len(section_results)} section results")
 
+        # Per-section elapsed seconds, computed from frame timestamps.
         manifest = self._load_section_manifest()
 
         events = []
@@ -311,7 +320,8 @@ class SparseEventPipeline:
         for event_id, event in enumerate(reviewed_events, start=1):
             event["event_id"] = event_id
 
-        # Recompute seconds in case the merge model altered them.
+        # Re-attach per-section and frame seconds in case the review model
+        # altered them.
         self._attach_seconds(reviewed_events, manifest)
 
         # Persist the reviewed event list for review and later stages.
@@ -327,6 +337,7 @@ class SparseEventPipeline:
 
     def _generate_questions(self) -> None:
         """Generate sparse-event questions from the human-verified events.json."""
+        # Require events produced and reviewed by the earlier stage.
         config = self.config
         output_dir = self._output_dir()
         events_path = output_dir / "events.json"
