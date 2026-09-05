@@ -40,7 +40,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 ### What Is Not Yet Implemented
 
 - The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
-- `temporal_event.pbs` runs the API-backed temporal configuration and forwards exported environment variables to the PBS job.
+- `temporal_event.pbs` runs the local vLLM temporal configuration on four GPUs.
 - A **User Interface**, **Hybrid Search Module**, and **Reporting frontend** are not implemented.
 - No test suite, CI/CD, Dockerfile, or Makefile.
 
@@ -135,14 +135,6 @@ temporal mode runs `extract` followed by `timeline`. The `questions` stages are
 intentionally separate so a human can review and correct `events.json` or
 `timeline.json` first.
 
-The bundled `run_temporal_questions.sh` script runs the `questions` stage for
-several already-completed Boreas lists in one go. It rewrites the per-list paths
-in `configs/temporal_events.json`, switches `backend` to `api` and `model` to
-`gpt-5.6-luna`, then invokes `main.py --mode temporal --stage questions` for each
-list, restoring the original config afterwards. Edit the `LISTS` array at the top
-of the script to change which lists are processed. It requires `OPENCODE_API_KEY`
-to be exported.
-
 **Functions:**
 
 | Function | Purpose |
@@ -196,7 +188,7 @@ to be exported.
 
 **Purpose:** PBS job script for running the current sparse-event pipeline on Gadi.
 
-**Entry point:** Loads the Python and CUDA modules, activates the configured virtual environment, changes to the PBS working directory, and runs:
+**Entry point:** Loads Python, activates the configured virtual environment, changes to the PBS working directory, and runs:
 
 ```bash
 python3 main.py --mode sparse
@@ -204,9 +196,11 @@ python3 main.py --mode sparse
 
 Submit it from the repository root with `qsub sparse_event.pbs`.
 
-**Resources:** 24 CPUs, 4 GPUs, 1024 GB memory, and a five-hour walltime.
+**Resources:** 1 CPU, 8 GB memory, and a 35-minute walltime.
 
-**Prerequisites:** Requires `vllm`, four GPUs, and the model already present in `/scratch/pg06/FYP2026S1_3473/huggingface_cache`. This is the local/offline job; API runs should use `temporal_event.pbs` instead.
+**Prerequisites:** Requires the OpenAI client, network access, and a valid
+`OPENCODE_API_KEY`. This is the API job; it does not require CUDA or a local
+Hugging Face model.
 
 ---
 
@@ -224,10 +218,9 @@ With no `--stage`, this invokes temporal extraction followed by timeline
 construction. Question generation must be run separately after reviewing
 `timeline.json`.
 
-**Current status:** The script is configured for the API-backed temporal
-configuration. It requests CPU and memory only, forwards the submission
-environment with `#PBS -V`, and relies on `OPENCODE_API_KEY` or `.env` for
-authentication. It does not load CUDA or a local Hugging Face model.
+**Current status:** The script is configured for the local Qwen vLLM temporal
+configuration. It requests four GPUs, loads CUDA, enables offline Hugging Face
+resolution, and uses the model already present in the shared cache.
 
 ---
 
@@ -352,6 +345,10 @@ The relevant configuration keys are:
 | `tensor_parallel_size` | Number of GPUs used by vLLM |
 | `api_base_url` | OpenAI-compatible API base URL or full `/responses` endpoint |
 | `api_key_env` | Environment variable containing the API key |
+
+In API mode, `AIParser` sends an identifying user agent, an OpenCode client
+header, and one stable `x-opencode-session` ID for the process. API errors retain
+the provider response body and request ID when available.
 
 **Public methods:**
 
@@ -650,21 +647,20 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`, `sparse_event_filter.txt`, and `sparse_event_question_gen.txt`) |
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 
-The current sparse example uses `frames_per_section: 5`, `step: 10`,
-`temperature: 0.4` (local), no `api_temperature`, `max_tokens: 3000`,
-`review_window: 50`, and `question_max_tokens: 3000`. The current temporal
-example uses `frames_per_section: 10`, `step: 15`, no `temperature` or
-`api_temperature`, `reasoning_effort: low`, `max_tokens: 2048`,
-`merge_window: 50`, `storyline_max_tokens: 1024`,
-`question_max_tokens: 2048`, `max_model_len: 8192`, and
-`tensor_parallel_size: 4`.
+The current sparse example uses the API backend with `gpt-5.6-luna`,
+`frames_per_section: 5`, `step: 10`, no `api_temperature`,
+`max_tokens: 3000`, `review_window: 50`, and `question_max_tokens: 3000`.
+The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
+`frames_per_section: 5`, `step: 10`, `max_tokens: 3090`, `merge_window: 50`,
+`storyline_max_tokens: 3000`, `question_max_tokens: 3000`,
+`max_model_len: 50000`, and `tensor_parallel_size: 4`.
 
 
 
 
 ## Known Issues & Missing Pieces
 
-1. **Backend-specific environment is required** — The sparse configuration uses local vLLM and requires four GPUs plus access to the cached `Qwen/Qwen2.5-VL-72B-Instruct` model. The temporal configuration uses the OpenCode Go API and requires a valid `OPENCODE_API_KEY`, network access, and an image-capable model.
+1. **Backend-specific environment is required** — The sparse configuration uses the OpenCode Go API and requires a valid `OPENCODE_API_KEY` and network access. The temporal configuration uses local vLLM and requires four GPUs plus access to the cached `Qwen/Qwen2.5-VL-72B-Instruct` model.
 
 2. **`vllm.pbs` runs the prototype** — The PBS script invokes `test_vlm.py`, not the mode dispatcher in `main.py`.
 
@@ -701,10 +697,10 @@ example uses `frames_per_section: 10`, `step: 15`, no `temperature` or
 | Sparse event question prompt (`prompts/sparse_event_question_gen.txt`) | Complete |
 | Example configs (`configs/*.json`) | Complete |
 | Legacy HPC job script (`vllm.pbs`) | Exists for the old prototype |
-| Sparse-event HPC job script (`sparse_event.pbs`) | Current PBS wrapper; requests four GPUs for the 72B model |
+| Sparse-event HPC job script (`sparse_event.pbs`) | Current API-backed PBS wrapper; requests CPU and memory only |
 | Temporal storyline prompt (`prompts/temporal_storyline.txt`) | Complete |
 | Temporal question prompt (`prompts/temporal_question_gen.txt`) | Complete |
-| Temporal PBS job script (`temporal_event.pbs`) | API-backed temporal wrapper; no GPU required |
+| Temporal PBS job script (`temporal_event.pbs`) | Local vLLM temporal wrapper; requests four GPUs for the 72B model |
 | Temporal question generation | Implemented; requires human-reviewed timeline |
 | Sparse event question generation | Implemented; requires human-reviewed events list |
 | Benchmark categories 2–4 | Not yet implemented |

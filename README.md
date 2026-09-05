@@ -13,7 +13,7 @@ The top-level runner accepts four benchmark modes. `sparse` and `temporal` are c
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
-Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses local vLLM; the supplied temporal configuration uses the OpenCode Go Responses API with `gpt-5.6-luna` and does not require a local VLM or GPUs.
+Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses the OpenCode Go Responses API with `gpt-5.6-luna`; the supplied temporal configuration uses local vLLM with `Qwen/Qwen2.5-VL-72B-Instruct` and requires four GPUs.
 
 ## Setup
 
@@ -23,9 +23,9 @@ Install the dependencies listed in `requirements.txt`:
 pip install -r requirements.txt
 ```
 
-The current mode dispatcher does not require a `.env` file. API mode requires
-the environment variable named by `api_key_env` in the selected configuration;
-the supplied temporal configuration uses `OPENCODE_API_KEY`.
+API mode requires the environment variable named by `api_key_env` in the
+selected configuration. The supplied sparse configuration uses
+`OPENCODE_API_KEY`, loaded from the environment or the repository `.env` file.
 
 ## Run A Benchmark Mode
 
@@ -72,14 +72,6 @@ The temporal review workflow is:
 4. Run `--stage questions` to generate temporal questions from the reviewed timeline.
 5. Review `questions.json` before using it as benchmark data.
 
-To run the `questions` stage for several already-completed lists in one go (using the API backend), use the bundled `run_temporal_questions.sh` script. It rewrites the per-list paths in `configs/temporal_events.json`, switches `backend` to `api` and `model` to `gpt-5.6-luna`, then runs `--stage questions` for each list in turn, restoring the original config afterwards:
-
-```bash
-./run_temporal_questions.sh
-```
-
-The script is intended to be run from the repository root and needs the `OPENCODE_API_KEY` exported (see the API configuration section below). Edit the `LISTS` array at the top of the script to change which lists are processed.
-
 The other accepted modes currently print a not-implemented message:
 
 ```bash
@@ -102,8 +94,7 @@ python main.py --mode counting
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
 | `configs/*.json` | Pipeline configuration files |
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
-| `temporal_event.pbs` | API-backed temporal PBS job script |
-| `run_temporal_questions.sh` | Runs the temporal `questions` stage across multiple Boreas lists via the API backend |
+| `temporal_event.pbs` | Local vLLM temporal PBS job script |
 
 ## Sparse-Event Pipeline
 
@@ -240,10 +231,10 @@ coverage matters less.
 | `step` | Number of input frames skipped between samples. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
 | `model` | Model used for extraction and later sparse stages. Pick a model that accepts the selected backend and image inputs. |
-| `backend` | Use `local` for the supplied vLLM configuration or `api` for a Responses API model. The backend must match the model and available infrastructure. |
+| `backend` | Use `api` for the supplied OpenCode configuration or `local` for a vLLM model. The backend must match the model and available infrastructure. |
 | `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
 | `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
-| `temperature` | Local vLLM sampling temperature. Use a low value, such as `0.4`, for consistent detection; the supplied sparse configuration sets it explicitly. |
+| `temperature` | Local vLLM sampling temperature. It is ignored by the supplied API configuration; use a low value if switching sparse extraction to local vLLM. |
 | `api_temperature` | API sampling temperature, used only with the API backend. Keep it `null` for API models that do not accept the temperature parameter, such as `gpt-5.6-luna`. |
 | `reasoning_effort` | API reasoning effort, when supported. Use a lower value for faster extraction or a higher value when the model needs more effort to judge whether a detection is real. |
 | `max_tokens` | Maximum response length for each section extraction. Increase it if detection lists are being truncated. |
@@ -270,13 +261,13 @@ events and larger sections only when the model can handle the added context.
 | `frames_per_section` | Number of sampled frames grouped into one extraction request. Increase it for wider context, but keep it within the model's image/context limits; `5` is the supplied starting point. |
 | `step` | Number of input frames skipped between samples. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed; `15` is the supplied starting point. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
-| `model` | Model used for extraction and later temporal stages, such as `gpt-5.6-luna`. Pick a model that accepts the selected backend and image inputs. |
-| `backend` | Use `api` for the supplied Responses API configuration or `local` for a local vLLM model. The backend must match the model and available infrastructure. |
+| `model` | Model used for extraction and later temporal stages. The supplied configuration uses `Qwen/Qwen2.5-VL-72B-Instruct` locally. |
+| `backend` | Use `local` for the supplied four-GPU vLLM configuration or `api` for a Responses API model. The backend must match the model and available infrastructure. |
 | `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
 | `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
 | `temperature` | Local vLLM sampling temperature. Keep it `null` to use the local `0.2` default; use a low value when deterministic extraction is preferred. |
-| `api_temperature` | API sampling temperature, used only with the API backend. Keep it `null` for the supplied reasoning-model API configuration, which does not accept the temperature parameter. |
-| `reasoning_effort` | API reasoning effort. Use `low` for faster extraction, or increase it when the model needs more effort to distinguish event order. |
+| `api_temperature` | API sampling temperature, used only with the API backend. Keep it `null` for models that do not accept the parameter. |
+| `reasoning_effort` | API reasoning effort, used only when the temporal backend is switched to an API model. |
 | `max_tokens` | Maximum response length for each section extraction. Increase it if event lists are being truncated; lower it to reduce cost when responses are short. |
 | `merge_window` | Number of chronologically sorted events sent to the timeline-merging model at once. Increase it to give the merger more context, but keep it within the model's context limit; `50` is the supplied starting point. |
 | `storyline_max_tokens` | Maximum length of the generated chronological storyline. Choose a value large enough to describe all reviewed events without excessive prose. |
@@ -308,7 +299,7 @@ Then export the key using the configured environment variable:
 
 ```bash
 export OPENCODE_API_KEY="your-api-key"
-python main.py --mode temporal --stage extract
+python main.py --mode sparse --stage extract
 ```
 
 The API backend sends the prompt and every image in a section as a single
@@ -316,6 +307,9 @@ Responses API request. `gpt-5.6-luna` supports image inputs. For GPT-5.6
 reasoning models, the configuration omits `temperature`; API requests use
 `api_temperature`, which is omitted when `null`, and `max_tokens` includes
 both reasoning and visible output tokens.
+
+The API wrapper sends a stable per-run `x-opencode-session` header and an
+identifying user agent, as required by OpenCode Go for third-party clients.
 
 If an API call fails, the pipeline reports the model, endpoint, HTTP status,
 response body, and provider request ID when available. A 401 indicates a key

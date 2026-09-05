@@ -1,4 +1,6 @@
+import json
 import os
+import uuid
 from pathlib import Path
 
 
@@ -75,9 +77,17 @@ class AIParser:
 
             api_base_url = api_base_url.rstrip("/").removesuffix("/responses")
 
+            # OpenCode Go uses this stable per-run ID for routing and prompt
+            # caching. Generic clients without it can be rejected or throttled.
+            self.api_session_id = f"ses_{uuid.uuid4().hex}"
             self.client = OpenAI(
                 api_key=api_key,
                 base_url=api_base_url,
+                default_headers={
+                    "User-Agent": "episodic-memory-pipeline/1.0",
+                    "x-opencode-client": "episodic-memory-pipeline",
+                    "x-opencode-session": self.api_session_id,
+                },
             )
             self.api_base_url = api_base_url
 
@@ -112,10 +122,15 @@ class AIParser:
             response = getattr(error, "response", None)
             if status_code is None:
                 status_code = getattr(response, "status_code", None)
-            details = getattr(response, "text", None) or str(error)
+            details = getattr(error, "body", None)
+            if not details:
+                details = getattr(response, "text", None)
+            if isinstance(details, (dict, list)):
+                details = json.dumps(details)
+            details = details or str(error)
             request_id = getattr(error, "request_id", None)
             if not request_id:
-                headers = getattr(response, "headers", {})
+                headers = getattr(response, "headers", {}) or {}
                 request_id = headers.get("x-request-id")
             request_info = f" request_id={request_id}" if request_id else ""
             raise RuntimeError(
