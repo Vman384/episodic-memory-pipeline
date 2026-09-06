@@ -13,7 +13,7 @@ The top-level runner accepts four benchmark modes. `sparse` and `temporal` are c
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
-Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses the OpenCode Go Responses API with `gpt-5.6-luna`; the supplied temporal configuration uses local vLLM with `Qwen/Qwen2.5-VL-72B-Instruct` and requires four GPUs.
+Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses the OpenCode Go Responses API with `grok-4.6` and downsamples frames to `image_max_size: 1024` JPEGs; the supplied temporal configuration uses local vLLM with `Qwen/Qwen2.5-VL-72B-Instruct` and requires four GPUs.
 
 ## Setup
 
@@ -90,6 +90,7 @@ python main.py --mode counting
 | `run_timeframe_converter.py` | Applies timeframe conversion to events in `timeline.json` |
 | `pipeline/ConfigLoader.py` | Shared JSON configuration loader |
 | `pipeline/frame_parser.py` | Splits numerically named frame images into sections |
+| `pipeline/image_preprocessor.py` | Re-encodes frames as resized JPEGs while sections are built |
 | `pipeline/AIParser.py` | Configurable local vLLM or OpenAI-compatible API wrapper |
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
 | `configs/*.json` | Pipeline configuration files |
@@ -229,6 +230,8 @@ coverage matters less.
 | `output` | Directory for section results, `events.json`, and `questions.json`. Use a separate output directory for each experiment. |
 | `frames_per_section` | Number of sampled frames grouped into one extraction request. Increase it for wider context, but keep it within the model's image/context limits; `5` is the supplied starting point. |
 | `step` | Number of input frames skipped between samples. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed. |
+| `image_max_size` | Longest side, in pixels, of frames written into sections. Frames are downscaled to fit (never upscaled). Omit it to keep original frame sizes. Use a small value, such as `1024`, to keep API request payloads small and stay within the vision-token budget of models such as `grok-4.6`; omit it for local vLLM runs that accept full-resolution frames. |
+| `image_quality` | JPEG quality, from `1` to `95`, used when frames are re-encoded for sections. `90` is the supplied value. Omit it with `image_max_size` to copy frames through untouched. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
 | `model` | Model used for extraction and later sparse stages. Pick a model that accepts the selected backend and image inputs. |
 | `backend` | Use `api` for the supplied OpenCode configuration or `local` for a vLLM model. The backend must match the model and available infrastructure. |
@@ -333,6 +336,14 @@ video. These seconds are computed from the real frame timestamps, so later
 stages know the time range of every section without relying on model output.
 
 Set `move` to `true` in the configuration to move frames instead of copying them. It defaults to `false` when omitted.
+
+When `image_max_size` or `image_quality` is set in the configuration, `FrameParser`
+runs every sampled frame through `ImagePreprocessor` while writing sections:
+frames are converted to RGB and re-encoded as JPEGs with the configured
+quality, downscaled so the longest side fits `image_max_size`. Numeric
+filenames keep their stem, so section and event timestamp handling is
+unaffected. Downscaled JPEG sections produce much smaller base64 payloads for
+the API backend, which otherwise rejects large multi-image requests.
 
 ## Intended Output
 

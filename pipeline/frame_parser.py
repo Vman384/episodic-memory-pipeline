@@ -12,6 +12,11 @@ try:
 except ImportError:
     from timeframe_converter import TimeframeConverter
 
+try:
+    from pipeline.image_preprocessor import ImagePreprocessor
+except ImportError:
+    from image_preprocessor import ImagePreprocessor
+
 
 class FrameParser:
     """Partition video frames into numbered section directories.
@@ -39,6 +44,9 @@ class FrameParser:
         step_size: Keep every ``step_size``-th frame after sorting.  A value
             of 1 keeps every frame, while 2 keeps frames 0, 2, 4, and so on.
         move: Move frames instead of copying them.
+        preprocessor: Optional ``ImagePreprocessor`` re-encodes each sampled
+            frame as a resized JPEG while writing sections.  When omitted,
+            frames are copied (or moved) untouched.
         extensions: Accepted image extensions.  Matching is case-insensitive.
     """
 
@@ -51,6 +59,7 @@ class FrameParser:
         frames_per_section: int = 100,
         step_size: int = 1,
         move: bool = False,
+        preprocessor=None,
         extensions: tuple[str, ...] = DEFAULT_EXTENSIONS):
 
         # Get the path of all the frames
@@ -72,6 +81,7 @@ class FrameParser:
         self.frames_per_section = frames_per_section
         self.step_size = step_size
         self.move = move
+        self.preprocessor = preprocessor
         normalized_extensions = set()
         for extension in extensions:
             if extension.startswith("."):
@@ -127,8 +137,12 @@ class FrameParser:
 
             for frame_path in section_frames:
                 destination = section_dir / frame_path.name
-                # Depending on params, either we move the actual frames themselves or we make a copy
-                if self.move:
+                if self.preprocessor is not None:
+                    destination = section_dir / f"{frame_path.stem}{self.preprocessor.SUFFIX}"
+                    self.preprocessor.process(frame_path, destination)
+                    if self.move:
+                        frame_path.unlink()
+                elif self.move:
                     shutil.move(str(frame_path), str(destination))
                 else:
                     shutil.copy2(frame_path, destination)
@@ -177,6 +191,7 @@ def main() -> None:
         frames_per_section=config["frames_per_section"],
         step_size=config["step"],
         move=config.get("move", False),
+        preprocessor=ImagePreprocessor.from_config(config),
     ).create_section_dir()
 
     for section_dir in section_dirs:

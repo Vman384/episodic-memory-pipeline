@@ -19,7 +19,9 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 ### What Is Currently Implemented
 
-1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, and copy/move semantics.
+1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, copy/move semantics, and optional per-frame JPEG re-encoding via `ImagePreprocessor`.
+
+2. **Image Preprocessor** (`pipeline/image_preprocessor.py`) — Re-encodes frame images as resized JPEGs while sections are built, shrinking API request payloads and vision-token usage.
 
 2. **Timeframe Converter** (`pipeline/timeframe_converter.py`) — Converts temporal event `start_frame` and `end_frame` values into elapsed video seconds relative to the earliest frame in the source directory.
 
@@ -64,6 +66,7 @@ episodic-memory-pipeline/
 │   ├── ConfigLoader.py
 │   ├── AIParser.py
 │   ├── frame_parser.py
+│   ├── image_preprocessor.py
 │   ├── timeframe_converter.py
 │   ├── SparseEventPipeline.py
 │   ├── TemporalPipeline.py
@@ -258,13 +261,14 @@ temporal-order benchmark pipelines.
 | `frames_per_section` | Maximum frames per section | `100` |
 | `step_size` | Keep every Nth frame after sorting | `1` |
 | `move` | Move frames instead of copying | `False` |
+| `preprocessor` | Optional `ImagePreprocessor` re-encoding sampled frames as resized JPEGs | `None` |
 | `extensions` | Accepted image extensions (case-insensitive) | `.jpg`, `.jpeg`, `.png`, `.webp`, `.bmp` |
 
 **Methods:**
 
 | Method | Purpose |
 |--------|---------|
-| `create_section_dir()` | Sorts frame files by numeric stem, applies step sampling, partitions into per-section directories, and copies (or moves) files. Also writes a `sections.json` manifest mapping each section to its first/last frame and elapsed start/end seconds relative to the first sampled frame. Returns list of created section directory paths. |
+| `create_section_dir()` | Sorts frame files by numeric stem, applies step sampling, partitions into per-section directories, and copies (or moves) files. When a `preprocessor` is provided, each sampled frame is re-encoded as a JPEG (`.jpg` suffix, same numeric stem) instead of being copied. Also writes a `sections.json` manifest mapping each section to its first/last frame and elapsed start/end seconds relative to the first sampled frame. Returns list of created section directory paths. |
 
 **CLI Interface:**
 
@@ -273,6 +277,35 @@ temporal-order benchmark pipelines.
 | `--config` | Required JSON config file containing all frame-processing settings | (required) |
 
 
+
+---
+
+### `pipeline/image_preprocessor.py`
+
+**Purpose:** Re-encodes frame images as resized JPEGs while `FrameParser`
+writes sections. Full-resolution camera frames produce base64 request payloads
+that API backends reject and vision tokens that local models must pay for;
+JPEG re-encoding shrinks payloads dramatically and downscaling keeps
+multi-image requests within the vision-token budget of API models such as
+`grok-4.6`. Images are never upscaled and numeric filenames keep their stem.
+
+**Key Dependencies:** `Pillow`, `pathlib.Path`.
+
+**Class: `ImagePreprocessor`**
+
+| Constructor Parameter | Description | Default |
+|-----------------------|-------------|---------|
+| `max_size` | Longest output side in pixels; `None` re-encodes without resizing | `None` |
+| `quality` | JPEG quality, `1` to `95` | `90` |
+
+| Member | Purpose |
+|--------|---------|
+| `SUFFIX` | Output filename suffix (`.jpg`) |
+| `from_config(config)` | Build a preprocessor from `image_max_size` / `image_quality` config keys, or `None` when neither is set |
+| `process(src, dst)` | Convert `src` to RGB, optionally fit the longest side to `max_size`, and save as a JPEG at `dst` |
+
+Both pipelines pass `ImagePreprocessor.from_config(self.config)` to
+`FrameParser`, so frames are only preprocessed when a configuration opts in.
 
 ---
 
@@ -647,8 +680,9 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`, `sparse_event_filter.txt`, and `sparse_event_question_gen.txt`) |
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 
-The current sparse example uses the API backend with `gpt-5.6-luna`,
-`frames_per_section: 5`, `step: 10`, no `api_temperature`,
+The current sparse example uses the API backend with `grok-4.6`,
+`frames_per_section: 5`, `step: 10`, `image_max_size: 1024`,
+`image_quality: 90`, no `api_temperature`,
 `max_tokens: 3000`, `review_window: 50`, and `question_max_tokens: 3000`.
 The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 `frames_per_section: 5`, `step: 10`, `max_tokens: 3090`, `merge_window: 50`,
@@ -686,6 +720,7 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 | Top-level mode dispatcher (`main.py`) | Sparse and temporal branches connected |
 | Prototype (`test_vlm.py`) | Reference implementation |
 | Frame parser (`frame_parser.py`) | Complete |
+| Image preprocessor (`image_preprocessor.py`) | Complete |
 | Timeframe converter (`timeframe_converter.py`) | Implemented standalone utility |
 | AI parser (`pipeline/AIParser.py`) | Implemented local vLLM and OpenAI-compatible API wrapper |
 | Sparse event pipeline (`pipeline/SparseEventPipeline.py`) | Extract, review, and question stages implemented |

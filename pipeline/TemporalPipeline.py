@@ -6,6 +6,7 @@ from pathlib import Path
 from pipeline.AIParser import AIParser
 from pipeline.ConfigLoader import ConfigLoader
 from pipeline.frame_parser import FrameParser
+from pipeline.image_preprocessor import ImagePreprocessor
 
 
 def parse_json_response(response: str):
@@ -96,6 +97,7 @@ class TemporalPipeline:
             frames_per_section=self.config["frames_per_section"],
             step_size=self.config["step"],
             move=self.config.get("move", False),
+            preprocessor=ImagePreprocessor.from_config(self.config),
         )
 
         # Initialize the configured local or API backend.

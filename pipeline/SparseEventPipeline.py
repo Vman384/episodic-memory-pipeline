@@ -7,6 +7,7 @@ from pipeline.AIParser import AIParser
 from pipeline.ConfigLoader import ConfigLoader
 from pipeline.TemporalPipeline import parse_json_response
 from pipeline.frame_parser import FrameParser
+from pipeline.image_preprocessor import ImagePreprocessor
 from pipeline.timeframe_converter import TimeframeConverter
 
 
@@ -71,6 +72,7 @@ class SparseEventPipeline:
             frames_per_section=self.config["frames_per_section"],
             step_size=self.config["step"],
             move=self.config.get("move", False),
+            preprocessor=ImagePreprocessor.from_config(self.config),
         )
 
         # Convert frame filenames to elapsed seconds from real timestamps.
