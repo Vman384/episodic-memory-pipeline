@@ -7,7 +7,7 @@
     "step": 10,
     "model": "gpt-5.6-luna",
     "backend": "api",
-    "api_base_url": "https://opencode.ai/zen/v1/responses",
+    "api_base_url": "https://opencode.ai/zen/v1",
     "api_key_env": "OPENCODE_API_KEY",
     "temperature": 0.4,
     "api_temperature": null,
