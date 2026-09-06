@@ -75,7 +75,7 @@ class AIParser:
             if not api_base_url:
                 raise ValueError("API Base URL not provided!")
 
-            api_base_url = api_base_url.rstrip("/").removesuffix("/responses")
+            # api_base_url = api_base_url.rstrip("/").removesuffix("/responses")
 
             # OpenCode Go uses this stable per-run ID for routing and prompt
             # caching. Generic clients without it can be rejected or throttled.
