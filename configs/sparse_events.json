@@ -7,7 +7,7 @@
     "step": 10,
     "model": "grok-4.6",
     "backend": "api",
-    "api_base_url": "https://opencode.ai/zen/v1",
+    "api_base_url": "https://opencode.ai/zen/go/v1",
     "api_key_env": "OPENCODE_API_KEY",
     "temperature": 0.4,
     "api_temperature": null,

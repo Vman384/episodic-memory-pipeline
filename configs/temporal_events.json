@@ -7,7 +7,7 @@
     "step": 10,
     "model": "Qwen/Qwen2.5-VL-72B-Instruct",
     "backend": "local",
-    "api_base_url": "https://opencode.ai/zen/go/v1/responses",
+    "api_base_url": "https://opencode.ai/zen/go/v1",
     "api_key_env": "OPENCODE_API_KEY",
     "temperature": null,
     "api_temperature": null,
