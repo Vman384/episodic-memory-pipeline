@@ -315,7 +315,15 @@ class SparseEventPipeline:
                 reviewed_events.extend(parsed["events"])
             else:
                 # Preserve the original window if filtering fails.
-                print("  Warning: review response was not valid JSON; keeping events unmerged")
+                print(
+                    "  Warning: review response was not valid JSON; "
+                    "keeping events unmerged"
+                )
+                print(
+                    "  ---- raw review response ----\n"
+                    f"{response}\n"
+                    "  -----------------------------"
+                )
                 reviewed_events.extend(window)
 
         # Renumber events after merging changes their sequence.
