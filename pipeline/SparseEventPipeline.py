@@ -308,7 +308,10 @@ class SparseEventPipeline:
                 f"{json.dumps(window, indent=2)}"
             )
             # Ask the LLM to merge duplicates and remove spurious detections.
-            response = self.ai_parser.call_llm(review_input)
+            response = self.ai_parser.call_llm(
+                review_input,
+                max_tokens=config.get("review_max_tokens"),
+            )
             parsed = parse_json_response(response)
 
             if isinstance(parsed, dict) and isinstance(parsed.get("events"), list):

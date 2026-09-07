@@ -118,9 +118,10 @@ uses the following stages:
    It is instructed not to reorder or invent events. Seconds are re-attached
    after merging. The result is written to `events.json`.
 3. **Questions:** After `events.json` has been reviewed and corrected by a
-   human, the LLM generates existence, deceptive, noteworthy, and
-   temporal-perception questions in `questions.json`. Deceptive questions use
-   invented plausible false events that did not occur; every false event is
+   human, the LLM generates existence, deceptive, and noteworthy questions in
+   `questions.json`. Deceptive questions use one invented plausible false
+   event, and noteworthy questions offer four options of which exactly one is
+   a real event and three are invented false events; every false event is
    listed in `questions.json` as a `false_events` array for review.
 
 The sparse prompts are:

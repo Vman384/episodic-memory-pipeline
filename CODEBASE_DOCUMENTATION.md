@@ -656,12 +656,14 @@ human-verified `events.json`.
 - `existence` — asks whether a real, verified event occurred during the drive.
 - `deceptive` — asks whether an invented plausible false event occurred; the
   answer is always no.
-- `noteworthy` — asks which of several real events was the most unusual.
-- `temporal_perception` — asks in which section or around what elapsed time a
-  real event happened.
+- `noteworthy` — asks which event was the noteworthy rare event that actually
+  occurred. Options are four plausible events: exactly one real event and
+  three invented false events; the answer is the real event.
 
-Questions include `event_ids`, `frame_evidence`, `options`, and
-`answer_indices` so they can be reviewed and later graded programmatically.
+Temporal-perception questions are intentionally not generated here; they
+belong to the temporal-order benchmark. Questions include `event_ids`,
+`frame_evidence`, `options`, and `answer_indices` so they can be reviewed and
+later graded programmatically.
 Every invented false event is repeated in the top-level `false_events` array
 with its rationale for human verification.
 
