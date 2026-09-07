@@ -83,6 +83,7 @@ class AIParser:
             self.client = OpenAI(
                 api_key=api_key,
                 base_url=api_base_url,
+                default_headers={"x-opencode-session": self.api_session_id},
             )
             self.api_base_url = api_base_url
 
