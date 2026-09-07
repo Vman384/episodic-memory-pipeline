@@ -1,8 +1,8 @@
 {
     "task": 1,
     "frames_dir": "/scratch/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-03-13-13/camera",
-    "sections_dir": "/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/gpt/sparse_outputs/sections",
-    "output": "/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/gpt/sparse_outputs/events",
+    "sections_dir": "/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13_gpt/sparse_outputs/sections",
+    "output": "/scratch/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13_gpt/sparse_outputs/events",
     "frames_per_section": 5,
     "step": 10,
     "image_max_size": 1024,
