@@ -1,10 +1,11 @@
 #!/bin/bash
 #PBS -N sparse_event
 #PBS -P pg06
-#PBS -q copyq
-#PBS -l ncpus=1
-#PBS -l mem=8GB
-#PBS -l walltime=00:35:00
+#PBS -q gpuhopper
+#PBS -l ncpus=48
+#PBS -l ngpus=4
+#PBS -l mem=1024GB
+#PBS -l walltime=01:00:00
 #PBS -l storage=scratch/pg06
 #PBS -l wd
 #PBS -V
@@ -24,7 +25,7 @@ export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
 # run main script
-python3 main.py --mode sparse
+python3 main.py --mode sparse --stage review
 
 # run question stage right after
-#python3 main.py --mode sparse --stage questions
+python3 main.py --mode sparse --stage questions
