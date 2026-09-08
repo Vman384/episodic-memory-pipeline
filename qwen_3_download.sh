@@ -16,17 +16,17 @@
 source /scratch/pg06/FYP2026S1_3473/.venv/bin/activate
 
 # Load Gadi modules
-module purge
 module load cuda/12.4
 module load python3/3.11.7
 
 pip install huggingfacehub
 pip install vllm
 
-export HF_HOME=/scratch/pg06/FYP2026S1_3473/huggingface_cache
+export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
+export HF_HUB_CACHE="$HF_HOME/hub"
 
 # Get the internal hostname and port of the assigned Gadi compute node
 echo "Downloading Qwen3"
 
 # download it
-huggingface-cli download Qwen/Qwen3-VL-235B-A22B-Instruct
+huggingface-cli download Qwen/Qwen3-VL-235B-A22B-Instruct-FP8 -cache-dir "HF_HUB_CACHE"
