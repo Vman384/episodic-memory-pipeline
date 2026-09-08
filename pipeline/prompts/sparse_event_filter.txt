@@ -14,18 +14,9 @@ Return ONLY valid JSON in this format:
         {
             "event_id": 1,
             "section": "section name where the event occurs",
-            "start_frame": "exact frame filename where the event starts",
-            "end_frame": "exact frame filename where the event ends",
             "event_description": "what happened",
             "why_interesting": "why this is unusual",
             "terrain": "forest, rural, tunnel, or other",
-        }
-    ],
-    "removed": [
-        {
-            "frame": "exact frame filename of the removed detection",
-            "description": "original detection",
-            "reason": "why it was filtered out"
         }
     ]
 }
