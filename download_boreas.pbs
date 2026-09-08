@@ -4,9 +4,13 @@
 #PBS -q copyq
 #PBS -l ncpus=1
 #PBS -l mem=8GB
-#PBS -l walltime=2:00:00
+#PBS -l walltime=4:00:00
 #PBS -l storage=scratch/pg06
 #PBS -l wd
+
+
+set -e  # Exit immediately if a command fails
+
 
 module load python3/3.11.7
 
@@ -16,7 +20,8 @@ cd "$PBS_O_WORKDIR"
 source .venv/bin/activate
 
 root=/scratch/pg06/FYP2026S1_3473/forest_dataset
-mkdir -p "$root"
+DESTINATION="$ROOT_DIR/72329v001"
+mkdir -p "$DESTINATION"
 
 echo "Starting download..."
 
@@ -26,7 +31,6 @@ export AWS_SECRET_ACCESS_KEY="z2HugVSyibm/uxqSfUE8um3P3NhqMFjLZXW/0YPL"
 
 ENDPOINT_URL="https://s3.data.csiro.au"
 SOURCE="s3://dapprd/000072329v001/"
-DESTINATION="./72329v001"
 
 aws s3 sync --endpoint-url "$ENDPOINT_URL" "$SOURCE" "$DESTINATION"
 
@@ -43,3 +47,16 @@ aws s3 sync --endpoint-url "$ENDPOINT_URL" "$SOURCE" "$DESTINATION"
 #done
 
 echo "Download Completed"
+
+echo "Download completed. Starting extraction..."
+
+# cd "$DESTINATION"
+
+# if [ -f "data/V-01/images_shrunk.tar.gz" ]; then
+#     mkdir -p "data/V-01/shrunk_images"
+#     tar -xzf "data/V-01/images_shrunk.tar.gz" -C "data/V-01/shrunk_images"
+#     chmod -R +w "data/V-01/shrunk_images"
+#     echo "Extracted V-01 images."
+# fi
+
+# echo "All tasks completed successfully."
