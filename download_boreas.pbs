@@ -48,7 +48,6 @@ aws s3 sync --endpoint-url "$ENDPOINT_URL" "$SOURCE" "$DESTINATION"
 
 echo "Download Completed"
 
-echo "Download completed. Starting extraction..."
 
 # cd "$DESTINATION"
 
