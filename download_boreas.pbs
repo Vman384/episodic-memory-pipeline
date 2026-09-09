@@ -20,7 +20,7 @@ cd "$PBS_O_WORKDIR"
 source .venv/bin/activate
 
 root=/scratch/pg06/FYP2026S1_3473/forest_dataset
-DESTINATION="$ROOT_DIR/72329v001"
+DESTINATION="$root/72329v001"
 mkdir -p "$DESTINATION"
 
 echo "Starting download..."
