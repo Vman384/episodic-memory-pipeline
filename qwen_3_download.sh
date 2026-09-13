@@ -13,8 +13,8 @@
 # Load Gadi modules (python only, CUDA not needed for downloading)
 module load python3/3.11.7
 
-# Activate the shared vllm env (already has huggingface_hub + CLI installed)
-source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
+# Activate env
+source /g/data/pg06/FYP2026S1_3473/.venv/bin/activate
 
 export HF_HOME="/g/data/pg06/FYP2026S1_3473/huggingface_cache"
 export HF_HUB_CACHE="$HF_HOME/hub"
