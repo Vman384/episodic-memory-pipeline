@@ -7,7 +7,7 @@
 #PBS -l mem=64GB
 #PBS -l walltime=00:25:00
 #PBS -l jobfs=50GB
-#PBS -l storage=scratch/pg06
+#PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 
 # 1. Load the required Gadi stacks

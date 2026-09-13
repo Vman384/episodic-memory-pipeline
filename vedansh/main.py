@@ -205,7 +205,7 @@ JSON:
     return full_pipeline_history, change_events_only
 
 if __name__ == "__main__":
-    video_path = "/scratch/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-03-13-13/video.mp4"
+    video_path = "/g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-03-13-13/video.mp4"
     run_video_pipeline(
         video_path=video_path,
         full_history_json_path="full_history-boreas.json",

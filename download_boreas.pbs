@@ -5,7 +5,7 @@
 #PBS -l ncpus=1
 #PBS -l mem=8GB
 #PBS -l walltime=4:00:00
-#PBS -l storage=scratch/pg06
+#PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 
 
@@ -19,7 +19,7 @@ cd "$PBS_O_WORKDIR"
 # run script for awscli
 source .venv/bin/activate
 
-root=/scratch/pg06/FYP2026S1_3473/forest_dataset
+root=/g/data/pg06/FYP2026S1_3473/forest_dataset
 DESTINATION="$root/72329v001"
 mkdir -p "$DESTINATION"
 

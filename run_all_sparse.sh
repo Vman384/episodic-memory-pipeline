@@ -5,7 +5,7 @@
 #PBS -l ncpus=1
 #PBS -l mem=4GB
 #PBS -l walltime=00:30:00
-#PBS -l storage=scratch/pg06
+#PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
 
@@ -22,7 +22,7 @@ cd "$PBS_O_WORKDIR"
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 # Use the shared model cache and prevent model resolution from making network requests.
-export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
+export HF_HOME="/g/data/pg06/FYP2026S1_3473/huggingface_cache"
 
 
 # Boreas lists to process, in the order they were run.
@@ -35,7 +35,7 @@ LISTS=(
 #  "boreas-2025-07-18-15-12"
 )
 
-BASE="/scratch/pg06/FYP2026S1_3473"
+BASE="/g/data/pg06/FYP2026S1_3473"
 CONFIG="configs/sparse_events.json"
 # Keep the original config so we can restore it after the loop.
 ORIGINAL_CONFIG="$(cat "$CONFIG")"

@@ -6,7 +6,7 @@
 #PBS -l ngpus=4
 #PBS -l mem=1024GB
 #PBS -l walltime=01:30:00
-#PBS -l storage=scratch/pg06
+#PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
 
@@ -20,7 +20,7 @@ cd "$PBS_O_WORKDIR"
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 # Use the shared model cache and prevent model resolution from making network requests.
-export HF_HOME="/scratch/pg06/FYP2026S1_3473/huggingface_cache"
+export HF_HOME="/g/data/pg06/FYP2026S1_3473/huggingface_cache"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 

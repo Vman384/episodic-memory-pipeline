@@ -27,6 +27,15 @@ API mode requires the environment variable named by `api_key_env` in the
 selected configuration. The supplied sparse configuration uses
 `OPENCODE_API_KEY`, loaded from the environment or the repository `.env` file.
 
+## Gadi Data Paths
+
+All project data now lives on the project's mass-data storage at
+`/g/data/pg06/FYP2026S1_3473` (moved from `/scratch/pg06/FYP2026S1_3473`).
+This covers the Boreas frame datasets, pipeline outputs, and the Hugging Face
+cache. The shared vLLM environment is still on scratch at
+`/scratch/pg06/vm4618/envs/vllm_env`, so every Gadi job script requests both
+filesystems with `#PBS -l storage=scratch/pg06+gdata/pg06`.
+
 ## Run A Benchmark Mode
 
 Run commands from the repository root because configuration paths are relative to the current working directory:

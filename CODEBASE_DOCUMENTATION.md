@@ -86,6 +86,24 @@ episodic-memory-pipeline/
 
 ---
 
+## Gadi Storage Layout
+
+All project data has moved from `/scratch/pg06/FYP2026S1_3473` to the project's
+mass-data storage at `/g/data/pg06/FYP2026S1_3473`. The configs, PBS job
+scripts, and pipeline scripts point there for frames, outputs, and the Hugging
+Face cache.
+
+| Location | Contents |
+|----------|----------|
+| `/g/data/pg06/FYP2026S1_3473` | Boreas frame datasets, pipeline outputs, forest dataset downloads, Hugging Face cache |
+| `/scratch/pg06/vm4618/envs/vllm_env` | Shared Python environment with vLLM (used by every Gadi job script) |
+| `/scratch/pg06/vm4618/huggingface_cache` | Qwen2-VL-7B cache used by the `vedansh/` prototype only |
+
+Because the venv remains on scratch, the Gadi job scripts request both
+filesystems: `#PBS -l storage=scratch/pg06+gdata/pg06`.
+
+---
+
 ## File-by-File Documentation
 
 ---
