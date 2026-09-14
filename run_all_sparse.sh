@@ -28,11 +28,11 @@ export HF_HOME="/g/data/pg06/FYP2026S1_3473/huggingface_cache"
 # Boreas lists to process, in the order they were run.
 LISTS=(
   "boreas-2025-07-18-14-55"
-#  "boreas-2024-12-03-13-13"
-#  "boreas-2024-12-03-13-34"
-#  "boreas-2024-12-04-11-45"
-#  "boreas-2024-12-04-11-56"
-#  "boreas-2025-07-18-15-12"
+  "boreas-2024-12-03-13-13"
+  "boreas-2024-12-03-13-34"
+  "boreas-2024-12-04-11-45"
+  "boreas-2024-12-04-11-56"
+  "boreas-2025-07-18-15-12"
 )
 
 BASE="/g/data/pg06/FYP2026S1_3473"
@@ -70,7 +70,7 @@ with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
 EOF
 
-  python3 main.py --mode sparse --stage questions
+  python3 main.py --mode sparse
 done
 
 echo "All lists done."
