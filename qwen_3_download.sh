@@ -22,4 +22,4 @@ mkdir -p "$HF_HUB_CACHE"
 
 # download it
 echo "Downloading Qwen3"
-huggingface-cli download Qwen/Qwen3-VL-235B-A22B-Instruct-FP8 --cache-dir "$HF_HUB_CACHE"
+hf download Qwen/Qwen3-VL-235B-A22B-Instruct-FP8 --cache-dir "$HF_HUB_CACHE"
