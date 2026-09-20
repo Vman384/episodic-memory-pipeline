@@ -253,12 +253,27 @@ vLLM backend over all six Boreas lists.
 **Job configuration:** `gpuhopper` queue, 48 CPUs, 4 GPUs (one full node), 1024 GB
 memory, 24-hour walltime, and `scratch/pg06+gdata/pg06` storage.
 
-**Entry point:** For each list it rewrites `configs/sparse_events.json` with the
-list's frame/section/output paths, sets `backend: "local"`, points `model` at the
-cached `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` snapshot, sets
-`tensor_parallel_size: 4`, and runs `python3 main.py --mode sparse` (extract then
-review). The original config is restored on exit, and completed section results
-are reused so the job can be resubmitted.
+**Entry point:** For each list it rewrites only the per-list `frames_dir`,
+`sections_dir`, and `output` paths in `configs/sparse_events.json`, then runs
+`python3 main.py --mode sparse` (extract then review). `backend`, `model`, and
+`tensor_parallel_size` are read from the config: the supplied sparse config uses
+local vLLM with `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` sharded across four GPUs.
+The Hugging Face cache resolves the repo id offline. The original config is
+restored on exit, and completed section results are reused so the job can be
+resubmitted.
+
+---
+
+### `scripts/run_all_api.sh`
+
+**Purpose:** PBS batch script that runs the sparse-event pipeline over the Boreas
+lists on the CPU-only `copyq` queue.
+
+**Entry point:** For each list it rewrites only the per-list `frames_dir`,
+`sections_dir`, and `output` paths in `configs/sparse_events.json`, then runs
+`python3 main.py --mode sparse`. `backend` and `model` are read from the config,
+so the config must select `backend: "api"` and an API model (for example
+`gpt-5.6-luna`) before submitting. The original config is restored on exit.
 
 ---
 
@@ -720,10 +735,13 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`, `sparse_event_filter.txt`, and `sparse_event_question_gen.txt`) |
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 
-The current sparse example uses the API backend with `grok-4.6`,
-`frames_per_section: 5`, `step: 10`, `image_max_size: 1024`,
-`image_quality: 90`, no `api_temperature`,
-`max_tokens: 3000`, `review_window: 50`, and `question_max_tokens: 3000`.
+The current sparse configuration uses local `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8`
+with `frames_per_section: 5`, `step: 5`, `image_max_size: null`,
+`image_quality: 90`, `temperature: 0.4`, `max_tokens: 10000`,
+`review_window: 50`, `question_max_tokens: 10000`, `max_model_len: 50000`, and
+`tensor_parallel_size: 4`. The `backend` and `model` fields are the single
+source of truth for what a run uses; the batch scripts only rewrite per-list
+paths.
 The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 `frames_per_section: 5`, `step: 10`, `max_tokens: 3090`, `merge_window: 50`,
 `storyline_max_tokens: 3000`, `question_max_tokens: 3000`,
@@ -734,7 +752,11 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 
 ## Known Issues & Missing Pieces
 
-1. **Backend-specific environment is required** — The sparse configuration uses the OpenCode Go API and requires a valid `OPENCODE_API_KEY` and network access. The temporal configuration uses local vLLM and requires four GPUs plus access to the cached `Qwen/Qwen2.5-VL-72B-Instruct` model.
+1. **Backend-specific environment is required** — The supplied sparse and
+   temporal configurations use local vLLM and require four GPUs plus access to
+   the cached `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` and
+   `Qwen/Qwen2.5-VL-72B-Instruct` models. Switching a configuration to
+   `backend: "api"` requires a valid `OPENCODE_API_KEY` and network access.
 
 2. **`vllm.pbs` runs the prototype** — The PBS script invokes `test_vlm.py`, not the mode dispatcher in `main.py`.
 

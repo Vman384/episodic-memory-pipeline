@@ -13,7 +13,7 @@ The top-level runner accepts four benchmark modes. `sparse` and `temporal` are c
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
-Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses the OpenCode Go Responses API with `grok-4.6` and downsamples frames to `image_max_size: 1024` JPEGs; the supplied temporal configuration uses local vLLM with `Qwen/Qwen2.5-VL-72B-Instruct` and requires four GPUs.
+Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses local vLLM with `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` and four GPUs; the supplied temporal configuration uses local vLLM with `Qwen/Qwen2.5-VL-72B-Instruct` and also requires four GPUs. Set `backend` and `model` in a configuration to switch that run to the OpenAI-compatible API.
 
 ## Setup
 
@@ -186,6 +186,12 @@ VLM output.
 The sparse-event configuration is stored in `configs/sparse_events.json`; the
 temporal configuration is stored in `configs/temporal_events.json`.
 
+The batch scripts under `scripts/` (`run_all_local.sh`, `run_all_api.sh`) rewrite
+only the per-list `frames_dir`, `sections_dir`, and `output` paths before each
+run. `backend`, `model`, and every other inference setting are read from the
+configuration file, so set `backend` and `model` there before submitting a batch
+job.
+
 
 The `task` value identifies the benchmark category. The top-level `--mode`
 selects the pipeline and its prompt files:
@@ -248,7 +254,7 @@ coverage matters less.
 | `image_quality` | JPEG quality, from `1` to `95`, used when frames are re-encoded for sections. `90` is the supplied value. Omit it with `image_max_size` to copy frames through untouched. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
 | `model` | Model used for extraction and later sparse stages. Pick a model that accepts the selected backend and image inputs. |
-| `backend` | Use `api` for the supplied OpenCode configuration or `local` for a vLLM model. The backend must match the model and available infrastructure. |
+| `backend` | `local` for vLLM or `api` for the OpenAI-compatible Responses API. The configuration selects the backend for a run; the batch scripts in `scripts/` do not override it. The backend must match the model and available infrastructure. |
 | `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
 | `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
 | `temperature` | Local vLLM sampling temperature. It is ignored by the supplied API configuration; use a low value if switching sparse extraction to local vLLM. |

@@ -26,9 +26,8 @@ export HF_HOME="/g/data/pg06/FYP2026S1_3473/huggingface_cache"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
-# Qwen3-VL 235B FP8 is sharded across the four H200 GPUs of one gpuhopper node.
-# vLLM loads the snapshot directory, not the Hugging Face cache repo root.
-MODEL_PATH="/g/data/pg06/FYP2026S1_3473/huggingface_cache/hub/models--Qwen--Qwen3-VL-235B-A22B-Instruct-FP8/snapshots/7fbcd8c9e2ad011808ed8a57d64c462605c3e381"
+# Backend, model, and GPU sharding are selected in configs/sparse_events.json.
+# The HF cache resolves the repo id offline because HF_HUB_OFFLINE is set.
 
 # Boreas lists to process, in the order they were run.
 LISTS=(
@@ -50,12 +49,12 @@ for LIST in "${LISTS[@]}"; do
   echo "Running sparse stages for: $LIST"
   echo "=============================================="
 
-  # Only the per-list paths differ between runs; backend/model are fixed.
-  python3 - "$CONFIG" "$BASE" "$LIST" "$MODEL_PATH" <<'EOF'
+  # Only the per-list paths differ between runs.
+  python3 - "$CONFIG" "$BASE" "$LIST" <<'EOF'
 import json
 import sys
 
-config_path, base, list_name, model_path = sys.argv[1:5]
+config_path, base, list_name = sys.argv[1:4]
 
 with open(config_path) as f:
     config = json.load(f)
@@ -63,12 +62,6 @@ with open(config_path) as f:
 config["frames_dir"] = f"{base}/boreas_dataset/{list_name}/camera"
 config["sections_dir"] = f"{base}/{list_name}/sparse_outputs/sections"
 config["output"] = f"{base}/{list_name}/sparse_outputs/events"
-
-# Run extraction and review with the local Qwen3-VL checkpoint.
-config["backend"] = "local"
-config["model"] = model_path
-# One shard per GPU on the four-GPU gpuhopper node.
-config["tensor_parallel_size"] = 4
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=2)

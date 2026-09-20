@@ -45,7 +45,8 @@ for LIST in "${LISTS[@]}"; do
   echo "Running questions stage for: $LIST"
   echo "=============================================="
 
-  # Only the per-list paths differ between runs; backend/model are fixed.
+  # Only the per-list paths differ between runs; backend and model come from
+  # the config, which must be set to the API backend before submitting.
   python3 - "$CONFIG" "$BASE" "$LIST" <<'EOF'
 import json
 import sys
@@ -58,12 +59,6 @@ with open(config_path) as f:
 config["frames_dir"] = f"{base}/boreas_dataset/{list_name}/camera"
 config["sections_dir"] = f"{base}/{list_name}/sparse_outputs/sections"
 config["output"] = f"{base}/{list_name}/sparse_outputs/events"
-
-# Questions is text-only, so use the API backend instead of spinning up vLLM.
-config["backend"] = "api"
-config["model"] = "gpt-5.6-luna"
-# gpt-5.6-luna does not accept the temperature parameter.
-config["temperature"] = None
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
