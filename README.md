@@ -118,7 +118,9 @@ uses the following stages:
    `start_seconds`/`end_seconds` and a `frame_seconds` value computed from the
    detected frame's timestamp. Existing
    `<output>/section_NNNN_output/result.json` files are skipped, allowing an
-   interrupted extraction job to resume.
+   interrupted extraction job to resume. Each section's frame images are
+   deleted once the VLM has processed it, and the per-section result folders
+   are deleted once `all_results.json` has been written.
 2. **Review:** Detections are parsed, sorted in Python by the numeric
    timestamp in `frame`, and sent to the LLM in windows controlled by
    `review_window`. The LLM merges duplicate observations of the same rare
@@ -151,7 +153,9 @@ stages:
    produces one structured JSON response per section. Each section's parsed
    events are stored with the section's `start_seconds`/`end_seconds` attached.
    Existing `<output>/section_NNNN_output/result.json` files are skipped,
-   allowing an interrupted extraction job to resume.
+   allowing an interrupted extraction job to resume. Each section's frame
+   images are deleted once the VLM has processed it, and the per-section result
+   folders are deleted once `all_results.json` has been written.
 2. **Timeline:** Section events are parsed, sorted in Python by the numeric
    timestamp in `start_frame`, and sent to the LLM in windows controlled by
    `merge_window`. The LLM only merges continuing or duplicate observations;
@@ -365,27 +369,23 @@ For a temporal run, the output is:
     timeline.json
     storyline.txt
     questions.json
-    section_0000_output/result.json
-    section_0001_output/result.json
 ```
 
 For a sparse-event run, the review stage replaces `timeline.json` with
-`events.json` and writes no storyline:
+`events.json` and writes no storyline. Extraction keeps only the aggregate:
 
 ```text
 <output>/
     all_results.json
     events.json
     questions.json
-    section_0000_output/result.json
-    section_0001_output/result.json
 ```
 
-Each `result.json` stores the raw VLM response plus a parsed `events` list.
-Every event carries `start_seconds` and `end_seconds` taken from the section's
-`start_seconds`/`end_seconds` window in `sections.json`, so a model only needs
-to name the section and the time range is already known. Sparse events also
-carry `frame_seconds`, computed from the detected frame's own timestamp.
+Each element of `all_results.json` stores the raw VLM response plus a parsed
+`events` list. Every event carries `start_seconds` and `end_seconds` taken from
+the section's `start_seconds`/`end_seconds` window in `sections.json`, so a model
+only needs to name the section and the time range is already known. Sparse events
+also carry `frame_seconds`, computed from the detected frame's own timestamp.
 `timeline.json`/`events.json` events carry the same seconds after merging.
 
 ## Frame Time Conversion

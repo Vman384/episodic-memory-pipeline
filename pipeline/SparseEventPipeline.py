@@ -1,6 +1,7 @@
 """Sparse event localisation pipeline: extract, review, generate questions."""
 
 import json
+import shutil
 from pathlib import Path
 
 from pipeline.AIParser import AIParser
@@ -155,7 +156,9 @@ class SparseEventPipeline:
         """Split frames into sections and detect noteworthy events with the VLM.
 
         Sections whose result.json already exists are skipped, so an
-        interrupted job can be resumed.
+        interrupted job can be resumed. Section frames are deleted as soon as
+        the VLM has processed them, and per-section result folders are deleted
+        once all_results.json has been written.
         """
         # Split the source frames into model-sized sections.
         config = self.config
@@ -191,6 +194,8 @@ class SparseEventPipeline:
                         json.dump(section_result, result_file, indent=2)
                 all_results.append(section_result)
                 print(f"  [{index}/{len(sections)}] {curr_section.name} (cached)")
+                # Frames are no longer needed once this section is processed.
+                shutil.rmtree(curr_section, ignore_errors=True)
                 continue
 
             # Query the VLM and persist this section immediately.
@@ -211,17 +216,32 @@ class SparseEventPipeline:
 
             all_results.append(section_result)
             print(f"  [{index}/{len(sections)}] {curr_section.name}")
+            # Frames are no longer needed once this section is processed.
+            shutil.rmtree(curr_section, ignore_errors=True)
 
         # Save an aggregate view of all section responses.
         with open(output_dir / "all_results.json", "w") as result_file:
             json.dump(all_results, result_file, indent=2)
 
+        # all_results.json now holds every response, so drop per-section folders.
+        for section_output in output_dir.glob("section_*_output"):
+            shutil.rmtree(section_output, ignore_errors=True)
+
         print(f"  Saved {len(all_results)} section responses to {config['output']}")
 
     def _load_section_results(self) -> list[dict]:
         """Load persisted section results from the extract stage."""
-        # Locate section outputs in chronological filename order.
         output_dir = Path(self.config["output"])
+
+        # The completed extract stage keeps every response in one file.
+        aggregate_path = output_dir / "all_results.json"
+        if aggregate_path.is_file():
+            with open(aggregate_path) as result_file:
+                results = json.load(result_file)
+            if results:
+                return results
+
+        # Fall back to per-section results from an interrupted extract.
         result_paths = sorted(output_dir.glob("section_*_output/result.json"))
         if not result_paths:
             raise SystemExit(

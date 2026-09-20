@@ -343,7 +343,7 @@ microseconds.
 
 For temporal runs the conversion is redundant: per-section seconds are computed
 from the actual frame timestamps when `FrameParser` builds the sections and
-attached to every event in each section's `result.json` and in `timeline.json`,
+attached to every event in each section result and in `timeline.json`,
 so the model never has to produce exact timestamps itself. The class remains a
 standalone utility for manual conversion.
 
@@ -413,7 +413,7 @@ Configuration loading belongs to the pipeline classes, which read the JSON file 
 **Output structure (per section):**
 ```
 <output_dir>/all_results.json                (aggregated single-file view)
-<output_dir>/section_0000_output/result.json (per-section persistent artifact)
+<output_dir>/section_0000_output/result.json (transient, deleted after aggregation)
 <output_dir>/section_0001_output/result.json
 ...
 ```
@@ -422,6 +422,9 @@ Each `result.json` contains the raw VLM `response` string plus a parsed `events`
 list where every event carries `start_seconds` and `end_seconds` taken from its
 section's window in the `sections.json` manifest written by `FrameParser`. The
 seconds are derived from the actual frame timestamps, never from model output.
+Both pipelines delete the section frame images as each section is processed and
+remove the `section_*_output` folders once `all_results.json` has been written,
+leaving the aggregate as the only extraction artifact.
 
  Implemented for local vLLM and OpenAI-compatible API back
 calls support an optional per-call `max_tokens` override for longer storyline
@@ -441,8 +444,8 @@ timeline.
 
 | Stage | Behavior |
 |-------|----------|
-| `extract` | Creates frame sections, queries the VLM with `temporal_vlm.txt`, writes one result per section, and skips existing results for resumability. Parsed events from each response are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json`. |
-| `timeline` | Loads persisted section results, parses their `events` arrays, sorts them by numeric `start_frame`, merges events in LLM windows, re-attaches per-section seconds after merging, and writes `timeline.json` and `storyline.txt`. |
+| `extract` | Creates frame sections, queries the VLM with `temporal_vlm.txt`, writes one result per section, and skips existing results for resumability. Parsed events from each response are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json`. Section frames are deleted once the VLM has processed them, and the per-section result folders are deleted after `all_results.json` is written. |
+| `timeline` | Loads section results from `all_results.json`, parses their `events` arrays, sorts them by numeric `start_frame`, merges events in LLM windows, re-attaches per-section seconds after merging, and writes `timeline.json` and `storyline.txt`. |
 | `questions` | Loads `timeline.json`, intended to be human-reviewed first, and writes generated temporal questions to `questions.json`. |
 
 When no stage is supplied, the pipeline runs `extract` followed by `timeline`.
@@ -461,14 +464,14 @@ events are retained for review.
 ```text
 <output>/
     all_results.json
-    section_0000_output/result.json
-    section_0001_output/result.json
     timeline.json
     storyline.txt
     questions.json
 ```
 
-`questions.json` is produced only by the `questions` stage. Each generated
+`all_results.json` is the only extraction artifact: section frames and the
+`section_*_output` folders are deleted after it is written. `questions.json` is
+produced only by the `questions` stage. Each generated
 question is expected to contain a type, options, answer indices, event IDs, and
 frame evidence for review and later grading.
 
@@ -500,8 +503,8 @@ The class is invoked by `main.py` when the user selects
 
 | Stage | Behavior |
 |-------|----------|
-| `extract` | Creates frame sections, queries the VLM with `sparse_event_prompt.txt`, writes one result per section, and skips existing results for resumability. Parsed detections are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json` and a `frame_seconds` value computed from the detected frame's timestamp. |
-| `review` | Loads persisted section results, parses their `interesting_events` into detections, sorts them by numeric `frame`, merges duplicate observations and filters spurious detections in LLM windows, re-attaches seconds after merging, and writes `events.json`. |
+| `extract` | Creates frame sections, queries the VLM with `sparse_event_prompt.txt`, writes one result per section, and skips existing results for resumability. Parsed detections are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json` and a `frame_seconds` value computed from the detected frame's timestamp. Section frames are deleted once the VLM has processed them, and the per-section result folders are deleted after `all_results.json` is written. |
+| `review` | Loads section results from `all_results.json`, parses their `interesting_events` into detections, sorts them by numeric `frame`, merges duplicate observations and filters spurious detections in LLM windows, re-attaches seconds after merging, and writes `events.json`. |
 | `questions` | Loads `events.json`, intended to be human-reviewed first, and writes generated sparse questions to `questions.json`. |
 
 When no stage is supplied, the pipeline runs `extract` followed by `review`.
@@ -521,13 +524,13 @@ unmerged detections are retained for review.
 ```text
 <output>/
     all_results.json
-    section_0000_output/result.json
-    section_0001_output/result.json
     events.json
     questions.json
 ```
 
-`questions.json` is produced only by the `questions` stage. Each generated
+`all_results.json` is the only extraction artifact: section frames and the
+`section_*_output` folders are deleted after it is written. `questions.json` is
+produced only by the `questions` stage. Each generated
 question carries a type, options, answer indices, event IDs, and frame
 evidence. Deceptive questions refer to an invented plausible false event
 (always answered "no"), and every invented false event is repeated in the
