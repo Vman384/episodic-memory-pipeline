@@ -245,6 +245,23 @@ resolution, and uses the model already present in the shared cache.
 
 ---
 
+### `scripts/run_all_local.sh`
+
+**Purpose:** PBS batch script that runs the sparse-event pipeline with the local
+vLLM backend over all six Boreas lists.
+
+**Job configuration:** `gpuhopper` queue, 48 CPUs, 4 GPUs (one full node), 1024 GB
+memory, 24-hour walltime, and `scratch/pg06+gdata/pg06` storage.
+
+**Entry point:** For each list it rewrites `configs/sparse_events.json` with the
+list's frame/section/output paths, sets `backend: "local"`, points `model` at the
+cached `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` snapshot, sets
+`tensor_parallel_size: 4`, and runs `python3 main.py --mode sparse` (extract then
+review). The original config is restored on exit, and completed section results
+are reused so the job can be resubmitted.
+
+---
+
 ## `pipeline/` — Pipeline Components
 
 This directory contains the shared helpers plus the sparse-event and
