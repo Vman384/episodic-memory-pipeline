@@ -25,7 +25,7 @@ export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
 # run main script
-python3 main.py --mode sparse --stage review
+python3 main.py --mode sparse --stage extract
 
 # run question stage right after
-python3 main.py --mode sparse --stage questions
+python3 main.py --mode sparse --stage review
