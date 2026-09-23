@@ -24,5 +24,9 @@ export HF_HOME="/g/data/pg06/FYP2026S1_3473/huggingface_cache"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
+# DeepGEMM JIT needs NVCC >= 12.3 but the CUDA module provides 12.2.2.
+# Fall back to vLLM's CUTLASS FP8 kernels instead.
+export VLLM_USE_DEEP_GEMM=0
+
 # run main script
 python3 main.py --mode temporal

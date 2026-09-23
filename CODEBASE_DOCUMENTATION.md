@@ -209,19 +209,23 @@ intentionally separate so a human can review and correct `events.json` or
 
 **Purpose:** PBS job script for running the current sparse-event pipeline on Gadi.
 
-**Entry point:** Loads Python, activates the configured virtual environment, changes to the PBS working directory, and runs:
+**Entry point:** Loads Python and CUDA, activates the shared vLLM environment,
+changes to the PBS working directory, and runs:
 
 ```bash
-python3 main.py --mode sparse
+python3 main.py --mode sparse --stage extract
+python3 main.py --mode sparse --stage review
 ```
 
 Submit it from the repository root with `qsub sparse_event.pbs`.
 
-**Resources:** 1 CPU, 8 GB memory, and a 35-minute walltime.
+**Resources:** 48 CPUs, 4 GPUs, 1024 GB memory, and a 1-hour walltime.
 
-**Prerequisites:** Requires the OpenAI client, network access, and a valid
-`OPENCODE_API_KEY`. This is the API job; it does not require CUDA or a local
-Hugging Face model.
+**Prerequisites:** Requires the local vLLM environment and the cached
+`Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` model. It exports
+`VLLM_USE_DEEP_GEMM=0` because DeepGEMM's JIT requires NVCC >= 12.3 while the
+`cuda/12.2.2` module provides 12.2.2; vLLM then falls back to its CUTLASS FP8
+kernels.
 
 ---
 
@@ -241,7 +245,9 @@ construction. Question generation must be run separately after reviewing
 
 **Current status:** The script is configured for the local Qwen vLLM temporal
 configuration. It requests four GPUs, loads CUDA, enables offline Hugging Face
-resolution, and uses the model already present in the shared cache.
+resolution, uses the model already present in the shared cache, and exports
+`VLLM_USE_DEEP_GEMM=0` so vLLM does not JIT-compile DeepGEMM kernels with the
+`cuda/12.2.2` module's NVCC, which is older than DeepGEMM's 12.3 minimum.
 
 ---
 
@@ -794,7 +800,7 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 | Sparse event question prompt (`prompts/sparse_event_question_gen.txt`) | Complete |
 | Example configs (`configs/*.json`) | Complete |
 | Legacy HPC job script (`vllm.pbs`) | Exists for the old prototype |
-| Sparse-event HPC job script (`sparse_event.pbs`) | Current API-backed PBS wrapper; requests CPU and memory only |
+| Sparse-event HPC job script (`sparse_event.pbs`) | Local vLLM sparse-event wrapper; requests four GPUs for the 235B FP8 model |
 | Temporal storyline prompt (`prompts/temporal_storyline.txt`) | Complete |
 | Temporal question prompt (`prompts/temporal_question_gen.txt`) | Complete |
 | Temporal PBS job script (`temporal_event.pbs`) | Local vLLM temporal wrapper; requests four GPUs for the 72B model |

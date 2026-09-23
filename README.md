@@ -36,6 +36,11 @@ cache. The shared vLLM environment is still on scratch at
 `/scratch/pg06/vm4618/envs/vllm_env`, so every Gadi job script requests both
 filesystems with `#PBS -l storage=scratch/pg06+gdata/pg06`.
 
+The local vLLM job scripts also export `VLLM_USE_DEEP_GEMM=0`. DeepGEMM
+JIT-compiles its FP8 kernels with NVCC and requires version 12.3 or newer,
+while the `cuda/12.2.2` module provides 12.2.2; disabling it lets vLLM use its
+CUTLASS FP8 kernels instead.
+
 ## Run A Benchmark Mode
 
 Run commands from the repository root because configuration paths are relative to the current working directory:
