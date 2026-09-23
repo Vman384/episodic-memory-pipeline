@@ -19,7 +19,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 ### What Is Currently Implemented
 
-1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable chunk size, frame step sampling, copy/move semantics, and optional per-frame JPEG re-encoding via `ImagePreprocessor`.
+1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable section size, per-section frame stride and inter-section skip, copy/move semantics, and optional per-frame JPEG re-encoding via `ImagePreprocessor`.
 
 2. **Image Preprocessor** (`pipeline/image_preprocessor.py`) — Re-encodes frame images as resized JPEGs while sections are built, shrinking API request payloads and vision-token usage.
 
@@ -314,8 +314,9 @@ temporal-order benchmark pipelines.
 |-----------------------|-------------|---------|
 | `frames_dir` | Directory containing input frame files | (required) |
 | `output_dir` | Output root directory | `<frames_dir>_sections` |
-| `frames_per_section` | Maximum frames per section | `100` |
-| `step_size` | Keep every Nth frame after sorting | `1` |
+| `frames_per_section` | Number of frames sampled per section (the final section may be shorter) | `100` |
+| `step_size` | Stride between sampled frames inside one section | `1` |
+| `skip` | Frames skipped after a section's sampling stride before the next section starts; `0` keeps sampling contiguous | `0` |
 | `move` | Move frames instead of copying | `False` |
 | `preprocessor` | Optional `ImagePreprocessor` re-encoding sampled frames as resized JPEGs | `None` |
 | `extensions` | Accepted image extensions (case-insensitive) | `.jpg`, `.jpeg`, `.png`, `.webp`, `.bmp` |
@@ -324,7 +325,7 @@ temporal-order benchmark pipelines.
 
 | Method | Purpose |
 |--------|---------|
-| `create_section_dir()` | Sorts frame files by numeric stem, applies step sampling, partitions into per-section directories, and copies (or moves) files. When a `preprocessor` is provided, each sampled frame is re-encoded as a JPEG (`.jpg` suffix, same numeric stem) instead of being copied. Also writes a `sections.json` manifest mapping each section to its first/last frame and elapsed start/end seconds relative to the first sampled frame. Returns list of created section directory paths. |
+| `create_section_dir()` | Sorts frame files by numeric stem, samples `frames_per_section` frames per section at stride `step_size`, advances by `frames_per_section * step_size + skip` frames between sections, and copies (or moves) files. When a `preprocessor` is provided, each sampled frame is re-encoded as a JPEG (`.jpg` suffix, same numeric stem) instead of being copied. Also writes a `sections.json` manifest mapping each section to its first/last frame and elapsed start/end seconds relative to the first sampled frame. Returns list of created section directory paths. |
 
 **CLI Interface:**
 
@@ -582,8 +583,9 @@ top-level `false_events` array so a reviewer can confirm it never occurred.
 | `frames_dir` | Directory of frame images | (required) |
 | `sections_dir` | Intermediate section output | `"./sections"` |
 | `output` | Intended final VLM results directory | (required) |
-| `frames_per_section` | Max frames per section | `100` |
-| `step` | Keep every Nth frame | `1` |
+| `frames_per_section` | Frames sampled per section | `100` |
+| `step` | Stride between sampled frames inside one section | `1` |
+| `skip` | Frames skipped after a section's sampling stride before the next section starts | `0` |
 | `model` | Local vLLM model name/path or API model identifier | (required) |
 | `backend` | `local` for vLLM or `api` for the Responses API | `local` |
 | `temperature` | Local vLLM sampling temperature; `null` falls back to `0.2` | (optional) |
@@ -605,7 +607,7 @@ top-level `false_events` array so a reviewer can confirm it never occurred.
 **Configuration selection guide:**
 
 - `frames_per_section` controls how many images are sent in one VLM request. Lower values reduce memory use; start around `5-10` for high-resolution frames.
-- `step` keeps every Nth frame after sorting. Increase it to reduce compute, at the cost of temporal detail.
+- `step` is the stride between sampled frames inside a section, and `skip` is the number of frames skipped after a section's sampling stride before the next section starts. `skip: 0` samples as one uninterrupted stride; increase it to reduce compute between sections at the cost of temporal detail.
 - `max_model_len` is the total token budget for the prompt, visual image tokens, and generated output. It is not a duration or frame count. Start at `4096`; increase to `8192` if requests are too long, or reduce it and/or the section size if GPU memory is exhausted.
 - `max_tokens` reserves the output portion of the context budget. For reasoning API models, it includes hidden reasoning tokens as well as visible output. The temporal API example uses `2048` for section JSON extraction. Temporal storyline and question calls use `storyline_max_tokens` and `question_max_tokens`.
 - `dtype` controls numerical precision. `bfloat16` is appropriate for the current Qwen2.5-VL model on Hopper GPUs; `half` uses FP16.
@@ -742,15 +744,15 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 
 The current sparse configuration uses local `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8`
-with `frames_per_section: 5`, `step: 5`, `image_max_size: null`,
-`image_quality: 90`, `temperature: 0.4`, `max_tokens: 10000`,
+with `frames_per_section: 7`, `step: 8`, `skip: 0`, `image_max_size: null`,
+`image_quality: 85`, `temperature: 0.4`, `max_tokens: 10000`,
 `review_window: 50`, `question_max_tokens: 10000`, `max_model_len: 50000`, and
 `tensor_parallel_size: 4`. The `backend` and `model` fields are the single
 source of truth for what a run uses; the batch scripts only rewrite per-list
 paths.
 The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
-`frames_per_section: 5`, `step: 10`, `max_tokens: 3090`, `merge_window: 50`,
-`storyline_max_tokens: 3000`, `question_max_tokens: 3000`,
+`frames_per_section: 5`, `step: 10`, `skip: 0`, `max_tokens: 3090`,
+`merge_window: 50`, `storyline_max_tokens: 3000`, `question_max_tokens: 3000`,
 `max_model_len: 50000`, and `tensor_parallel_size: 4`.
 
 

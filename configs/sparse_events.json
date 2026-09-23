@@ -5,6 +5,7 @@
     "output": "/g/data/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/sparse_outputs/events",
     "frames_per_section": 7,
     "step": 8,
+    "skip": 0,
     "image_max_size": null,
     "image_quality": 85,
     "model": "Qwen/Qwen3-VL-235B-A22B-Instruct-FP8",

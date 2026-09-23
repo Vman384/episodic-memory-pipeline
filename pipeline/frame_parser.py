@@ -22,7 +22,8 @@ class FrameParser:
     """Partition video frames into numbered section directories.
 
     The parser expects one directory containing frame image files.  It copies
-    (or optionally moves) those files into groups of ``frames_per_section``::
+    (or optionally moves) sampled frames into groups of at most
+    ``frames_per_section``::
 
         input_frames/
             1733343593917869.png
@@ -40,9 +41,15 @@ class FrameParser:
         output_dir: Directory in which section directories are created.  When
             omitted, a sibling directory named ``<frames_dir>_sections`` is
             used.
-        frames_per_section: Maximum number of frames in each section.
-        step_size: Keep every ``step_size``-th frame after sorting.  A value
-            of 1 keeps every frame, while 2 keeps frames 0, 2, 4, and so on.
+        frames_per_section: Number of frames sampled into each section.  The
+            final section may contain fewer frames.
+        step_size: Stride between sampled frames inside one section.  A value
+            of 1 samples consecutive frames, while 3 samples the 1st, 4th,
+            7th, and so on, until the section is full.
+        skip: Number of frames skipped after a section's sampling stride
+            before the next section starts.  The next section begins at
+            ``start + frames_per_section * step_size + skip``, so 0 continues
+            sampling as one uninterrupted stride.
         move: Move frames instead of copying them.
         preprocessor: Optional ``ImagePreprocessor`` re-encodes each sampled
             frame as a resized JPEG while writing sections.  When omitted,
@@ -58,6 +65,7 @@ class FrameParser:
         output_dir: str | Path | None = None,
         frames_per_section: int = 100,
         step_size: int = 1,
+        skip: int = 0,
         move: bool = False,
         preprocessor=None,
         extensions: tuple[str, ...] = DEFAULT_EXTENSIONS):
@@ -75,11 +83,14 @@ class FrameParser:
             raise ValueError("frames_per_section must be greater than zero")
         if step_size <= 0:
             raise ValueError("step_size must be greater than zero")
+        if skip < 0:
+            raise ValueError("skip must be zero or greater")
         if not extensions:
             raise ValueError("extensions must contain at least one image extension")
 
         self.frames_per_section = frames_per_section
         self.step_size = step_size
+        self.skip = skip
         self.move = move
         self.preprocessor = preprocessor
         normalized_extensions = set()
@@ -112,7 +123,7 @@ class FrameParser:
         directories, mapping each section to its first/last frame and elapsed
         start/end seconds relative to the first sampled frame of the video.
         """
-        frame_paths = self._get_frame_paths()[:: self.step_size]
+        frame_paths = self._get_frame_paths()
         if not frame_paths:
             return []
 
@@ -128,9 +139,12 @@ class FrameParser:
         # Reuse the shared converter for all per-section second math.
         converter = TimeframeConverter(self.frames_dir)
         video_start_timestamp = converter.video_start_timestamp
-        for section_index, start in enumerate(range(0, len(frame_paths), self.frames_per_section)):
+        stride_window = self.frames_per_section * self.step_size
+        section_index = 0
+        section_start = 0
+        while section_start < len(frame_paths):
 
-            section_frames = frame_paths[start : start + self.frames_per_section]
+            section_frames = frame_paths[section_start : section_start + stride_window : self.step_size]
             section_dir = self.output_dir / f"section_{section_index:04d}"
             section_dir.mkdir(parents=True, exist_ok=True)
             section_dirs.append(section_dir)
@@ -158,6 +172,9 @@ class FrameParser:
                 "start_seconds": seconds["start_seconds"],
                 "end_seconds": seconds["end_seconds"],
             }
+
+            section_start += stride_window + self.skip
+            section_index += 1
 
         manifest_path = self.output_dir / "sections.json"
         with open(manifest_path, "w") as manifest_file:
@@ -190,6 +207,7 @@ def main() -> None:
         output_dir=config["sections_dir"],
         frames_per_section=config["frames_per_section"],
         step_size=config["step"],
+        skip=config.get("skip", 0),
         move=config.get("move", False),
         preprocessor=ImagePreprocessor.from_config(config),
     ).create_section_dir()

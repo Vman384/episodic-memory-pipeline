@@ -72,6 +72,7 @@ class SparseEventPipeline:
             output_dir=self.config["sections_dir"],
             frames_per_section=self.config["frames_per_section"],
             step_size=self.config["step"],
+            skip=self.config.get("skip", 0),
             move=self.config.get("move", False),
             preprocessor=ImagePreprocessor.from_config(self.config),
         )
