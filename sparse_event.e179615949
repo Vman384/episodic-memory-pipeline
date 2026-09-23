@@ -1,0 +1,248 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+(Worker pid=62024) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker pid=62025) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker pid=62026) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker pid=62023) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:   0% Completed | 0/24 [00:00<?, ?it/s]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:   4% Completed | 1/24 [00:12<04:47, 12.50s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:   8% Completed | 2/24 [00:27<05:11, 14.15s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  12% Completed | 3/24 [00:37<04:10, 11.93s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  17% Completed | 4/24 [00:46<03:34, 10.74s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  21% Completed | 5/24 [00:54<03:06,  9.79s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  25% Completed | 6/24 [01:01<02:42,  9.05s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  29% Completed | 7/24 [01:09<02:27,  8.69s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  33% Completed | 8/24 [01:17<02:12,  8.30s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  38% Completed | 9/24 [01:24<02:00,  8.06s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  42% Completed | 10/24 [01:32<01:49,  7.85s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  46% Completed | 11/24 [01:39<01:41,  7.77s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  50% Completed | 12/24 [01:47<01:34,  7.84s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  54% Completed | 13/24 [01:55<01:26,  7.87s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  58% Completed | 14/24 [02:03<01:18,  7.89s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  62% Completed | 15/24 [02:11<01:11,  7.93s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  67% Completed | 16/24 [02:19<01:03,  7.95s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  71% Completed | 17/24 [02:27<00:55,  7.93s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  75% Completed | 18/24 [02:35<00:47,  7.89s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  79% Completed | 19/24 [02:43<00:39,  7.85s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  83% Completed | 20/24 [02:50<00:31,  7.76s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  88% Completed | 21/24 [02:58<00:23,  7.82s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  92% Completed | 22/24 [03:06<00:15,  7.79s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards:  96% Completed | 23/24 [03:13<00:07,  7.68s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards: 100% Completed | 24/24 [03:19<00:00,  7.17s/it]
+(Worker_TP0 pid=62023) Loading safetensors checkpoint shards: 100% Completed | 24/24 [03:19<00:00,  8.32s/it]
+(Worker_TP0 pid=62023) 
+(EngineCore pid=62010) Process EngineCore:
+(EngineCore pid=62010) Traceback (most recent call last):
+(EngineCore pid=62010)   File "/apps/python3/3.11.7/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+(EngineCore pid=62010)     self.run()
+(EngineCore pid=62010)   File "/apps/python3/3.11.7/lib/python3.11/multiprocessing/process.py", line 108, in run
+(EngineCore pid=62010)     self._target(*self._args, **self._kwargs)
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 1199, in run_engine_core
+(EngineCore pid=62010)     raise e
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 1164, in run_engine_core
+(EngineCore pid=62010)     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=62010)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=62010)     return func(*args, **kwargs)
+(EngineCore pid=62010)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 930, in __init__
+(EngineCore pid=62010)     super().__init__(
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 132, in __init__
+(EngineCore pid=62010)     kv_cache_config = self._initialize_kv_caches(vllm_config)
+(EngineCore pid=62010)                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=62010)     return func(*args, **kwargs)
+(EngineCore pid=62010)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 257, in _initialize_kv_caches
+(EngineCore pid=62010)     available_gpu_memory = self.model_executor.determine_available_memory()
+(EngineCore pid=62010)                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/abstract.py", line 147, in determine_available_memory
+(EngineCore pid=62010)     return self.collective_rpc("determine_available_memory")
+(EngineCore pid=62010)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/multiproc_executor.py", line 404, in collective_rpc
+(EngineCore pid=62010)     return future if non_block else future.result()
+(EngineCore pid=62010)                                     ^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/multiproc_executor.py", line 91, in result
+(EngineCore pid=62010)     return super().result()
+(EngineCore pid=62010)            ^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/apps/python3/3.11.7/lib/python3.11/concurrent/futures/_base.py", line 449, in result
+(EngineCore pid=62010)     return self.__get_result()
+(EngineCore pid=62010)            ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/apps/python3/3.11.7/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore pid=62010)     raise self._exception
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/multiproc_executor.py", line 95, in _wait_for_response
+(EngineCore pid=62010)     response = self.aggregate(self.get_response())
+(EngineCore pid=62010)                               ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62010)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/multiproc_executor.py", line 391, in get_response
+(EngineCore pid=62010)     raise RuntimeError(
+(EngineCore pid=62010) RuntimeError: Worker failed with error 'Assertion error (/workspace/.deps/deepgemm-src/csrc/apis/../jit_kernels/impls/../../jit/compiler.hpp:187): (major > 12 or (major == 12 and minor >= 3)) and "NVCC version should be >= 12.3"', please check the stack trace above for the root cause
+Traceback (most recent call last):
+  File "/home/565/wn8778/episodic-memory-pipeline/main.py", line 92, in <module>
+    main()
+  File "/home/565/wn8778/episodic-memory-pipeline/main.py", line 62, in main
+    pipeline.run(stage=args.stage)
+  File "/home/565/wn8778/episodic-memory-pipeline/pipeline/SparseEventPipeline.py", line 97, in run
+    self.load_config()
+  File "/home/565/wn8778/episodic-memory-pipeline/pipeline/SparseEventPipeline.py", line 83, in load_config
+    self.ai_parser = AIParser(config=self.config)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/565/wn8778/episodic-memory-pipeline/pipeline/AIParser.py", line 47, in __init__
+    self.model = LLM(
+                 ^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/entrypoints/llm.py", line 349, in __init__
+    self.llm_engine = LLMEngine.from_engine_args(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/llm_engine.py", line 170, in from_engine_args
+    return cls(
+           ^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/llm_engine.py", line 104, in __init__
+    self.engine_core = EngineCoreClient.make_client(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core_client.py", line 102, in make_client
+    return SyncMPClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core_client.py", line 771, in __init__
+    super().__init__(
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core_client.py", line 570, in __init__
+    with launch_core_engines(
+  File "/apps/python3/3.11.7/lib/python3.11/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/utils.py", line 1190, in launch_core_engines
+    wait_for_engine_startup(
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/utils.py", line 1249, in wait_for_engine_startup
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+/apps/python3/3.11.7/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 4 leaked shared_memory objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+[transformers] `Qwen2VLImageProcessorFast` is deprecated. The `Fast` suffix for image processors has been removed; use `Qwen2VLImageProcessor` instead.
+(Worker pid=62725) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker pid=62726) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker pid=62727) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker pid=62724) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:   0% Completed | 0/24 [00:00<?, ?it/s]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:   4% Completed | 1/24 [00:07<02:51,  7.47s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:   8% Completed | 2/24 [00:15<02:47,  7.59s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  12% Completed | 3/24 [00:22<02:41,  7.68s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  17% Completed | 4/24 [00:30<02:31,  7.60s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  21% Completed | 5/24 [00:38<02:26,  7.69s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  25% Completed | 6/24 [00:45<02:15,  7.55s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  29% Completed | 7/24 [00:53<02:09,  7.64s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  33% Completed | 8/24 [01:01<02:03,  7.70s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  38% Completed | 9/24 [01:08<01:54,  7.66s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  42% Completed | 10/24 [01:16<01:48,  7.73s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  46% Completed | 11/24 [01:24<01:40,  7.76s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  50% Completed | 12/24 [01:32<01:32,  7.73s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  54% Completed | 13/24 [01:39<01:24,  7.68s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  58% Completed | 14/24 [01:47<01:16,  7.62s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  62% Completed | 15/24 [01:54<01:08,  7.66s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  67% Completed | 16/24 [02:02<01:00,  7.62s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  71% Completed | 17/24 [02:10<00:53,  7.64s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  75% Completed | 18/24 [02:17<00:45,  7.52s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  79% Completed | 19/24 [02:25<00:38,  7.62s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  83% Completed | 20/24 [02:32<00:30,  7.66s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  88% Completed | 21/24 [02:40<00:22,  7.65s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  92% Completed | 22/24 [02:48<00:15,  7.71s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards:  96% Completed | 23/24 [02:56<00:07,  7.77s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards: 100% Completed | 24/24 [03:02<00:00,  7.31s/it]
+(Worker_TP0 pid=62724) Loading safetensors checkpoint shards: 100% Completed | 24/24 [03:02<00:00,  7.61s/it]
+(Worker_TP0 pid=62724) 
+(EngineCore pid=62703) Process EngineCore:
+(EngineCore pid=62703) Traceback (most recent call last):
+(EngineCore pid=62703)   File "/apps/python3/3.11.7/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+(EngineCore pid=62703)     self.run()
+(EngineCore pid=62703)   File "/apps/python3/3.11.7/lib/python3.11/multiprocessing/process.py", line 108, in run
+(EngineCore pid=62703)     self._target(*self._args, **self._kwargs)
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 1199, in run_engine_core
+(EngineCore pid=62703)     raise e
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 1164, in run_engine_core
+(EngineCore pid=62703)     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=62703)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=62703)     return func(*args, **kwargs)
+(EngineCore pid=62703)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 930, in __init__
+(EngineCore pid=62703)     super().__init__(
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 132, in __init__
+(EngineCore pid=62703)     kv_cache_config = self._initialize_kv_caches(vllm_config)
+(EngineCore pid=62703)                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=62703)     return func(*args, **kwargs)
+(EngineCore pid=62703)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core.py", line 257, in _initialize_kv_caches
+(EngineCore pid=62703)     available_gpu_memory = self.model_executor.determine_available_memory()
+(EngineCore pid=62703)                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/abstract.py", line 147, in determine_available_memory
+(EngineCore pid=62703)     return self.collective_rpc("determine_available_memory")
+(EngineCore pid=62703)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/multiproc_executor.py", line 404, in collective_rpc
+(EngineCore pid=62703)     return future if non_block else future.result()
+(EngineCore pid=62703)                                     ^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/multiproc_executor.py", line 91, in result
+(EngineCore pid=62703)     return super().result()
+(EngineCore pid=62703)            ^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/apps/python3/3.11.7/lib/python3.11/concurrent/futures/_base.py", line 449, in result
+(EngineCore pid=62703)     return self.__get_result()
+(EngineCore pid=62703)            ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/apps/python3/3.11.7/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore pid=62703)     raise self._exception
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/multiproc_executor.py", line 95, in _wait_for_response
+(EngineCore pid=62703)     response = self.aggregate(self.get_response())
+(EngineCore pid=62703)                               ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=62703)   File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/executor/multiproc_executor.py", line 391, in get_response
+(EngineCore pid=62703)     raise RuntimeError(
+(EngineCore pid=62703) RuntimeError: Worker failed with error 'Assertion error (/workspace/.deps/deepgemm-src/csrc/apis/../jit_kernels/impls/../../jit/compiler.hpp:187): (major > 12 or (major == 12 and minor >= 3)) and "NVCC version should be >= 12.3"', please check the stack trace above for the root cause
+Traceback (most recent call last):
+  File "/home/565/wn8778/episodic-memory-pipeline/main.py", line 92, in <module>
+    main()
+  File "/home/565/wn8778/episodic-memory-pipeline/main.py", line 62, in main
+    pipeline.run(stage=args.stage)
+  File "/home/565/wn8778/episodic-memory-pipeline/pipeline/SparseEventPipeline.py", line 97, in run
+    self.load_config()
+  File "/home/565/wn8778/episodic-memory-pipeline/pipeline/SparseEventPipeline.py", line 83, in load_config
+    self.ai_parser = AIParser(config=self.config)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/565/wn8778/episodic-memory-pipeline/pipeline/AIParser.py", line 47, in __init__
+    self.model = LLM(
+                 ^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/entrypoints/llm.py", line 349, in __init__
+    self.llm_engine = LLMEngine.from_engine_args(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/llm_engine.py", line 170, in from_engine_args
+    return cls(
+           ^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/llm_engine.py", line 104, in __init__
+    self.engine_core = EngineCoreClient.make_client(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core_client.py", line 102, in make_client
+    return SyncMPClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core_client.py", line 771, in __init__
+    super().__init__(
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/core_client.py", line 570, in __init__
+    with launch_core_engines(
+  File "/apps/python3/3.11.7/lib/python3.11/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/utils.py", line 1190, in launch_core_engines
+    wait_for_engine_startup(
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/vllm/v1/engine/utils.py", line 1249, in wait_for_engine_startup
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+/apps/python3/3.11.7/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 4 leaked shared_memory objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
