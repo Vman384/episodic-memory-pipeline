@@ -46,10 +46,11 @@ class FrameParser:
         step_size: Stride between sampled frames inside one section.  A value
             of 1 samples consecutive frames, while 3 samples the 1st, 4th,
             7th, and so on, until the section is full.
-        skip: Number of frames skipped after a section's sampling stride
-            before the next section starts.  The next section begins at
-            ``start + frames_per_section * step_size + skip``, so 0 continues
-            sampling as one uninterrupted stride.
+        skip: Number of frames from the last sampled frame of a section to
+            the first frame of the next section.  The next section begins at
+            ``last_frame + skip``, so ``skip == step_size`` samples every
+            ``step_size``-th frame without gaps.  Defaults to ``step_size``
+            when omitted.
         move: Move frames instead of copying them.
         preprocessor: Optional ``ImagePreprocessor`` re-encodes each sampled
             frame as a resized JPEG while writing sections.  When omitted,
@@ -65,7 +66,7 @@ class FrameParser:
         output_dir: str | Path | None = None,
         frames_per_section: int = 100,
         step_size: int = 1,
-        skip: int = 0,
+        skip: int | None = None,
         move: bool = False,
         preprocessor=None,
         extensions: tuple[str, ...] = DEFAULT_EXTENSIONS):
@@ -83,8 +84,10 @@ class FrameParser:
             raise ValueError("frames_per_section must be greater than zero")
         if step_size <= 0:
             raise ValueError("step_size must be greater than zero")
-        if skip < 0:
-            raise ValueError("skip must be zero or greater")
+        if skip is None:
+            skip = step_size
+        if skip <= 0:
+            raise ValueError("skip must be greater than zero")
         if not extensions:
             raise ValueError("extensions must contain at least one image extension")
 
@@ -173,7 +176,7 @@ class FrameParser:
                 "end_seconds": seconds["end_seconds"],
             }
 
-            section_start += stride_window + self.skip
+            section_start += (len(section_frames) - 1) * self.step_size + self.skip
             section_index += 1
 
         manifest_path = self.output_dir / "sections.json"
@@ -207,7 +210,7 @@ def main() -> None:
         output_dir=config["sections_dir"],
         frames_per_section=config["frames_per_section"],
         step_size=config["step"],
-        skip=config.get("skip", 0),
+        skip=config.get("skip"),
         move=config.get("move", False),
         preprocessor=ImagePreprocessor.from_config(config),
     ).create_section_dir()

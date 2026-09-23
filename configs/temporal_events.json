@@ -5,7 +5,7 @@
     "output": "/g/data/pg06/FYP2026S1_3473/boreas-2025-07-18-15-12/temporal_outputs/narratives",
     "frames_per_section": 5,
     "step": 10,
-    "skip": 0,
+    "skip": 10,
     "model": "Qwen/Qwen2.5-VL-72B-Instruct",
     "backend": "local",
     "api_base_url": "https://opencode.ai/zen/go/v1",

@@ -226,7 +226,7 @@ below and choose values based on the spatial detail needed by the benchmark:
 | `output` | Directory for model results. Use a location with enough space for one result per section and the aggregate output. |
 | `frames_per_section` | Maximum frames sent to the model in one request. Start small enough to fit the model context, then increase it if spatial references need more surrounding frames. |
 | `step` | Stride between sampled frames inside one section. Use `1` to keep every frame; use a larger value to reduce redundant frames, but keep enough samples to judge distances and landmarks. |
-| `skip` | Number of frames skipped after a section's sampling stride before the next section starts. `0` continues sampling as one uninterrupted stride; raise it to leave gaps between sections. |
+| `skip` | Number of frames from a section's last sampled frame to the next section's first frame. Defaults to `step` when omitted, which samples without gaps; use a larger value to leave unsampled gaps between sections. |
 | `move` | If `true`, moves frames into sections; if `false` or omitted, copies them. Keep it `false` when the original frames must be preserved. |
 | `model` | Model used for the run, such as `Qwen/Qwen2.5-VL-72B-Instruct`. Pick a vision-language model that supports image inputs and has enough context for each section. |
 | `backend` | Inference backend: `local` for vLLM or `api` for the OpenAI-compatible API. Choose `local` for an available local model and GPUs, otherwise use `api`. |
@@ -256,7 +256,7 @@ section coverage matters less.
 | `output` | Directory for section results, `events.json`, and `questions.json`. Use a separate output directory for each experiment. |
 | `frames_per_section` | Number of sampled frames grouped into one extraction request. Increase it for wider context, but keep it within the model's image/context limits; `5` is the supplied starting point. |
 | `step` | Stride between sampled frames inside one section. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed. |
-| `skip` | Number of frames skipped after a section's sampling stride before the next section starts. `0` (the supplied value) makes sections contiguous; increase it to leave unsampled gaps between sections. |
+| `skip` | Number of frames from a section's last sampled frame to the next section's first frame. Defaults to `step` when omitted, which samples without gaps; use a larger value to leave unsampled gaps between sections. |
 | `image_max_size` | Longest side, in pixels, of frames written into sections. Frames are downscaled to fit (never upscaled). Omit it to keep original frame sizes. Use a small value, such as `1024`, to keep API request payloads small and stay within the vision-token budget of models such as `grok-4.6`; omit it for local vLLM runs that accept full-resolution frames. |
 | `image_quality` | JPEG quality, from `1` to `95`, used when frames are re-encoded for sections. `90` is the supplied value. Omit it with `image_max_size` to copy frames through untouched. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
@@ -291,7 +291,7 @@ context.
 | `output` | Directory for section results, `timeline.json`, `storyline.txt`, and `questions.json`. Use a separate output directory for each experiment. |
 | `frames_per_section` | Number of sampled frames grouped into one extraction request. Increase it for wider context, but keep it within the model's image/context limits; `5` is the supplied starting point. |
 | `step` | Stride between sampled frames inside one section. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed; `15` is the supplied starting point. |
-| `skip` | Number of frames skipped after a section's sampling stride before the next section starts. `0` (the supplied value) makes sections contiguous; increase it to leave unsampled gaps between sections. |
+| `skip` | Number of frames from a section's last sampled frame to the next section's first frame. Defaults to `step` when omitted, which samples without gaps; use a larger value to leave unsampled gaps between sections. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
 | `model` | Model used for extraction and later temporal stages. The supplied configuration uses `Qwen/Qwen2.5-VL-72B-Instruct` locally. |
 | `backend` | Use `local` for the supplied four-GPU vLLM configuration or `api` for a Responses API model. The backend must match the model and available infrastructure. |
@@ -350,7 +350,7 @@ provider with the request ID.
 
 ## Frame Sections
 
-`FrameParser` accepts `.jpg`, `.jpeg`, `.png`, `.webp`, and `.bmp` files. It sorts frames by their numeric filename and samples each section with `step` as the stride between frames up to `frames_per_section` frames, then skips `skip` frames before the next section. It groups the sampled frames into directories such as:
+`FrameParser` accepts `.jpg`, `.jpeg`, `.png`, `.webp`, and `.bmp` files. It sorts frames by their numeric filename and samples each section with `step` as the stride between frames up to `frames_per_section` frames; the next section starts `skip` frames after the last sampled frame (defaulting to `step`, so sampling continues without gaps). It groups the sampled frames into directories such as:
 
 ```text
 sections/
