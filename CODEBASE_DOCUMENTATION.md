@@ -251,22 +251,24 @@ resolution, uses the model already present in the shared cache, and exports
 
 ---
 
-### `scripts/run_all_local.sh`
+### `run_all_local.sh`
 
 **Purpose:** PBS batch script that runs the sparse-event pipeline with the local
-vLLM backend over all six Boreas lists.
+vLLM backend over the remaining Boreas lists, extract then review per list, in a
+single job.
 
 **Job configuration:** `gpuhopper` queue, 48 CPUs, 4 GPUs (one full node), 1024 GB
-memory, 24-hour walltime, and `scratch/pg06+gdata/pg06` storage.
+memory, 5-hour walltime, and `scratch/pg06+gdata/pg06` storage.
 
 **Entry point:** For each list it rewrites only the per-list `frames_dir`,
 `sections_dir`, and `output` paths in `configs/sparse_events.json`, then runs
-`python3 main.py --mode sparse` (extract then review). `backend`, `model`, and
-`tensor_parallel_size` are read from the config: the supplied sparse config uses
-local vLLM with `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` sharded across four GPUs.
-The Hugging Face cache resolves the repo id offline. The original config is
-restored on exit, and completed section results are reused so the job can be
-resubmitted.
+`python3 main.py --mode sparse` (extract then review), the same stages as
+`sparse_event.pbs`. It exports `VLLM_USE_DEEP_GEMM=0` for the same reason as the
+other local job scripts. `backend`, `model`, and `tensor_parallel_size` are read
+from the config: the supplied sparse config uses local vLLM with
+`Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` sharded across four GPUs. The Hugging Face
+cache resolves the repo id offline. The original config is restored on exit, and
+completed section results are reused so the job can be resubmitted.
 
 ---
 

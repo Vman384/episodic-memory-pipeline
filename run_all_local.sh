@@ -5,7 +5,7 @@
 #PBS -l ncpus=48
 #PBS -l ngpus=4
 #PBS -l mem=1024GB
-#PBS -l walltime=2:30:00
+#PBS -l walltime=5:00:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
@@ -26,13 +26,15 @@ export HF_HOME="/g/data/pg06/FYP2026S1_3473/huggingface_cache"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
+# DeepGEMM JIT needs NVCC >= 12.3 but the CUDA module provides 12.2.2.
+# Fall back to vLLM's CUTLASS FP8 kernels instead.
+export VLLM_USE_DEEP_GEMM=0
+
 # Backend, model, and GPU sharding are selected in configs/sparse_events.json.
 # The HF cache resolves the repo id offline because HF_HUB_OFFLINE is set.
 
-# Boreas lists to process, in the order they were run.
+# Boreas lists still to process.
 LISTS=(
-  "boreas-2024-12-03-13-13"
-  "boreas-2024-12-03-13-34"
   "boreas-2024-12-04-11-45"
   "boreas-2024-12-04-11-56"
   "boreas-2025-07-18-15-12"
@@ -67,6 +69,7 @@ with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
 EOF
 
+  # No --stage runs extract then review, same stages as sparse_event.pbs.
   python3 main.py --mode sparse
 done
 
