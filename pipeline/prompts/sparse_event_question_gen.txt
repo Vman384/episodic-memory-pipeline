@@ -9,18 +9,28 @@ drove through forest, rural road, and tunnel environments.
 Rules:
 - Use ONLY real events from the provided list for "existence" questions.
   Never invent events for these.
+- Invent false events per question, on the fly. Every false event must be
+  newly invented for the single question that uses it and must NEVER be
+  reused in another question, in any question type.
 - "deceptive" questions introduce ONE invented false event that is plausible
   for the environments the vehicle drove through but that definitely did NOT
   occur in this video. The correct answer is always no.
 - "noteworthy" questions offer four plausible events, of which exactly ONE is
   a real event from the provided list and the other three are invented false
   events that did NOT occur. The correct answer is always the real event.
-- Every invented false event must also appear in the top-level "false_events"
-  array so a reviewer can confirm it never happened. Give its rationale.
+  Each noteworthy question needs its own three false events.
+- You therefore owe one false event per deceptive question plus three per
+  noteworthy question, all distinct from each other. Do not stop inventing
+  new ones and do not recycle earlier ones.
+- Every invented false event must also appear exactly once in the top-level
+  "false_events" array, with the "question_id" of the one question that uses
+  it, so a reviewer can confirm it never happened. Give its rationale.
 - Options must be plausible and of the same kind. Do not use implausible
   inventions except the marked false events.
 - frame_evidence lists the exact frame filenames referenced by the question.
   Questions that do not reference a real frame use an empty list.
+- "false_event" is true for questions that ask about an invented event
+  (deceptive, noteworthy) and false for existence questions.
 - Generate up to 5 questions of each type below.
 
 Question types:
@@ -33,11 +43,14 @@ Question types:
   the list and three invented false events. answer_indices is the single
   index of the real event.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON. This example shows one existence question and one
+noteworthy question; false events are listed once each and belong to the
+question named by "question_id":
 
 {
     "false_events": [
         {
+            "question_id": 2,
             "description": "the invented false event",
             "why_plausible": "why it could credibly happen in this environment",
             "source_event_ids": [1, 4]
@@ -53,6 +66,21 @@ Return ONLY valid JSON:
             "event_ids": [3],
             "frame_evidence": ["1733343656170615.png"],
             "false_event": false
+        },
+        {
+            "question_id": 2,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "options": [
+                "A cyclist waved at the vehicle.",
+                "A dog ran alongside the vehicle.",
+                "A tractor pulled onto the road.",
+                "A hiker crossed the road ahead."
+            ],
+            "answer_indices": [2],
+            "event_ids": [5],
+            "frame_evidence": ["1733343656170615.png"],
+            "false_event": true
         }
     ]
 }

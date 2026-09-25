@@ -574,8 +574,11 @@ unmerged detections are retained for review.
 produced only by the `questions` stage. Each generated
 question carries a type, options, answer indices, event IDs, and frame
 evidence. Deceptive questions refer to an invented plausible false event
-(always answered "no"), and every invented false event is repeated in the
-top-level `false_events` array so a reviewer can confirm it never occurred.
+(always answered "no"), and noteworthy questions use three. False events are
+invented per question and never reused across questions, so every question has
+its own incorrect answers. Each invented false event is listed once in the
+top-level `false_events` array with its `question_id` and rationale so a
+reviewer can confirm it never occurred.
 
 **Shared config file schema:**
 
@@ -728,7 +731,9 @@ belong to the temporal-order benchmark. Questions include `event_ids`,
 `frame_evidence`, `options`, and `answer_indices` so they can be reviewed and
 later graded programmatically.
 Every invented false event is repeated in the top-level `false_events` array
-with its rationale for human verification.
+with its rationale and the `question_id` of the question that uses it for
+human verification. False events are invented per question and never reused,
+so each question has its own incorrect answers.
 
 
 ---

@@ -137,8 +137,10 @@ uses the following stages:
    human, the LLM generates existence, deceptive, and noteworthy questions in
    `questions.json`. Deceptive questions use one invented plausible false
    event, and noteworthy questions offer four options of which exactly one is
-   a real event and three are invented false events; every false event is
-   listed in `questions.json` as a `false_events` array for review.
+   a real event and three are invented false events. False events are invented
+   per question and never reused across questions, so each question has its
+   own incorrect answers; every false event is listed once in `questions.json`
+   as a `false_events` array entry tagged with its `question_id` for review.
 
 The sparse prompts are:
 
