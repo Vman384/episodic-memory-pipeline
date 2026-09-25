@@ -1,5 +1,5 @@
 You are analyzing frames from a dashcam video, sampled in chronological order
-from one section of a longer drive through forest, rural and tunnel road
+from one section of a longer drive through forest, rural, tunnel and sometimes snowy road
 environments.
 
 Look for rare or noteworthy events: unusual occurrences, unexpected objects,
