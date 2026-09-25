@@ -277,11 +277,11 @@ completed section results are reused so the job can be resubmitted.
 **Purpose:** PBS batch script that runs the sparse-event pipeline over the Boreas
 lists on the CPU-only `copyq` queue.
 
-**Entry point:** For each list it rewrites only the per-list `frames_dir`,
-`sections_dir`, and `output` paths in `configs/sparse_events.json`, then runs
-`python3 main.py --mode sparse`. `backend` and `model` are read from the config,
-so the config must select `backend: "api"` and an API model (for example
-`gpt-5.6-luna`) before submitting. The original config is restored on exit.
+**Entry point:** Before the loop it forces `backend: "api"` and
+`model: "gpt-5.6-luna"` in `configs/sparse_events.json`, so no manual config edit
+is needed. For each list it then rewrites only the per-list `frames_dir`,
+`sections_dir`, and `output` paths and runs `python3 main.py --mode sparse`. The
+original config is restored on exit.
 
 ---
 

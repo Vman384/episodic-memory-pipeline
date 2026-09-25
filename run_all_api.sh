@@ -40,13 +40,31 @@ CONFIG="configs/sparse_events.json"
 ORIGINAL_CONFIG="$(cat "$CONFIG")"
 trap 'printf "%s\n" "$ORIGINAL_CONFIG" > "$CONFIG"' EXIT
 
+# Force the API backend and the API model so the run does not depend on
+# manually editing the config beforehand.
+python3 - "$CONFIG" <<'EOF'
+import json
+import sys
+
+config_path = sys.argv[1]
+
+with open(config_path) as f:
+    config = json.load(f)
+
+config["backend"] = "api"
+config["model"] = "gpt-5.6-luna"
+
+with open(config_path, "w") as f:
+    json.dump(config, f, indent=2)
+EOF
+
 for LIST in "${LISTS[@]}"; do
   echo "=============================================="
   echo "Running questions stage for: $LIST"
   echo "=============================================="
 
-  # Only the per-list paths differ between runs; backend and model come from
-  # the config, which must be set to the API backend before submitting.
+  # Only the per-list paths differ between runs; the API backend and model are
+  # already set above for every list.
   python3 - "$CONFIG" "$BASE" "$LIST" <<'EOF'
 import json
 import sys

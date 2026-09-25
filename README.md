@@ -195,9 +195,10 @@ temporal configuration is stored in `configs/temporal_events.json`.
 
 The batch scripts under `scripts/` (`run_all_local.sh`, `run_all_api.sh`) rewrite
 only the per-list `frames_dir`, `sections_dir`, and `output` paths before each
-run. `backend`, `model`, and every other inference setting are read from the
-configuration file, so set `backend` and `model` there before submitting a batch
-job.
+run. `run_all_api.sh` also forces `backend: "api"` and `model: "gpt-5.6-luna"`,
+so it needs no manual configuration edit. `run_all_local.sh` reads `backend`,
+`model`, and every other inference setting from the configuration file, so set
+those there before submitting a local batch job.
 
 
 The `task` value identifies the benchmark category. The top-level `--mode`
