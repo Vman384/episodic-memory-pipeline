@@ -1,0 +1,28 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=3747104) Loading safetensors checkpoint shards:   0% Completed | 0/5 [00:00<?, ?it/s]
+(EngineCore pid=3747104) Loading safetensors checkpoint shards:  20% Completed | 1/5 [00:11<00:47, 11.86s/it]
+(EngineCore pid=3747104) Loading safetensors checkpoint shards:  40% Completed | 2/5 [00:14<00:19,  6.34s/it]
+(EngineCore pid=3747104) Loading safetensors checkpoint shards:  60% Completed | 3/5 [00:15<00:08,  4.04s/it]
+(EngineCore pid=3747104) Loading safetensors checkpoint shards:  80% Completed | 4/5 [00:16<00:02,  2.96s/it]
+(EngineCore pid=3747104) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:17<00:00,  2.06s/it]
+(EngineCore pid=3747104) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:17<00:00,  3.48s/it]
+(EngineCore pid=3747104) 
+(EngineCore pid=3747104) 2026-09-26 01:27:09,382 - INFO - autotuner.py:622 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(EngineCore pid=3747104) 2026-09-26 01:27:09,540 - INFO - autotuner.py:641 - flashinfer.jit: [Autotuner]: Autotuning process ends
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 30357.03it/s]
+Loading weights:   0%|          | 0/1468 [00:00<?, ?it/s]Loading weights:  24%|██▎       | 348/1468 [00:00<00:00, 2566.79it/s]Loading weights:  41%|████      | 605/1468 [00:00<00:00, 888.57it/s] Loading weights:  51%|█████     | 743/1468 [00:01<00:01, 575.43it/s]Loading weights:  57%|█████▋    | 832/1468 [00:01<00:01, 481.17it/s]Loading weights:  61%|██████    | 898/1468 [00:01<00:01, 416.31it/s]Loading weights:  65%|██████▍   | 950/1468 [00:02<00:01, 273.70it/s]Loading weights:  67%|██████▋   | 988/1468 [00:02<00:01, 249.54it/s]Loading weights:  69%|██████▉   | 1019/1468 [00:02<00:02, 216.78it/s]Loading weights:  71%|███████   | 1044/1468 [00:02<00:02, 210.93it/s]Loading weights:  73%|███████▎  | 1067/1468 [00:02<00:02, 185.01it/s]Loading weights:  74%|███████▍  | 1087/1468 [00:03<00:02, 179.64it/s]Loading weights:  75%|███████▌  | 1106/1468 [00:03<00:02, 162.01it/s]Loading weights:  77%|███████▋  | 1130/1468 [00:03<00:02, 162.50it/s]Loading weights:  78%|███████▊  | 1150/1468 [00:03<00:01, 167.62it/s]Loading weights:  79%|███████▉  | 1167/1468 [00:03<00:01, 158.98it/s]Loading weights:  81%|████████  | 1183/1468 [00:03<00:01, 151.75it/s]Loading weights:  82%|████████▏ | 1203/1468 [00:03<00:01, 149.90it/s]Loading weights:  84%|████████▎ | 1226/1468 [00:04<00:01, 148.17it/s]Loading weights:  85%|████████▌ | 1250/1468 [00:04<00:01, 163.91it/s]Loading weights:  86%|████████▋ | 1267/1468 [00:04<00:01, 163.52it/s]Loading weights:  88%|████████▊ | 1293/1468 [00:04<00:00, 182.42it/s]Loading weights:  90%|████████▉ | 1314/1468 [00:04<00:00, 185.63it/s]Loading weights:  91%|█████████ | 1333/1468 [00:04<00:00, 161.46it/s]Loading weights:  92%|█████████▏| 1351/1468 [00:04<00:00, 145.84it/s]Loading weights:  94%|█████████▎| 1373/1468 [00:04<00:00, 156.30it/s]Loading weights:  95%|█████████▍| 1390/1468 [00:05<00:00, 153.83it/s]Loading weights:  96%|█████████▌| 1412/1468 [00:05<00:00, 167.98it/s]Loading weights:  98%|█████████▊| 1434/1468 [00:05<00:00, 177.17it/s]Loading weights:  99%|█████████▉| 1453/1468 [00:05<00:00, 166.28it/s]Loading weights: 100%|██████████| 1468/1468 [00:05<00:00, 271.55it/s]
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:08<00:00,  8.06s/it]Rendering prompts: 100%|██████████| 1/1 [00:08<00:00,  8.06s/it]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.74s/it, est. speed input: 375.61 toks/s, output: 15.35 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.74s/it, est. speed input: 375.61 toks/s, output: 15.35 toks/s]Processed prompts: 100%|██████████| 1/1 [00:02<00:00,  2.74s/it, est. speed input: 375.61 toks/s, output: 15.35 toks/s]
+
+------------------------------------------------------------------------
+Job 179878341 has exceeded memory allocation on node gadi-gpu-h200-0016.gadi.nci.org.au
+Process "bash", pid 3742090, rss 3551232, vmem 23937024
+Process "179878341.gadi-", pid 3742160, rss 3141632, vmem 10371072
+Process "python", pid 3742188, rss 32950407168, vmem 70591791104
+Process "VLLM::EngineCor", pid 3747104, rss 2137935872, vmem 159747969024
+------------------------------------------------------------------------
+For more information visit https://opus.nci.org.au/x/SwGRAQ
+------------------------------------------------------------------------
+/local/spool/pbs/mom_priv/jobs/179878341.gadi-pbs.SC: line 29: 3742188 Killed                  python main.py --mode counting

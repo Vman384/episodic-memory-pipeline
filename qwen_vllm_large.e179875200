@@ -1,0 +1,27 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=1054122) Loading safetensors checkpoint shards:   0% Completed | 0/5 [00:00<?, ?it/s]
+(EngineCore pid=1054122) Loading safetensors checkpoint shards:  20% Completed | 1/5 [00:11<00:46, 11.74s/it]
+(EngineCore pid=1054122) Loading safetensors checkpoint shards:  40% Completed | 2/5 [00:15<00:20,  6.87s/it]
+(EngineCore pid=1054122) Loading safetensors checkpoint shards:  60% Completed | 3/5 [00:16<00:08,  4.34s/it]
+(EngineCore pid=1054122) Loading safetensors checkpoint shards:  80% Completed | 4/5 [00:17<00:03,  3.13s/it]
+(EngineCore pid=1054122) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:18<00:00,  2.17s/it]
+(EngineCore pid=1054122) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:18<00:00,  3.65s/it]
+(EngineCore pid=1054122) 
+(EngineCore pid=1054122) 2026-09-26 00:51:59,477 - INFO - autotuner.py:622 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(EngineCore pid=1054122) 2026-09-26 00:51:59,617 - INFO - autotuner.py:641 - flashinfer.jit: [Autotuner]: Autotuning process ends
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 12008.99it/s]
+Loading weights:   0%|          | 0/1468 [00:00<?, ?it/s]Loading weights:  24%|██▎       | 345/1468 [00:00<00:00, 2898.39it/s]Loading weights:  43%|████▎     | 635/1468 [00:00<00:01, 790.84it/s] Loading weights:  53%|█████▎    | 784/1468 [00:01<00:01, 531.33it/s]Loading weights:  60%|█████▉    | 878/1468 [00:01<00:01, 434.00it/s]Loading weights:  64%|██████▍   | 945/1468 [00:01<00:01, 407.23it/s]Loading weights:  68%|██████▊   | 1000/1468 [00:01<00:01, 377.61it/s]Loading weights:  71%|███████▏  | 1046/1468 [00:02<00:01, 352.35it/s]Loading weights:  74%|███████▍  | 1086/1468 [00:02<00:01, 334.77it/s]Loading weights:  76%|███████▋  | 1122/1468 [00:02<00:01, 333.37it/s]Loading weights:  79%|███████▉  | 1157/1468 [00:02<00:00, 336.28it/s]Loading weights:  81%|████████  | 1192/1468 [00:02<00:00, 332.15it/s]Loading weights:  84%|████████▎ | 1226/1468 [00:02<00:00, 282.10it/s]Loading weights:  86%|████████▌ | 1256/1468 [00:02<00:00, 277.91it/s]Loading weights:  88%|████████▊ | 1285/1468 [00:03<00:00, 273.52it/s]Loading weights:  90%|████████▉ | 1320/1468 [00:03<00:00, 287.23it/s]Loading weights:  92%|█████████▏| 1350/1468 [00:03<00:00, 288.92it/s]Loading weights:  94%|█████████▍| 1380/1468 [00:03<00:00, 268.60it/s]Loading weights:  96%|█████████▌| 1408/1468 [00:03<00:00, 264.48it/s]Loading weights:  98%|█████████▊| 1437/1468 [00:03<00:00, 271.13it/s]Loading weights: 100%|██████████| 1468/1468 [00:03<00:00, 403.47it/s]
+[00:52:19] /github/workspace/src/video/video_reader.cc:83: ERROR opening: /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-11-45/video.mp4, No such file or directory
+Traceback (most recent call last):
+  File "/home/565/vm4618/episodic-memory-pipeline/main.py", line 107, in <module>
+    main()
+  File "/home/565/vm4618/episodic-memory-pipeline/main.py", line 99, in main
+    pipeline.run()
+  File "/home/565/vm4618/episodic-memory-pipeline/pipeline/CountingPipeline.py", line 206, in run
+    vr = VideoReader(self.config["frames_dir"], ctx=cpu(0))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/pg06/vm4618/envs/vllm_env/lib/python3.11/site-packages/decord/video_reader.py", line 57, in __init__
+    raise RuntimeError("Error reading " + uri + "...")
+RuntimeError: Error reading /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-11-45/video.mp4...

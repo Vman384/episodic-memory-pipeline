@@ -1,14 +1,16 @@
 Analyze the provided image(s). Your task is to identify ALL distinct, prominent, or moving physical objects clearly visible in the scene. 
 
 CRITICAL CONSTRAINTS:
-1. Do not guess, assume, or hallucinate objects that are not explicitly visible.
-2. Provide short, specific, descriptive names for each object (e.g., "red sedan", "person walking", "delivery truck"). 
-3. Do NOT provide bounding boxes or spatial coordinates.
-4. Output NOTHING EXCEPT a valid JSON array of strings. Do not include markdown formatting (e.g., no ```json blocks), conversational filler, or explanations.
+1. Use the ABSOLUTE SIMPLEST naming convention: [Color] [Base Object]. 
+2. Do NOT use granular sub-types or specific vehicle classifications. For example, use "red car" — NEVER use "red sedan", "red SUV", or "red hatchback". 
+3. Do not guess, assume, or hallucinate objects that are not explicitly visible.
+4. Do NOT provide bounding boxes or spatial coordinates.
+5. Output NOTHING EXCEPT a valid JSON array of strings. Do not include markdown formatting, code blocks, conversational filler, or explanations.
 
 Expected Output Format:
 [
-  "red sedan",
-  "person walking",
-  "blue bicycle"
+  "red car",
+  "white truck",
+  "blue bicycle",
+  "person"
 ]

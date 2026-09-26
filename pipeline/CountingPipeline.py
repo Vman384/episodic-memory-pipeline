@@ -8,7 +8,7 @@ import torch # pyright: ignore[reportMissingImports]
 import torch.nn.functional as F # type: ignore
 import re
 from decord import VideoReader, cpu
-
+import time
 
 # Import SAM 3 and CLIP from Transformers
 from transformers import CLIPProcessor, CLIPModel, Sam3Processor, Sam3Model
@@ -47,6 +47,9 @@ class CountingPipeline:
         self.embedding_memory = {}  # Dict[str, List[torch.Tensor]]
         self.object_counts = {}      # Dict[str, int]
         self.all_results = []
+        
+        # Tracking boxes across scenes to enforce label consistency
+        self.last_scene_boxes = []  # List[Dict[str, any]] e.g. [{"label": "red car", "box": [x1, y1, x2, y2]}]
         
         # 1. Load CLIP Model & Processor
         clip_model_name = config.get("CLIPModelmodel", "openai/clip-vit-base-patch32")
@@ -110,6 +113,23 @@ class CountingPipeline:
 
         return max_similarity <= self.similarity_threshold
 
+    def calculate_iou(self, boxA: list, boxB: list) -> float:
+        """Calculates Intersection over Union (IoU) between two bounding boxes [xmin, ymin, xmax, ymax]."""
+        xA = max(boxA[0], boxB[0])
+        yA = max(boxA[1], boxB[1])
+        xB = min(boxA[2], boxB[2])
+        yB = min(boxA[3], boxB[3])
+
+        interArea = max(0, xB - xA) * max(0, yB - yA)
+        if interArea == 0:
+            return 0.0
+
+        boxAArea = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
+        boxBArea = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
+
+        iou = interArea / float(boxAArea + boxBArea - interArea)
+        return iou
+
     def parse_concept_list(self, vlm_response: str) -> list[str]:
         """Parses raw text/JSON from the VLM response into a list of string concepts."""
         if isinstance(vlm_response, list):
@@ -117,28 +137,25 @@ class CountingPipeline:
 
         # 1. Attempt JSON parsing if response is formatted as [ "red car", "person" ]
         try:
-            # Locate bracketed JSON inside the string if surrounded by prose
-            match = re.search(r"\[.*?\]", vlm_response, re.DOTALL)
+            match = re.search(r"$$.*?$$", vlm_response, re.DOTALL)
             if match:
                 parsed = json.loads(match.group(0))
                 if isinstance(parsed, list):
                     return [str(x).strip().lower() for x in parsed if x]
         except json.JSONDecodeError:
             pass
-
         # 2. Fallback: Parse bullet points or comma-separated text
         lines = vlm_response.strip().split("\n")
         concepts = []
         for line in lines:
-            # Clean out bullet points (*, -, 1., etc.)
             cleaned = re.sub(r"^[\s\*\-\d\.]+", "", line).strip().lower()
             if cleaned:
                 concepts.extend([c.strip() for c in cleaned.split(",") if c.strip()])
 
         return list(set(concepts))
 
-    def isolate_objects_with_sam3(self, images: list[Image.Image], text_prompt: str) -> list[Image.Image]:
-        """Uses SAM 3 to isolate text concepts across a batch of video frames."""
+    def isolate_objects_with_sam3(self, images: list[Image.Image], text_prompt: str) -> list[tuple[Image.Image, list[int]]]:
+        """Uses SAM 3 to isolate text concepts and returns BOTH the cropped image AND its bounding box."""
         prompts = [text_prompt] * len(images)
         
         inputs = self.sam3_processor(
@@ -158,25 +175,38 @@ class CountingPipeline:
             target_sizes=target_sizes
         )
         
-        isolated_crops = []
+        isolated_crops_and_boxes = []
         for img, res in zip(images, results):
             if "masks" in res:
                 image_np = np.array(img.convert("RGB"))
                 masks = res["masks"].cpu().numpy()
+                
                 for mask in masks:
+                    # Extract bounding box from the boolean mask
+                    rows = np.any(mask, axis=1)
+                    cols = np.any(mask, axis=0)
+                    if not np.any(rows) or not np.any(cols):
+                        continue # Mask is empty
+                        
+                    ymin, ymax = np.where(rows)[0][[0, -1]]
+                    xmin, xmax = np.where(cols)[0][[0, -1]]
+                    bbox = [int(xmin), int(ymin), int(xmax), int(ymax)]
+                    
+                    # Create the blacked-out crop
                     isolated_image_np = image_np.copy()
                     isolated_image_np[~mask] = 0
-                    isolated_crops.append(Image.fromarray(isolated_image_np))
+                    crop_img = Image.fromarray(isolated_image_np)
                     
-        return isolated_crops
-    
+                    isolated_crops_and_boxes.append((crop_img, bbox))
+                    
+        return isolated_crops_and_boxes
+
     def run(self) -> None:
         """Executes the pipeline using VLM for discovery and SAM 3 for spatial tracking."""
         vr = VideoReader(self.config["frames_dir"], ctx=cpu(0))
         fps = vr.get_avg_fps()
-        total_frames = len(vr)
-        total_frames = len(vr) - self.config["step"]-5
-    
+        total_frames = len(vr) - self.config["step"] - 5
+
         output_dir = Path(self.config["output"])
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -186,12 +216,17 @@ class CountingPipeline:
             start_time_sec = start_frame / fps
             end_time_sec = end_frame / fps
             time_str = f"{format_timestamp(start_time_sec)} - {format_timestamp(end_time_sec)}"
-    
-            # Extract frames (Downscaled to 448x448 max, 8 samples per chunk)
+
             pil_frames = sample_frames_from_indices(vr, start_frame, end_frame, num_samples=8, max_size=(448, 448))
             
-            # 1. Ask VLM purely for a list of concepts (e.g. ["red car", "pedestrian"])
-            detection_response = self.ai_parser.call_vlm(self.prompt, folder_path=None, video=pil_frames)
+            # 1. DYNAMIC PROMPTING: Force the VLM to reuse known labels
+            current_prompt = self.prompt
+            if self.object_counts:
+                known_labels = ", ".join(self.object_counts.keys())
+                current_prompt += f"\n\nCRITICAL: You previously detected these objects: [{known_labels}]. If any of these are still in the scene, you MUST reuse the exact same label. Do not invent synonyms."
+
+            # 2. Ask VLM purely for a list of concepts
+            detection_response = self.ai_parser.call_vlm(current_prompt, folder_path=None, video=pil_frames)
             detected_concepts = self.parse_concept_list(detection_response)
 
             section_result = {
@@ -200,37 +235,59 @@ class CountingPipeline:
                 "timestamp": time_str
             }
             
-            # Use the middle frame as our anchor for SAM 3
+            current_scene_boxes = []
 
             for concept in detected_concepts:
-                # 2. SAM 3 dynamically searches for the text concept and returns masked crops
-                isolated_crops = self.isolate_objects_with_sam3(pil_frames, concept)
+                # 3. SAM 3 returns both the masked crops AND the bounding boxes
+                crops_and_boxes = self.isolate_objects_with_sam3(pil_frames, concept)
 
-                if not isolated_crops:
-                    continue # SAM 3 didn't find anything matching the VLM's hallucination
+                if not crops_and_boxes:
+                    continue 
                     
-                if concept not in self.embedding_memory:
-                    self.embedding_memory[concept] = []
+                # 4. Process every instance of the concept
+                for idx, (crop, bbox) in enumerate(crops_and_boxes):
+                    
+                    # SPATIAL IOU TRACKING: Check if this box overlaps with an object from the previous scene
+                    assigned_label = concept
+                    best_iou = 0.0
+                    
+                    for past_item in self.last_scene_boxes:
+                        iou = self.calculate_iou(bbox, past_item["box"])
+                        if iou > best_iou:
+                            best_iou = iou
+                            assigned_label = past_item["label"] # Inherit the old label
+                            
+                    if best_iou > 0.50:
+                        print(f"[{time_str}] Tracking match: VLM said '{concept}', mapped to '{assigned_label}' (IoU: {best_iou:.2f})")
+                    
+                    # Track this box for the next scene
+                    current_scene_boxes.append({"label": assigned_label, "box": bbox})
 
-                # 3. Process every instance of the concept SAM 3 found in this frame
-                for idx, crop in enumerate(isolated_crops):
+                    # Ensure we have memory initialized for the potentially updated label
+                    if assigned_label not in self.embedding_memory:
+                        self.embedding_memory[assigned_label] = []
+
+                    # 5. CLIP Deduplication using the tracking-adjusted label
                     new_embedding = self.get_clip_embedding(crop)
-                    unique = self.is_unique(new_embedding, self.embedding_memory[concept])
+                    unique = self.is_unique(new_embedding, self.embedding_memory[assigned_label])
                     
-                    instance_key = f"{concept}_{idx}"
+                    instance_key = f"{assigned_label}_{idx}"
                     section_result["is_unique_map"][instance_key] = unique
 
                     if unique:
-                        self.object_counts[concept] = self.object_counts.get(concept, 0) + 1
-                        self.embedding_memory[concept].append(new_embedding)
+                        self.object_counts[assigned_label] = self.object_counts.get(assigned_label, 0) + 1
+                        self.embedding_memory[assigned_label].append(new_embedding)
 
-                        class_dir = output_dir / concept.replace(" ", "_")
+                        class_dir = output_dir / assigned_label.replace(" ", "_")
                         class_dir.mkdir(parents=True, exist_ok=True)
 
-            self.write_json_output(output_dir, "result.json", section_result)
+            # Update the global tracker to pass these boxes to the next chunk
+            self.last_scene_boxes = current_scene_boxes
+
+            self.write_json_output(output_dir, f"result_{time.time()}.json", section_result)
             self.all_results.append(section_result)
 
-        self.write_json_output(output_dir, "final_counts.json", self.object_counts)
-        self.write_json_output(output_dir, "all_results.json", self.all_results)
+        self.write_json_output(output_dir, f"final_counts_{time.time()}.json", self.object_counts)
+        self.write_json_output(output_dir, f"all_results_{time.time()}.json", self.all_results)
 
         print(f"Pipeline execution finished. Final Object Counts: {self.object_counts}")
