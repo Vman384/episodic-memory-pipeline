@@ -29,7 +29,4 @@ export TRANSFORMERS_OFFLINE=1
 export VLLM_USE_DEEP_GEMM=0
 
 # run main script
-python3 main.py --mode sparse --stage extract
-
-# run question stage right after
-python3 main.py --mode sparse --stage review
+python3 main.py --mode sparse
