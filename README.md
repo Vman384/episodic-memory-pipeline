@@ -110,6 +110,7 @@ python main.py --mode counting
 | `configs/*.json` | Pipeline configuration files |
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | Local vLLM temporal PBS job script |
+| `forest_run.sh` | Combined API/local PBS job script for the forest K-01 dataset, sparse and temporal |
 
 ## Sparse-Event Pipeline
 
@@ -193,12 +194,18 @@ VLM output.
 The sparse-event configuration is stored in `configs/sparse_events.json`; the
 temporal configuration is stored in `configs/temporal_events.json`.
 
-The batch scripts under `scripts/` (`run_all_local.sh`, `run_all_api.sh`) rewrite
-only the per-list `frames_dir`, `sections_dir`, and `output` paths before each
-run. `run_all_api.sh` also forces `backend: "api"` and `model: "gpt-5.6-luna"`,
-so it needs no manual configuration edit. `run_all_local.sh` reads `backend`,
+The batch scripts (`run_all_local.sh`, `run_all_api.sh`) rewrite only the
+per-list `frames_dir`, `sections_dir`, and `output` paths before each run.
+`run_all_api.sh` also forces `backend: "api"` and `model: "gpt-5.6-luna"`, so
+it needs no manual configuration edit. `run_all_local.sh` reads `backend`,
 `model`, and every other inference setting from the configuration file, so set
 those there before submitting a local batch job.
+
+`forest_run.sh` runs both the sparse and temporal pipelines over the forest
+K-01 dataset (`K-01_data`) in one PBS job. It contains an API version and a
+local model version; comment out the PBS header and run blocks of the version
+you are not running before submitting. It rewrites the config paths to the
+K-01 dataset and restores the original configs on exit.
 
 
 The `task` value identifies the benchmark category. The top-level `--mode`
