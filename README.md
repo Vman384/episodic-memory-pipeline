@@ -419,7 +419,7 @@ also carry `frame_seconds`, computed from the detected frame's own timestamp.
 temporal events into elapsed seconds. It uses the earliest frame timestamp in
 `frames_dir` as time zero. Two filename formats are supported: Boreas-style
 epoch microseconds (`1733343593917869.png`) and WildScenes-style
-`<epoch-seconds>-<nanoseconds>` (`1624328055-542742850.png`); both are parsed
+`<epoch-seconds>.<fraction>` (`1624325785.833297127.png`); both are parsed
 by `parse_frame_timestamp`.
 
 ```python

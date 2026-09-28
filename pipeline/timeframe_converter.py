@@ -6,26 +6,28 @@ from pathlib import Path
 MICROSECONDS_PER_SECOND = 1_000_000
 
 # Matches plain epoch-microsecond names (Boreas) and WildScenes-style
-# "<epoch-seconds>-<nanoseconds>" names.
-_FRAME_TIMESTAMP_PATTERN = re.compile(r"^(\d+)(?:-(\d{1,9}))?$")
+# "<epoch-seconds>.<fraction>" names (also tolerates a "-" separator). The
+# trailing extension is optional so bare frame names still parse.
+_FRAME_TIMESTAMP_PATTERN = re.compile(r"^(\d+)(?:[.-](\d+))?(?:\.[A-Za-z0-9]+)?$")
 
 
 def parse_frame_timestamp(frame):
     """Return a frame filename's epoch timestamp in microseconds.
 
     Supports plain epoch-microsecond filenames (Boreas) and
-    ``<epoch-seconds>-<nanoseconds>`` filenames (WildScenes).
+    ``<epoch-seconds>.<fraction>`` filenames (WildScenes).
     """
-    match = _FRAME_TIMESTAMP_PATTERN.match(Path(str(frame)).stem)
+    match = _FRAME_TIMESTAMP_PATTERN.match(Path(str(frame)).name)
     if not match:
         raise ValueError(
             "Frame must have a timestamp filename (e.g. 1733343593917869.png "
-            f"or 1624328055-542742850.png): {frame}"
+            f"or 1624325785.833297127.png): {frame}"
         )
-    seconds, nanoseconds = match.groups()
-    if nanoseconds is None:
+    seconds, fraction = match.groups()
+    if fraction is None:
         return int(seconds)
-    return int(seconds) * MICROSECONDS_PER_SECOND + int(nanoseconds.ljust(9, "0")) // 1000
+    nanoseconds = int(fraction.ljust(9, "0")[:9])
+    return int(seconds) * MICROSECONDS_PER_SECOND + nanoseconds // 1000
 
 
 class TimeframeConverter:

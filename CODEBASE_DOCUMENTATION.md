@@ -323,7 +323,7 @@ temporal-order benchmark pipelines.
 
 ### `pipeline/frame_parser.py`
 
-**Purpose:** Splits an existing directory of timestamp-named frame images into VLM-sized section folders. Works on pre-extracted frame directories (e.g., Boreas dataset camera images named `<epoch-microseconds>.png` or WildScenes images named `<epoch-seconds>-<nanoseconds>.png`) — no video input, no Decord dependency. This is the first stage of the sparse event pipeline.
+**Purpose:** Splits an existing directory of timestamp-named frame images into VLM-sized section folders. Works on pre-extracted frame directories (e.g., Boreas dataset camera images named `<epoch-microseconds>.png` or WildScenes images named `<epoch-seconds>.<fraction>.png`) — no video input, no Decord dependency. This is the first stage of the sparse event pipeline.
 
 **Key Dependencies:** `shutil`, `pathlib.Path`, `argparse`.
 
@@ -401,7 +401,7 @@ Both pipelines pass `ImagePreprocessor.from_config(self.config)` to
 elapsed seconds in the overall video. The earliest frame in the source
 directory is treated as time zero. Frame filenames must be timestamps in either
 the Boreas format `<epoch-microseconds>.png` or the WildScenes format
-`<epoch-seconds>-<nanoseconds>.png`; both are parsed to microseconds by
+`<epoch-seconds>.<fraction>.png`; both are parsed to microseconds by
 `parse_frame_timestamp(frame)`, which raises `ValueError` for other names.
 
 **Functions:**
