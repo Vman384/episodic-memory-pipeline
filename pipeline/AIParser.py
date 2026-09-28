@@ -3,6 +3,11 @@ import os
 import uuid
 from pathlib import Path
 
+try:
+    from pipeline.timeframe_converter import parse_frame_timestamp
+except ImportError:
+    from timeframe_converter import parse_frame_timestamp
+
 
 class AIParser:
     """
@@ -170,7 +175,7 @@ class AIParser:
             if path.is_file() and path.suffix.lower() in self.image_extensions:
                 image_paths.append(path)
 
-        image_paths.sort(key=lambda path: int(path.stem))
+        image_paths.sort(key=parse_frame_timestamp)
         if not image_paths:
             raise ValueError(f"No image frames found in folder: {folder}")
 

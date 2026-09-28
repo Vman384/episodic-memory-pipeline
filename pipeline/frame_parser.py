@@ -8,9 +8,9 @@ import shutil
 from pathlib import Path
 
 try:
-    from pipeline.timeframe_converter import TimeframeConverter
+    from pipeline.timeframe_converter import TimeframeConverter, parse_frame_timestamp
 except ImportError:
-    from timeframe_converter import TimeframeConverter
+    from timeframe_converter import TimeframeConverter, parse_frame_timestamp
 
 try:
     from pipeline.image_preprocessor import ImagePreprocessor
@@ -105,7 +105,7 @@ class FrameParser:
         self.extensions = frozenset(normalized_extensions)
 
     def _get_frame_paths(self) -> list[Path]:
-        """Return supported frame files in numeric filename order."""
+        """Return supported frame files in timestamp filename order."""
         if not self.frames_dir.is_dir():
             raise FileNotFoundError(f"Frame directory not found: {self.frames_dir}")
 
@@ -113,7 +113,7 @@ class FrameParser:
         for path in self.frames_dir.iterdir():
             if path.is_file() and path.suffix.lower() in self.extensions:
                 frame_paths.append(path)
-        return sorted(frame_paths, key=lambda path: int(path.stem))
+        return sorted(frame_paths, key=parse_frame_timestamp)
 
     def create_section_dir(self) -> list[Path]:
         """Create section directories and return their paths.

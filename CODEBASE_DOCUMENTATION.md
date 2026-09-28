@@ -19,7 +19,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 ### What Is Currently Implemented
 
-1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of numerically named frame images into VLM-sized section folders. Supports configurable section size, per-section frame stride and inter-section skip, copy/move semantics, and optional per-frame JPEG re-encoding via `ImagePreprocessor`.
+1. **Frame Parser** (`pipeline/frame_parser.py`) — Splits a directory of timestamp-named frame images into VLM-sized section folders. Supports configurable section size, per-section frame stride and inter-section skip, copy/move semantics, and optional per-frame JPEG re-encoding via `ImagePreprocessor`.
 
 2. **Image Preprocessor** (`pipeline/image_preprocessor.py`) — Re-encodes frame images as resized JPEGs while sections are built, shrinking API request payloads and vision-token usage.
 
@@ -323,7 +323,7 @@ temporal-order benchmark pipelines.
 
 ### `pipeline/frame_parser.py`
 
-**Purpose:** Splits an existing directory of numerically named frame images into VLM-sized section folders. Works on pre-extracted frame directories (e.g., Boreas dataset camera images) — no video input, no Decord dependency. This is the first stage of the sparse event pipeline.
+**Purpose:** Splits an existing directory of timestamp-named frame images into VLM-sized section folders. Works on pre-extracted frame directories (e.g., Boreas dataset camera images named `<epoch-microseconds>.png` or WildScenes images named `<epoch-seconds>-<nanoseconds>.png`) — no video input, no Decord dependency. This is the first stage of the sparse event pipeline.
 
 **Key Dependencies:** `shutil`, `pathlib.Path`, `argparse`.
 
@@ -354,7 +354,7 @@ temporal-order benchmark pipelines.
 
 | Method | Purpose |
 |--------|---------|
-| `create_section_dir()` | Sorts frame files by numeric stem, samples `frames_per_section` frames per section at stride `step_size`, and starts the next section `skip` frames after the last sampled frame. Copies (or moves) files. When a `preprocessor` is provided, each sampled frame is re-encoded as a JPEG (`.jpg` suffix, same numeric stem) instead of being copied. Also writes a `sections.json` manifest mapping each section to its first/last frame and elapsed start/end seconds relative to the first sampled frame. Returns list of created section directory paths. |
+| `create_section_dir()` | Sorts frame files by parsed frame timestamp (`parse_frame_timestamp`), samples `frames_per_section` frames per section at stride `step_size`, and starts the next section `skip` frames after the last sampled frame. Copies (or moves) files. When a `preprocessor` is provided, each sampled frame is re-encoded as a JPEG (`.jpg` suffix, same filename stem) instead of being copied. Also writes a `sections.json` manifest mapping each section to its first/last frame and elapsed start/end seconds relative to the first sampled frame. Returns list of created section directory paths. |
 
 **CLI Interface:**
 
@@ -373,7 +373,7 @@ writes sections. Full-resolution camera frames produce base64 request payloads
 that API backends reject and vision tokens that local models must pay for;
 JPEG re-encoding shrinks payloads dramatically and downscaling keeps
 multi-image requests within the vision-token budget of API models such as
-`grok-4.6`. Images are never upscaled and numeric filenames keep their stem.
+`grok-4.6`. Images are never upscaled and timestamped filenames keep their stem.
 
 **Key Dependencies:** `Pillow`, `pathlib.Path`.
 
@@ -397,10 +397,18 @@ Both pipelines pass `ImagePreprocessor.from_config(self.config)` to
 
 ### `pipeline/timeframe_converter.py`
 
-**Purpose:** Converts numeric frame timestamps from temporal event outputs into
-elapsed seconds in the overall video. The earliest numeric frame in the source
-directory is treated as time zero, and timestamps are interpreted as
-microseconds.
+**Purpose:** Converts frame timestamps from temporal event outputs into
+elapsed seconds in the overall video. The earliest frame in the source
+directory is treated as time zero. Frame filenames must be timestamps in either
+the Boreas format `<epoch-microseconds>.png` or the WildScenes format
+`<epoch-seconds>-<nanoseconds>.png`; both are parsed to microseconds by
+`parse_frame_timestamp(frame)`, which raises `ValueError` for other names.
+
+**Functions:**
+
+| Function | Purpose |
+|----------|---------|
+| `parse_frame_timestamp(frame)` → `int` | Parse a frame filename to epoch microseconds for either supported format. |
 
 **Class: `TimeframeConverter`**
 
@@ -408,6 +416,10 @@ microseconds.
 |--------|---------|
 | `frame_to_seconds(frame)` → `float` | Convert one frame filename or timestamp to elapsed seconds. |
 | `timeframe_to_seconds(start_frame, end_frame)` → `dict` | Return `start_seconds` and `end_seconds` for one temporal event. |
+
+`parse_frame_timestamp` is also used by `FrameParser`, `AIParser`, and the
+sparse/temporal event sort keys so all ordering and seconds math share one
+filename parser.
 
 For temporal runs the conversion is redundant: per-section seconds are computed
 from the actual frame timestamps when `FrameParser` builds the sections and
@@ -430,7 +442,7 @@ python3 run_timeframe_converter.py
 python3 run_timeframe_converter.py --timeline input.json --output output.json
 ```
 
-The source frame directory must be available and contain numeric timestamp
+The source frame directory must be available and contain timestamped
 filenames.
 
 ---
@@ -474,7 +486,7 @@ the provider response body and request ID when available.
 | Method | Purpose |
 |--------|---------|
 | `call_llm(prompt, max_tokens=None)` → `str` | Sends a text prompt to the selected backend and returns generated text. An optional per-call token limit overrides the configured default. |
-| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by numeric filename, includes an in-memory ordered filename manifest in the prompt, sends them together to the selected backend, and returns generated text. |
+| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by parsed frame timestamp, includes an in-memory ordered filename manifest in the prompt, sends them together to the selected backend, and returns generated text. |
 
 Configuration loading belongs to the pipeline classes, which read the JSON file and pass the complete dictionary into the `AIParser` constructor. In API mode, the API key is read from the environment variable named by `api_key_env`; it is not stored in configuration files.
 
@@ -513,14 +525,14 @@ timeline.
 | Stage | Behavior |
 |-------|----------|
 | `extract` | Creates frame sections, queries the VLM with `temporal_vlm.txt`, writes one result per section, and skips existing results for resumability. Parsed events from each response are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json`. Section frames are deleted once the VLM has processed them, and the per-section result folders are deleted after `all_results.json` is written. |
-| `timeline` | Loads section results from `all_results.json`, parses their `events` arrays, sorts them by numeric `start_frame`, merges events in LLM windows, re-attaches per-section seconds after merging, and writes `timeline.json` and `storyline.txt`. |
+| `timeline` | Loads section results from `all_results.json`, parses their `events` arrays, sorts them by parsed `start_frame` timestamp, merges events in LLM windows, re-attaches per-section seconds after merging, and writes `timeline.json` and `storyline.txt`. |
 | `questions` | Loads `timeline.json`, intended to be human-reviewed first, and writes generated temporal questions to `questions.json`. |
 
 When no stage is supplied, the pipeline runs `extract` followed by `timeline`.
 The question stage is never included in the default run so that human review can
 occur between timeline creation and question generation.
 
-**Timeline behavior:** Event ordering is determined in Python from the numeric
+**Timeline behavior:** Event ordering is determined in Python from the parsed
 timestamp in each frame filename. The LLM is instructed only to merge duplicate
 or continuing observations, preserve order, and avoid inventing events. The
 `merge_window` configuration controls how many sorted events are sent in one
@@ -572,7 +584,7 @@ The class is invoked by `main.py` when the user selects
 | Stage | Behavior |
 |-------|----------|
 | `extract` | Creates frame sections, queries the VLM with `sparse_event_prompt.txt`, writes one result per section, and skips existing results for resumability. Parsed detections are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json` and a `frame_seconds` value computed from the detected frame's timestamp. Section frames are deleted once the VLM has processed them, and the per-section result folders are deleted after `all_results.json` is written. |
-| `review` | Loads section results from `all_results.json`, parses their `interesting_events` into detections, sorts them by numeric `frame`, merges duplicate observations and filters spurious detections in LLM windows, re-attaches seconds after merging, and writes `events.json`. |
+| `review` | Loads section results from `all_results.json`, parses their `interesting_events` into detections, sorts them by parsed `frame` timestamp, merges duplicate observations and filters spurious detections in LLM windows, re-attaches seconds after merging, and writes `events.json`. |
 | `questions` | Loads `events.json`, intended to be human-reviewed first, and writes generated sparse questions to `questions.json`. |
 
 When no stage is supplied, the pipeline runs `extract` followed by `review`.
@@ -580,7 +592,7 @@ The question stage is never included in the default run so that human review can
 occur between review and question generation.
 
 **Review behavior:** Detection ordering and event seconds are computed in
-Python from the numeric timestamp in each frame filename. The LLM is
+Python from the parsed timestamp in each frame filename. The LLM is
 instructed only to merge duplicate observations, remove spurious detections
 (with reasons in a `removed` list), preserve order, and avoid inventing events.
 The `review_window` configuration controls how many sorted detections are sent

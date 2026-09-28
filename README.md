@@ -103,7 +103,7 @@ python main.py --mode counting
 | `pipeline/timeframe_converter.py` | Converts timestamped event frame ranges into elapsed video seconds |
 | `run_timeframe_converter.py` | Applies timeframe conversion to events in `timeline.json` |
 | `pipeline/ConfigLoader.py` | Shared JSON configuration loader |
-| `pipeline/frame_parser.py` | Splits numerically named frame images into sections |
+| `pipeline/frame_parser.py` | Splits timestamp-named frame images into sections |
 | `pipeline/image_preprocessor.py` | Re-encodes frames as resized JPEGs while sections are built |
 | `pipeline/AIParser.py` | Configurable local vLLM or OpenAI-compatible API wrapper |
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
@@ -127,7 +127,7 @@ uses the following stages:
    interrupted extraction job to resume. Each section's frame images are
    deleted once the VLM has processed it, and the per-section result folders
    are deleted once `all_results.json` has been written.
-2. **Review:** Detections are parsed, sorted in Python by the numeric
+2. **Review:** Detections are parsed, sorted in Python by the frame
    timestamp in `frame`, and sent to the LLM in windows controlled by
    `review_window`. The LLM merges duplicate observations of the same rare
    event across a section boundary and filters out spurious detections (normal
@@ -164,7 +164,7 @@ stages:
    allowing an interrupted extraction job to resume. Each section's frame
    images are deleted once the VLM has processed it, and the per-section result
    folders are deleted once `all_results.json` has been written.
-2. **Timeline:** Section events are parsed, sorted in Python by the numeric
+2. **Timeline:** Section events are parsed, sorted in Python by the frame
    timestamp in `start_frame`, and sent to the LLM in windows controlled by
    `merge_window`. The LLM only merges continuing or duplicate observations;
    it is instructed not to reorder or invent events. Per-section seconds are
@@ -360,7 +360,7 @@ provider with the request ID.
 
 ## Frame Sections
 
-`FrameParser` accepts `.jpg`, `.jpeg`, `.png`, `.webp`, and `.bmp` files. It sorts frames by their numeric filename and samples each section with `step` as the stride between frames up to `frames_per_section` frames; the next section starts `skip` frames after the last sampled frame (defaulting to `step`, so sampling continues without gaps). It groups the sampled frames into directories such as:
+`FrameParser` accepts `.jpg`, `.jpeg`, `.png`, `.webp`, and `.bmp` files. It sorts frames by their timestamp filename and samples each section with `step` as the stride between frames up to `frames_per_section` frames; the next section starts `skip` frames after the last sampled frame (defaulting to `step`, so sampling continues without gaps). It groups the sampled frames into directories such as:
 
 ```text
 sections/
@@ -379,7 +379,7 @@ Set `move` to `true` in the configuration to move frames instead of copying them
 When `image_max_size` or `image_quality` is set in the configuration, `FrameParser`
 runs every sampled frame through `ImagePreprocessor` while writing sections:
 frames are converted to RGB and re-encoded as JPEGs with the configured
-quality, downscaled so the longest side fits `image_max_size`. Numeric
+quality, downscaled so the longest side fits `image_max_size`. Timestamp
 filenames keep their stem, so section and event timestamp handling is
 unaffected. Downscaled JPEG sections produce much smaller base64 payloads for
 the API backend, which otherwise rejects large multi-image requests.
@@ -416,9 +416,11 @@ also carry `frame_seconds`, computed from the detected frame's own timestamp.
 ## Frame Time Conversion
 
 `TimeframeConverter` converts the `start_frame` and `end_frame` values from
-temporal events into elapsed seconds. It uses the earliest numeric frame
-timestamp in `frames_dir` as time zero; frame filenames are expected to be
-microsecond timestamps.
+temporal events into elapsed seconds. It uses the earliest frame timestamp in
+`frames_dir` as time zero. Two filename formats are supported: Boreas-style
+epoch microseconds (`1733343593917869.png`) and WildScenes-style
+`<epoch-seconds>-<nanoseconds>` (`1624328055-542742850.png`); both are parsed
+by `parse_frame_timestamp`.
 
 ```python
 from pipeline.timeframe_converter import TimeframeConverter
@@ -438,7 +440,7 @@ python3 run_timeframe_converter.py
 ```
 
 Use `--timeline` and `--output` to select different paths. The source frame
-directory must be available, and frame names must contain numeric timestamps.
+directory must be available, and frame names must contain timestamps.
 For temporal runs this conversion is redundant: per-section seconds are already
 computed at frame-parsing time and attached to every event.
 

@@ -1,12 +1,35 @@
 """Convert timestamped frame timeframes into elapsed video seconds."""
 
+import re
 from pathlib import Path
+
+MICROSECONDS_PER_SECOND = 1_000_000
+
+# Matches plain epoch-microsecond names (Boreas) and WildScenes-style
+# "<epoch-seconds>-<nanoseconds>" names.
+_FRAME_TIMESTAMP_PATTERN = re.compile(r"^(\d+)(?:-(\d{1,9}))?$")
+
+
+def parse_frame_timestamp(frame):
+    """Return a frame filename's epoch timestamp in microseconds.
+
+    Supports plain epoch-microsecond filenames (Boreas) and
+    ``<epoch-seconds>-<nanoseconds>`` filenames (WildScenes).
+    """
+    match = _FRAME_TIMESTAMP_PATTERN.match(Path(str(frame)).stem)
+    if not match:
+        raise ValueError(
+            "Frame must have a timestamp filename (e.g. 1733343593917869.png "
+            f"or 1624328055-542742850.png): {frame}"
+        )
+    seconds, nanoseconds = match.groups()
+    if nanoseconds is None:
+        return int(seconds)
+    return int(seconds) * MICROSECONDS_PER_SECOND + int(nanoseconds.ljust(9, "0")) // 1000
 
 
 class TimeframeConverter:
     """Convert frame timestamps to seconds relative to the first video frame."""
-
-    MICROSECONDS_PER_SECOND = 1_000_000
 
     def __init__(self, frames_dir):
         self.frames_dir = Path(frames_dir).expanduser()
@@ -17,7 +40,7 @@ class TimeframeConverter:
 
     def _frame_timestamps(self):
         """
-        Return numeric frame timestamps in chronological order.
+        Return frame timestamps in chronological order.
         """
         if not self.frames_dir.is_dir():
             raise FileNotFoundError(f"Frame directory not found: {self.frames_dir}")
@@ -27,23 +50,15 @@ class TimeframeConverter:
             if not frame_path.is_file():
                 continue
             try:
-                timestamps.append(int(frame_path.stem))
+                timestamps.append(parse_frame_timestamp(frame_path))
             except ValueError:
                 continue
         return sorted(timestamps)
 
-    @staticmethod
-    def _timestamp(frame):
-        """Extract the numeric timestamp from a frame filename."""
-        try:
-            return int(Path(str(frame)).stem)
-        except ValueError as error:
-            raise ValueError(f"Frame must have a numeric filename: {frame}") from error
-
     def frame_to_seconds(self, frame):
         """Return a frame's elapsed time in seconds from the video start."""
-        timestamp = self._timestamp(frame)
-        return (timestamp - self.video_start_timestamp) / self.MICROSECONDS_PER_SECOND
+        timestamp = parse_frame_timestamp(frame)
+        return (timestamp - self.video_start_timestamp) / MICROSECONDS_PER_SECOND
 
     def timeframe_to_seconds(self, start_frame, end_frame):
         """Return the elapsed start and end seconds for an event timeframe."""

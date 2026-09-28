@@ -9,18 +9,18 @@ from pipeline.ConfigLoader import ConfigLoader
 from pipeline.TemporalPipeline import parse_json_response
 from pipeline.frame_parser import FrameParser
 from pipeline.image_preprocessor import ImagePreprocessor
-from pipeline.timeframe_converter import TimeframeConverter
+from pipeline.timeframe_converter import TimeframeConverter, parse_frame_timestamp
 
 
 def _frame_sort_key(event: dict):
-    """Sort key ordering events by their numeric frame timestamp.
+    """Sort key ordering events by their frame timestamp.
 
-    Frame filenames are epoch timestamps, so the numeric stem gives global
+    Frame filenames are epoch timestamps, so the parsed timestamp gives global
     chronological order. Events without a parseable frame go last.
     """
-    # Numeric frame names preserve order; invalid frames sort last.
+    # Timestamped frame names preserve order; invalid frames sort last.
     try:
-        return (0, int(Path(str(event.get("frame", ""))).stem))
+        return (0, parse_frame_timestamp(event.get("frame", "")))
     except ValueError:
         return (1, 0)
 
