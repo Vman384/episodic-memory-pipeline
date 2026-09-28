@@ -4,7 +4,7 @@ environments.
 
 Look for rare or noteworthy events: unusual occurrences, unexpected objects,
 sudden changes, unique terrain transitions, or anything that stands out from
-normal mundane driving. Do not report normal driving, regular traffic, or mundane
+normal mundane driving or walking. Do not report normal driving, regular traffic, or mundane
 scenery.
 
 Respond with ONLY a JSON object. If nothing noteworthy happens, return an
