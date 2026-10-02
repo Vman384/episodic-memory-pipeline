@@ -39,7 +39,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 9. **Sparse-Event HPC Job Script** (`sparse_event.pbs`) — PBS batch script for the current sparse-event CLI.
 
-10. **Forest Run Script** (`forest_run.sh`) — Combined PBS job script for the forest K-01 dataset. Holds an API version and a local vLLM version of both the sparse and temporal runs; the version that is not being run is commented out before submission.
+10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
 ### What Is Not Yet Implemented
 
@@ -290,25 +290,21 @@ original config is restored on exit.
 
 ### `forest_run.sh`
 
-**Purpose:** PBS batch script for the forest K-01 dataset. It runs both the
-sparse and temporal pipelines in one job and holds an API version and a local
-vLLM version; the PBS header and run blocks of the version that is not being run
-are commented out before submission.
+**Purpose:** PBS batch script currently configured to run the local
+Qwen3-VL sparse-event pipeline on the forest K-01 dataset. API and temporal run
+blocks are retained as inactive examples.
 
 **Entry point:** Loads Python and CUDA, activates the shared vLLM environment,
-rewrites `configs/sparse_events.json` and `configs/temporal_events.json` with the
-K-01 `frames_dir`, `sections_dir`, and `output` paths, then runs
-`python3 main.py --mode sparse` and `python3 main.py --mode temporal`. The API
-version also sets `backend: "api"` and `model: "gpt-5.6-luna"`; the local
-version sets `backend: "local"` and the Qwen VL model used by each config. The
-original configs are restored on exit, and completed section results are reused
-so the job can be resubmitted. Outputs are written next to the dataset under
-`forest_dataset/K-01_sparse_outputs/` and `forest_dataset/K-01_temporal_outputs/`.
+rewrites `configs/sparse_events.json` with `backend: "local"`,
+`model: "Qwen/Qwen3-VL-235B-A22B-Instruct-FP8"`, and the K-01 frame and output
+paths, then runs `python3 main.py --mode sparse` (extraction followed by
+review). The original configs are restored on exit, and completed section
+results are reused on resubmission. Outputs are written under
+`forest_dataset/K-01_sparse_outputs/`.
 
-**Resources:** The local header requests the `gpuhopper` queue (48 CPUs, 4 GPUs,
-1024 GB memory, 10-hour walltime); the API header requests the CPU-only `copyq`
-queue (1 CPU, 4 GB memory, 10-hour walltime). Both request
-`scratch/pg06+gdata/pg06` storage.
+**Resources:** The active local header requests the `gpuhopper` queue (48 CPUs,
+4 GPUs, 1024 GB memory, 10-hour walltime) and
+`scratch/pg06+gdata/pg06` storage. The CPU-only API header is commented out.
 
 ---
 
@@ -852,7 +848,7 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 | Temporal storyline prompt (`prompts/temporal_storyline.txt`) | Complete |
 | Temporal question prompt (`prompts/temporal_question_gen.txt`) | Complete |
 | Temporal PBS job script (`temporal_event.pbs`) | Local vLLM temporal wrapper; requests four GPUs for the 72B model |
-| Forest run script (`forest_run.sh`) | API/local wrapper for the forest K-01 dataset; sparse and temporal runs in one file |
+| Forest run script (`forest_run.sh`) | Local Qwen3-VL sparse-event run for forest K-01; API and temporal examples are inactive |
 | Temporal question generation | Implemented; requires human-reviewed timeline |
 | Sparse event question generation | Implemented; requires human-reviewed events list |
 | Benchmark categories 2–4 | Not yet implemented |

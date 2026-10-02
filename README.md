@@ -110,7 +110,7 @@ python main.py --mode counting
 | `configs/*.json` | Pipeline configuration files |
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | Local vLLM temporal PBS job script |
-| `forest_run.sh` | Combined API/local PBS job script for the forest K-01 dataset, sparse and temporal |
+| `forest_run.sh` | Local Qwen3-VL sparse-event PBS job for the forest K-01 dataset; API and temporal examples are inactive |
 
 ## Sparse-Event Pipeline
 
@@ -201,11 +201,12 @@ it needs no manual configuration edit. `run_all_local.sh` reads `backend`,
 `model`, and every other inference setting from the configuration file, so set
 those there before submitting a local batch job.
 
-`forest_run.sh` runs both the sparse and temporal pipelines over the forest
-K-01 dataset (`K-01_data`) in one PBS job. It contains an API version and a
-local model version; comment out the PBS header and run blocks of the version
-you are not running before submitting. It rewrites the config paths to the
-K-01 dataset and restores the original configs on exit.
+`forest_run.sh` is currently configured to run the local
+`Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` model for sparse-event extraction and
+review on forest K-01 (`K-01_data`). Its active PBS header requests four GPUs
+from `gpuhopper`. The API and temporal run blocks remain as inactive examples.
+The script updates the sparse config for K-01 and restores the original config
+when it exits.
 
 
 The `task` value identifies the benchmark category. The top-level `--mode`
