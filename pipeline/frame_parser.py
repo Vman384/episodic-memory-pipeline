@@ -197,8 +197,19 @@ def format_timestamp(seconds):
 def sample_frames_from_indices(vr, start_idx, end_idx, num_samples=8, max_size=(448, 448)):
     """Uniformly samples frames and resizes them to drastically cut visual token usage."""
     total_chunk_frames = end_idx - start_idx
-    step = max(1, total_chunk_frames // num_samples)
-    selected_indices = list(range(start_idx, end_idx, step))[:num_samples]
+    if num_samples <= 0:
+        raise ValueError("num_samples must be greater than zero")
+    if total_chunk_frames <= 0:
+        return []
+
+    sample_count = min(num_samples, total_chunk_frames)
+    if sample_count == 1:
+        selected_indices = [start_idx]
+    else:
+        selected_indices = [
+            start_idx + round(index * (total_chunk_frames - 1) / (sample_count - 1))
+            for index in range(sample_count)
+        ]
     
     batch = vr.get_batch(selected_indices).asnumpy()
     frames = []

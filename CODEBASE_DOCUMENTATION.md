@@ -29,17 +29,19 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 5. **Temporal Pipeline** (`pipeline/TemporalPipeline.py`) — Provides resumable section extraction, timestamp-sorted timeline construction, windowed LLM merging, storyline generation, and question generation from a human-reviewed timeline.
 
-6. **Top-Level CLI Dispatcher** (`main.py`) — Accepts `--mode` values for sparse event, temporal, spatial, and counting benchmarks. The temporal branch also accepts `--stage extract|timeline|questions`; spatial and counting remain placeholders.
+6. **Counting Pipeline** (`pipeline/CountingPipeline.py`) — Samples video frames, asks the VLM to discover object concepts, segments matching instances with SAM3, and uses CLIP embeddings to deduplicate detections. Sampling count and maximum frame size are configurable in `configs/counting_events.json`.
 
-7. **Prototype/Test Script** (`test_vlm.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. It reads video via Decord, chunks into 300-frame segments, and generates descriptions and change-detection QA drafts via few-shot prompting.
+7. **Top-Level CLI Dispatcher** (`main.py`) — Accepts `--mode` values for sparse event, temporal, spatial, and counting benchmarks. The temporal branch also accepts `--stage extract|timeline|questions`; only spatial remains a placeholder.
 
-8. **Legacy HPC Job Script** (`vllm.pbs`) — PBS batch script for the old prototype on NCI's Gadi cluster.
+8. **Prototype/Test Script** (`test_vlm.py`) — Reference implementation using self-hosted vLLM with Qwen2-VL-7B. It reads video via Decord, chunks into 300-frame segments, and generates descriptions and change-detection QA drafts via few-shot prompting.
 
-9. **Sparse-Event HPC Job Script** (`sparse_event.pbs`) — PBS batch script for the current sparse-event CLI.
+9. **Legacy HPC Job Script** (`vllm.pbs`) — PBS batch script for the old prototype on NCI's Gadi cluster.
+
+10. **Sparse-Event HPC Job Script** (`sparse_event.pbs`) — PBS batch script for the current sparse-event CLI.
 
 ### What Is Not Yet Implemented
 
-- The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
+- Dedicated attribute-perception and spatial-reasoning benchmarks.
 - `temporal_event.pbs` runs the API-backed temporal configuration and forwards exported environment variables to the PBS job.
 - A **User Interface**, **Hybrid Search Module**, and **Reporting frontend** are not implemented.
 - No test suite, CI/CD, Dockerfile, or Makefile.
@@ -114,7 +116,7 @@ episodic-memory-pipeline/
 python main.py --mode sparse
 ```
 
-The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse` imports `pipeline/SparseEventPipeline.py`, while `temporal` imports `pipeline/TemporalPipeline.py` and loads four temporal prompts. Spatial and counting remain placeholders.
+The accepted values are `sparse`, `temporal`, `spatial`, and `counting`. `sparse` imports `pipeline/SparseEventPipeline.py`, `temporal` imports `pipeline/TemporalPipeline.py` and loads four temporal prompts, and `counting` imports `pipeline/CountingPipeline.py`. Spatial remains a placeholder.
 
 The optional `--stage` argument applies to `temporal` mode:
 

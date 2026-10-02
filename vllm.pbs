@@ -2,28 +2,30 @@
 #PBS -N qwen_vllm_large
 #PBS -P pg06
 #PBS -q gpuhopper
-#PBS -l ncpus=12
-#PBS -l ngpus=1
+#PBS -l ncpus=24
+#PBS -l ngpus=4
 #PBS -l mem=128GB
-#PBS -l walltime=01:00:00
+#PBS -l walltime=00:30:00
 #PBS -l jobfs=100GB
 #PBS -l storage=gdata/pg06+scratch/pg06
 #PBS -l wd
 
-# 1. Load the required Gadi stacks
-module load python3/3.11.7
-module load cuda/12.2.2
+# 1. Load GCC alongside CUDA so NVCC has a valid host compiler
+module load cuda/12.9.0
+module load python3/3.12.13
+module load gcc/13.2.0
 
-# # 2. Apply your verified compilation fixes
-# export CPATH="/apps/python3/3.11.7/include/python3.11:$(python3 -c "import sysconfig; print(sysconfig.get_path('include'))"):$CPATH"
-# export CPLUS_INCLUDE_PATH=$CPATH
-# export CUDA_HOME=/apps/cuda/12.2.2
-# export PATH=$CUDA_HOME/bin:$PATH
+# 2. Environment Paths
+# export CUDA_HOME=/apps/cuda/12.3.2
+# export PATH=\(CUDA_HOME/bin:\)PATH
 
-# # 3. Optimizations specifically for Qwen2-VL & heavy data loading
-# export VLLM_ATTENTION_BACKEND=FLASH_ATTN # Forces stable attention backend
-# export TORCH_EXTENSIONS_DIR="${PBS_JOBFS}/torch_extensions" # Redirects JIT compilation to fast local SSD
+# 3. vLLM Engine Overrides
+export VLLM_USE_DEEP_GEMM=0
+export VLLM_MOE_USE_DEEP_GEMM=0     # harmless if unrecognized, covers some versions
+export CUDA_HOME=$(dirname $(dirname $(which nvcc)))
+export TORCH_EXTENSIONS_DIR="${PBS_JOBFS}/torch_ext"
 
-# 4. Activate your environment and run
+
+# 4. Activate virtual environment and run
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 python main.py --mode counting

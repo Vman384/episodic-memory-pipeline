@@ -4,16 +4,16 @@ Benchmarking pipeline for assessing Vision Language Models' (VLMs) episodic memo
 
 ## Current Status
 
-The top-level runner accepts four benchmark modes. `sparse` and `temporal` are connected to pipelines; `spatial` and `counting` are recognized but not implemented yet.
+The top-level runner accepts four benchmark modes. `sparse`, `temporal`, and `counting` are connected to pipelines; `spatial` is recognized but not implemented yet.
 
 | Mode | Status |
 |------|--------|
 | `sparse` | Connected to `SparseEventPipeline` |
 | `temporal` | Resumable extraction, timeline construction, storyline, and question generation implemented |
 | `spatial` | Not implemented |
-| `counting` | Not implemented |
+| `counting` | VLM concept discovery, SAM3 segmentation, and CLIP-based deduplication |
 
-Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses local vLLM; the supplied temporal configuration uses the OpenCode Go Responses API with `gpt-5.6-luna` and does not require a local VLM or GPUs.
+Sparse and temporal support local vLLM and OpenAI-compatible API inference. Counting uses a local VLM with SAM3 and CLIP models. The supplied sparse-event configuration uses local vLLM; the supplied temporal configuration uses the OpenCode Go Responses API with `gpt-5.6-luna` and does not require a local VLM or GPUs.
 
 ## Setup
 
@@ -51,11 +51,16 @@ The temporal review workflow is:
 4. Run `--stage questions` to generate temporal questions from the reviewed timeline.
 5. Review `questions.json` before using it as benchmark data.
 
-The other accepted modes currently print a not-implemented message:
+Counting runs with its configured video and models:
+
+```bash
+python main.py --mode counting
+```
+
+Spatial currently prints a not-implemented message:
 
 ```bash
 python main.py --mode spatial
-python main.py --mode counting
 ```
 
 ## Structure
@@ -255,6 +260,10 @@ video. These seconds are computed from the real frame timestamps, so later
 stages know the time range of every section without relying on model output.
 
 Set `move` to `true` in the configuration to move frames instead of copying them. It defaults to `false` when omitted.
+
+## Counting Recall Tuning
+
+Counting samples frames from each video section before sending them to the VLM. In `configs/counting_events.json`, `num_samples_per_section` controls how many frames are inspected per section, and `max_frame_size` sets the maximum width and height in pixels. The supplied values (`16` and `640`) increase coverage and detail compared with the previous eight 448-pixel samples, at the cost of more inference time and GPU memory. Sampling spans the full section, including its first and last frames. Reduce these values if the model server runs out of memory; increase them cautiously when small or brief objects are still missed.
 
 ## Intended Output
 

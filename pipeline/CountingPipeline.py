@@ -133,19 +133,34 @@ class CountingPipeline:
     def parse_concept_list(self, vlm_response: str) -> list[str]:
         """Parses raw text/JSON from the VLM response into a list of string concepts."""
         if isinstance(vlm_response, list):
-            return [str(item).strip() for item in vlm_response if item]
+            return list(dict.fromkeys(
+                str(item).strip().lower() for item in vlm_response if item
+            ))
 
-        # 1. Attempt JSON parsing if response is formatted as [ "red car", "person" ]
+        cleaned_response = re.sub(
+            r"```(?:json)?\s*([\s\S]*?)\s*```", r"\1", vlm_response
+        ).strip()
         try:
-            match = re.search(r"$$.*?$$", vlm_response, re.DOTALL)
+            parsed = json.loads(cleaned_response)
+            if isinstance(parsed, list):
+                return list(dict.fromkeys(
+                    str(item).strip().lower() for item in parsed if item
+                ))
+        except json.JSONDecodeError:
+            pass
+
+        try:
+            match = re.search(r"\[[\s\S]*?\]", cleaned_response)
             if match:
                 parsed = json.loads(match.group(0))
                 if isinstance(parsed, list):
-                    return [str(x).strip().lower() for x in parsed if x]
+                    return list(dict.fromkeys(
+                        str(item).strip().lower() for item in parsed if item
+                    ))
         except json.JSONDecodeError:
             pass
         # 2. Fallback: Parse bullet points or comma-separated text
-        lines = vlm_response.strip().split("\n")
+        lines = cleaned_response.split("\n")
         concepts = []
         for line in lines:
             cleaned = re.sub(r"^[\s\*\-\d\.]+", "", line).strip().lower()
@@ -217,7 +232,14 @@ class CountingPipeline:
             end_time_sec = end_frame / fps
             time_str = f"{format_timestamp(start_time_sec)} - {format_timestamp(end_time_sec)}"
 
-            pil_frames = sample_frames_from_indices(vr, start_frame, end_frame, num_samples=8, max_size=(448, 448))
+            frame_size = self.config.get("max_frame_size", 640)
+            pil_frames = sample_frames_from_indices(
+                vr,
+                start_frame,
+                end_frame,
+                num_samples=self.config.get("num_samples_per_section", 16),
+                max_size=(frame_size, frame_size),
+            )
             
             # 1. DYNAMIC PROMPTING: Force the VLM to reuse known labels
             current_prompt = self.prompt

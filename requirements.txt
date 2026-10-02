@@ -1,10 +1,16 @@
-vllm
+# Image, video, and model inference
 decord
-
-# sparse_event_pipeline requirements
-anthropic>=0.120
-python-dotenv
-tqdm
-decord
+numpy
 Pillow
+torch
+torchvision
+transformers
+tqdm
+typing
+
+# Local VLM backend (install a build compatible with the cluster CUDA stack)
+vllm
+
+# OpenAI-compatible API backend
 openai>=1.66.0
+python-dotenv

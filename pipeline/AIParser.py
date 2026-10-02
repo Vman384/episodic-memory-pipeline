@@ -52,6 +52,7 @@ class AIParser:
                 dtype=config.get("dtype", "half"),
                 max_model_len=config.get("max_model_len", 4096),
                 gpu_memory_utilization=config.get("gpu_memory_utilization", 0.9),
+                tensor_parallel_size=config.get("tensor_parallel_size", 1),
             )
             self.sampling_params = SamplingParams(
                 temperature=self.local_temperature,

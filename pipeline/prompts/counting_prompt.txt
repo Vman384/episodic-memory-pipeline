@@ -5,7 +5,9 @@ CRITICAL CONSTRAINTS:
 2. Do NOT use granular sub-types or specific vehicle classifications. For example, use "red car" — NEVER use "red sedan", "red SUV", or "red hatchback". 
 3. Do not guess, assume, or hallucinate objects that are not explicitly visible.
 4. Do NOT provide bounding boxes or spatial coordinates.
-5. Output NOTHING EXCEPT a valid JSON array of strings. Do not include markdown formatting, code blocks, conversational filler, or explanations.
+5. Inspect every supplied frame. Include an object if it is clearly visible in any one frame, even if it is absent from the other frames.
+6. Pay attention to small or distant objects when they are visually identifiable, but do not guess when details are unclear.
+7. Output NOTHING EXCEPT a valid JSON array of strings. Do not include markdown formatting, code blocks, conversational filler, or explanations.
 
 Expected Output Format:
 [
