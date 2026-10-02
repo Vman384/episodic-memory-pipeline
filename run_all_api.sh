@@ -4,7 +4,7 @@
 #PBS -q copyq
 #PBS -l ncpus=1
 #PBS -l mem=4GB
-#PBS -l walltime=00:30:00
+#PBS -l walltime=01:30:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
@@ -20,17 +20,11 @@ cd "$PBS_O_WORKDIR"
 # Enter the environment containing the local vLLM pipeline dependencies.
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
-# Use the shared model cache and prevent model resolution from making network requests.
-export HF_HOME="/g/data/pg06/FYP2026S1_3473/huggingface_cache"
-
-
 # Boreas lists to process, in the order they were run.
 LISTS=(
-  "boreas-2024-12-03-13-13"
-  "boreas-2024-12-03-13-34"
-  "boreas-2024-12-04-11-45"
-  "boreas-2024-12-04-11-56"
-  "boreas-2025-07-18-15-12"
+    "boreas-2024-12-04-14-44"
+    "boreas-2024-12-23-17-01"
+    "boreas-2025-02-15-16-58"
 )
 
 BASE="/g/data/pg06/FYP2026S1_3473"
@@ -51,7 +45,7 @@ with open(config_path) as f:
     config = json.load(f)
 
 config["backend"] = "api"
-config["model"] = "gpt-5.6-luna"
+config["model"] = "gpt-6-luna"
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
