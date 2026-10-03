@@ -35,9 +35,9 @@ export VLLM_USE_DEEP_GEMM=0
 
 # Boreas lists still to process.
 LISTS=(
-  "boreas-2024-12-04-14-44"
-  "boreas-2024-12-23-17-01"
-  "boreas-2025-02-15-16-58"
+    "boreas-2024-12-04-14-44"
+    "boreas-2025-02-15-16-58"
+    "boreas-2025-07-18-11-53"
 )
 
 BASE="/g/data/pg06/FYP2026S1_3473"

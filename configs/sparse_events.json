@@ -3,7 +3,7 @@
     "frames_dir": "/g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-02-15-16-58/camera",
     "sections_dir": "/g/data/pg06/FYP2026S1_3473/boreas-2025-02-15-16-58/sparse_outputs/sections",
     "output": "/g/data/pg06/FYP2026S1_3473/boreas-2025-02-15-16-58/sparse_outputs/events",
-    "frames_per_section": 5,
+    "frames_per_section": 4,
     "step": 4,
     "skip": 10,
     "image_max_size": null,
