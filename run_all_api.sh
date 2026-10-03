@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N sparse_event_questions
+#PBS -N temporal_questions
 #PBS -P pg06
 #PBS -q copyq
 #PBS -l ncpus=1
@@ -20,15 +20,15 @@ cd "$PBS_O_WORKDIR"
 # Enter the environment containing the local vLLM pipeline dependencies.
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
-# Boreas lists to process, in the order they were run.
+# Boreas lists to process, in the requested order.
 LISTS=(
     "boreas-2024-12-04-14-44"
-    "boreas-2024-12-23-17-01"
     "boreas-2025-02-15-16-58"
+    "boreas-2025-07-18-11-53"
 )
 
 BASE="/g/data/pg06/FYP2026S1_3473"
-CONFIG="configs/sparse_events.json"
+CONFIG="configs/temporal_events.json"
 # Keep the original config so we can restore it after the loop.
 ORIGINAL_CONFIG="$(cat "$CONFIG")"
 trap 'printf "%s\n" "$ORIGINAL_CONFIG" > "$CONFIG"' EXIT
@@ -53,7 +53,7 @@ EOF
 
 for LIST in "${LISTS[@]}"; do
   echo "=============================================="
-  echo "Running questions stage for: $LIST"
+  echo "Running temporal questions stage for: $LIST"
   echo "=============================================="
 
   # Only the per-list paths differ between runs; the API backend and model are
@@ -68,14 +68,14 @@ with open(config_path) as f:
     config = json.load(f)
 
 config["frames_dir"] = f"{base}/boreas_dataset/{list_name}/camera"
-config["sections_dir"] = f"{base}/{list_name}/sparse_outputs/sections"
-config["output"] = f"{base}/{list_name}/sparse_outputs/events"
+config["sections_dir"] = f"{base}/{list_name}/temporal_outputs/sections"
+config["output"] = f"{base}/{list_name}/temporal_outputs/narratives"
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
 EOF
 
-  python3 main.py --mode sparse --stage questions
+  python3 main.py --mode temporal
 done
 
 echo "All lists done."
