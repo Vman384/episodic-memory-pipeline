@@ -9,7 +9,6 @@ This md file contains all dataset status
 5. boreas-2024-12-04-11-56 (done)
 6. boreas-2025-07-18-15-12 (done)
 7. boreas-2024-12-04-14-44 
-8. boreas-2024-12-23-17-01 
 9. boreas-2025-02-15-16-58 
 10. boreas-2025-07-18-11-53 
 11. boreas-2024-12-04-14-34 
@@ -23,8 +22,7 @@ This md file contains all dataset status
 4. boreas-2024-12-04-11-45 (done)
 5. boreas-2024-12-04-11-56 (done)
 6. boreas-2025-07-18-15-12 (done)
-7. boreas-2024-12-04-14-44 (ER)
-8. boreas-2024-12-23-17-01 (ER)
+7. boreas-2024-12-04-14-44 (done)
 9. boreas-2025-02-15-16-58 (ER)
 10. boreas-2025-07-18-11-53 
 11. boreas-2024-12-04-14-34 

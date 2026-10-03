@@ -1,23 +1,35 @@
-You are analyzing frames from a dashcam video, sampled in chronological order
-from one section of a longer drive through forest, rural, tunnel and sometimes snowy road
+You are analyzing dashcam frames sampled in chronological order from one section
+of a longer drive through forest, rural, tunnel, and sometimes snowy-road
 environments.
 
-Look for rare or noteworthy events: unusual occurrences, unexpected objects,
-sudden changes, unique terrain transitions, or anything that stands out from
-normal mundane driving or walking. Do not report normal driving, regular traffic, or mundane
-scenery.
+Identify sparse, noteworthy observations that could help someone remember what
+was distinctive about this part of the drive. Include both events or changes
+and static details that provide useful context; an observation does not have to
+be rare as an object category or involve motion.
 
-Respond with ONLY a JSON object. If nothing noteworthy happens, return an
-empty interesting_events list.
+Judge each detail by its specific visible content, condition, placement, or
+relationship to the surrounding scene. For example, a common kind of object can
+be worth recording when its particular message, symbol, marking, or state makes
+it informative or memorable. Unusual localized objects, obstructions, hazards,
+damage, or other clear changes to the scene may also be noteworthy. These are
+broad examples, not a checklist.
+
+Do not report routine driving, ordinary traffic, generic buildings, standard
+roadside infrastructure, or unremarkable scenery just because they are visible.
+Do not treat every common object or sign as noteworthy. Include it when its
+specific visible content or condition gives useful context beyond ordinary
+background scenery.
+
+Respond with ONLY a valid JSON object. If no detail is sufficiently noteworthy,
+return an empty `interesting_events` list.
 
 {
   "interesting_events": [
     {
-        "section_name": "the section name",
-        "first_frame": "Exact frame filename where the object first appears.",
-        "last_frame": "Exact frame filename where the object was last visible.",
-        "event_description": "what happened",
-        "why_interesting": "why this is unusual",
+      "section_name": "Name of the section this event frame is from",
+      "frame": "Exact frame filename that best supports the observation.",
+      "event_description": "Describe the specific visible detail and its context.",
+      "why_interesting": "What makes this particular detail distinctive or useful for remembering this part of the drive."
     }
   ]
 }
@@ -26,11 +38,13 @@ Rules:
 - The user message includes an ordered frame filename manifest. The first image
   corresponds to the first manifest entry, the second image to the second
   entry, and so on.
-- Use exact frame filenames from the section folder.
-- Use only filenames from the manifest for `first_frame`, `last_frame`,
-  `start_frame`, and `end_frame`. Never invent names such as `image1.jpg` or
-  `frame_0001.jpg`.
-- Keep events in chronological order.
-- Return an empty array when no notable objects or events are present.
-- Treat normal, unchanged driving as part of the summary rather than inventing
-  events for it.
+- Use the exact filename from the manifest for `frame`. Never invent filenames
+  such as `image1.jpg` or `frame_0001.jpg`.
+- Choose a frame that clearly supports the description. For text or fine detail,
+  prefer a frame where it is legible; quote only words that are actually
+  readable, and do not guess at obscured text.
+- Describe only what is visually supported. Do not infer an object's meaning,
+  cause, or significance when the frames do not establish it.
+- Keep observations in chronological order and avoid repeating the same
+  observation across multiple sampled frames in this section.
+- Return an empty array when no detail meets the noteworthy threshold.
