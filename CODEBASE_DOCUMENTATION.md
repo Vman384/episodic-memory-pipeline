@@ -474,8 +474,14 @@ The relevant configuration keys are:
 | `api_key_env` | Environment variable containing the API key |
 
 In API mode, `AIParser` sends an identifying user agent, an OpenCode client
-header, and one stable `x-opencode-session` ID for the process. API errors retain
-the provider response body and request ID when available.
+header, and one stable `x-opencode-session` ID for the process. Calls are
+sequential. Connection/time-out errors and HTTP 408, 409, 429, and 5xx responses
+are retried indefinitely with exponential backoff and jitter, capped at five
+minutes unless the server's `Retry-After` header requests a longer delay.
+Each retry logs the provider response body and request ID when available.
+Non-transient errors, such as invalid credentials or an explicit
+exhausted-quota response, fail immediately. PBS walltime remains a hard limit on
+Gadi jobs.
 
 **Public methods:**
 

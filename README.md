@@ -353,11 +353,14 @@ both reasoning and visible output tokens.
 
 The API wrapper sends a stable per-run `x-opencode-session` header and an
 identifying user agent, as required by OpenCode Go for third-party clients.
-
-If an API call fails, the pipeline reports the model, endpoint, HTTP status,
-response body, and provider request ID when available. A 401 indicates a key
-or subscription problem; a 5xx response should be retried and reported to the
-provider with the request ID.
+Calls are sent sequentially, one at a time. Connection/time-out errors and
+HTTP 408, 409, 429, and 5xx errors are retried indefinitely with exponential
+backoff and jitter, capped at five minutes unless the server's `Retry-After`
+header asks for a longer delay. Each retry logs the model, endpoint, status,
+response body, and provider request ID when available. Other errors, such as an
+invalid API key or an explicit exhausted-quota response, fail immediately.
+Gadi's PBS walltime still applies, so a job can be terminated by the scheduler
+if an outage lasts beyond its requested walltime.
 
 ## Frame Sections
 

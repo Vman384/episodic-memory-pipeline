@@ -1,6 +1,10 @@
 import json
 import os
+import random
+import time
 import uuid
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 try:
@@ -13,6 +17,9 @@ class AIParser:
     """
     Interface for local vLLM and OpenAI-compatible API inference.
     """
+
+    API_RETRY_INITIAL_DELAY_SECONDS = 2
+    API_RETRY_MAX_DELAY_SECONDS = 300
 
     IMAGE_MEDIA_TYPES = {
         ".jpg": "image/jpeg",
@@ -69,7 +76,7 @@ class AIParser:
 
         elif backend == "api":
             from dotenv import load_dotenv
-            from openai import OpenAI
+            from openai import APIConnectionError, OpenAI
 
             load_dotenv()
             api_key = os.getenv(config.get("api_key_env"))
@@ -85,10 +92,14 @@ class AIParser:
             # OpenCode Go uses this stable per-run ID for routing and prompt
             # caching. Generic clients without it can be rejected or throttled.
             self.api_session_id = f"ses_{uuid.uuid4().hex}"
+            self.api_connection_error = APIConnectionError
             self.client = OpenAI(
                 api_key=api_key,
                 base_url=api_base_url,
                 default_headers={"x-opencode-session": self.api_session_id},
+                # Transient failures are retried in _call_api with backoff,
+                # without the SDK's separate fixed retry limit.
+                max_retries=0,
             )
             self.api_base_url = api_base_url
 
@@ -101,6 +112,104 @@ class AIParser:
     def _get_api_text(response) -> str:
         """Return text from an OpenAI Responses API response."""
         return response.output_text
+
+    @staticmethod
+    def _api_status_and_headers(error):
+        response = getattr(error, "response", None)
+        status_code = getattr(error, "status_code", None)
+        if status_code is None:
+            status_code = getattr(response, "status_code", None)
+        headers = getattr(response, "headers", {}) or {}
+        return status_code, headers
+
+    def _is_retryable_api_error(self, error) -> bool:
+        status_code, headers = self._api_status_and_headers(error)
+
+        # Respect an explicit retry instruction from the API gateway.
+        should_retry = str(headers.get("x-should-retry", "")).lower()
+        if should_retry == "true":
+            return True
+        if should_retry == "false":
+            return False
+
+        if status_code is not None:
+            try:
+                status_code = int(status_code)
+            except (TypeError, ValueError):
+                return False
+
+            body = getattr(error, "body", None)
+            api_error = body.get("error", {}) if isinstance(body, dict) else {}
+            if status_code == 429 and isinstance(api_error, dict):
+                if (
+                    api_error.get("code") == "insufficient_quota"
+                    or api_error.get("type") == "insufficient_quota"
+                ):
+                    return False
+            return status_code in {408, 409, 429} or status_code >= 500
+
+        # Connection errors include network failures and request timeouts.
+        return isinstance(error, self.api_connection_error)
+
+    @staticmethod
+    def _retry_after_seconds(headers) -> float | None:
+        retry_after_ms = headers.get("retry-after-ms")
+        if retry_after_ms is not None:
+            try:
+                return max(0.0, float(retry_after_ms) / 1000)
+            except (TypeError, ValueError):
+                pass
+
+        retry_after = headers.get("retry-after")
+        if retry_after is None:
+            return None
+
+        try:
+            return max(0.0, float(retry_after))
+        except (TypeError, ValueError):
+            # Retry-After may also be an HTTP date rather than a number of seconds.
+            pass
+
+        try:
+            retry_at = parsedate_to_datetime(retry_after)
+            if retry_at.tzinfo is None:
+                retry_at = retry_at.replace(tzinfo=timezone.utc)
+            return max(0.0, (retry_at - datetime.now(timezone.utc)).total_seconds())
+        except (TypeError, ValueError, OverflowError):
+            return None
+
+    def _api_retry_delay(self, error, retry_number: int) -> float:
+        # Exponential backoff with jitter, capped at five minutes.
+        exponent = min(retry_number - 1, 8)
+        delay_cap = min(
+            self.API_RETRY_MAX_DELAY_SECONDS,
+            self.API_RETRY_INITIAL_DELAY_SECONDS * (2**exponent),
+        )
+        delay = random.uniform(delay_cap / 2, delay_cap)
+
+        _, headers = self._api_status_and_headers(error)
+        retry_after = self._retry_after_seconds(headers)
+        if retry_after is not None:
+            delay = max(delay, retry_after)
+        return delay
+
+    def _format_api_error(self, error) -> str:
+        status_code, headers = self._api_status_and_headers(error)
+        details = getattr(error, "body", None)
+        if not details:
+            response = getattr(error, "response", None)
+            details = getattr(response, "text", None)
+        if isinstance(details, (dict, list)):
+            details = json.dumps(details)
+        details = details or str(error)
+        request_id = getattr(error, "request_id", None)
+        if not request_id:
+            request_id = headers.get("x-request-id")
+        request_info = f" request_id={request_id}" if request_id else ""
+        return (
+            f"API request failed for model {self.model_name} at "
+            f"{self.api_base_url} (status={status_code}{request_info}): {details}"
+        )
 
     def _call_api(self, input_data: str | list[dict], max_tokens: int | None = None) -> str:
         request = {
@@ -116,29 +225,23 @@ class AIParser:
         if self.reasoning_effort:
             request["reasoning"] = {"effort": self.reasoning_effort}
 
-        try:
-            response = self.client.responses.create(**request)
-        except Exception as error:
-            status_code = getattr(error, "status_code", None)
-            response = getattr(error, "response", None)
-            if status_code is None:
-                status_code = getattr(response, "status_code", None)
-            details = getattr(error, "body", None)
-            if not details:
-                details = getattr(response, "text", None)
-            if isinstance(details, (dict, list)):
-                details = json.dumps(details)
-            details = details or str(error)
-            request_id = getattr(error, "request_id", None)
-            if not request_id:
-                headers = getattr(response, "headers", {}) or {}
-                request_id = headers.get("x-request-id")
-            request_info = f" request_id={request_id}" if request_id else ""
-            raise RuntimeError(
-                f"API request failed for model {self.model_name} at "
-                f"{self.api_base_url} (status={status_code}{request_info}): {details}"
-            ) from error
-        return self._get_api_text(response)
+        retry_number = 0
+        while True:
+            try:
+                response = self.client.responses.create(**request)
+                return self._get_api_text(response)
+            except Exception as error:
+                if not self._is_retryable_api_error(error):
+                    raise RuntimeError(self._format_api_error(error)) from error
+
+                retry_number += 1
+                delay = self._api_retry_delay(error, retry_number)
+                print(
+                    f"{self._format_api_error(error)}; transient failure, "
+                    f"retrying in {delay:.1f}s (retry {retry_number})",
+                    flush=True,
+                )
+                time.sleep(delay)
 
     def call_llm(self, prompt: str, max_tokens: int | None = None) -> str:
         """
