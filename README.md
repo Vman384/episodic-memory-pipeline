@@ -194,10 +194,10 @@ VLM output.
 The sparse-event configuration is stored in `configs/sparse_events.json`; the
 temporal configuration is stored in `configs/temporal_events.json`.
 
-The batch scripts (`run_all_local.sh`, `run_all_api.sh`) rewrite only the
-per-list `frames_dir`, `sections_dir`, and `output` paths before each run.
-`run_all_api.sh` also forces `backend: "api"` and `model: "gpt-5.6-luna"`, so
-it needs no manual configuration edit. `run_all_local.sh` reads `backend`,
+The batch scripts (`run_all_local.sh`, `run_all_api.sh`) rewrite the per-list
+`frames_dir`, `sections_dir`, and `output` paths before each run.
+`run_all_api.sh` also forces `backend: "api"` and `model: "gpt-6-luna"`; it
+runs on `copyq` with 8 GB of memory. `run_all_local.sh` reads `backend`,
 `model`, and every other inference setting from the configuration file, so set
 those there before submitting a local batch job.
 

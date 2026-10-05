@@ -275,16 +275,17 @@ completed section results are reused so the job can be resubmitted.
 
 ---
 
-### `scripts/run_all_api.sh`
+### `run_all_api.sh`
 
-**Purpose:** PBS batch script that runs the sparse-event pipeline over the Boreas
-lists on the CPU-only `copyq` queue.
+**Purpose:** PBS batch script that runs temporal extraction over Boreas lists
+on the CPU-only `copyq` queue.
+
+**Resources:** One CPU, 8 GB of memory, and a 3.5-hour walltime.
 
 **Entry point:** Before the loop it forces `backend: "api"` and
-`model: "gpt-5.6-luna"` in `configs/sparse_events.json`, so no manual config edit
-is needed. For each list it then rewrites only the per-list `frames_dir`,
-`sections_dir`, and `output` paths and runs `python3 main.py --mode sparse`. The
-original config is restored on exit.
+`model: "gpt-6-luna"` in `configs/temporal_events.json`. For each list it
+rewrites the `frames_dir`, `sections_dir`, and `output` paths and runs
+`python3 main.py --mode temporal`. The original config is restored on exit.
 
 ---
 
@@ -526,7 +527,7 @@ timeline.
 
 | Stage | Behavior |
 |-------|----------|
-| `extract` | Creates frame sections, queries the VLM with `temporal_vlm.txt`, writes one result per section, and skips existing results for resumability. Parsed events from each response are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json`. Section frames are deleted once the VLM has processed them, and the per-section result folders are deleted after `all_results.json` is written. |
+| `extract` | Creates frame sections, queries the VLM with `temporal_vlm.txt`, writes one result per section, and skips existing results for resumability. Parsed events from each response are stored with the section's elapsed `start_seconds`/`end_seconds` from `sections.json`. The `all_results.json` aggregate is streamed through a temporary file to avoid retaining every response in memory; section frames and per-section result folders are deleted after the aggregate is complete. |
 | `timeline` | Loads section results from `all_results.json`, parses their `events` arrays, sorts them by parsed `start_frame` timestamp, merges events in LLM windows, re-attaches per-section seconds after merging, and writes `timeline.json` and `storyline.txt`. |
 | `questions` | Loads `timeline.json`, intended to be human-reviewed first, and writes generated temporal questions to `questions.json`. |
 

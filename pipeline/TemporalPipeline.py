@@ -191,56 +191,64 @@ class TemporalPipeline:
             f"model={config['model']}) ..."
         )
 
-        all_results = []
-        for index, curr_section in enumerate(sections, start=1):
-            result_path = output_dir / f"{curr_section.name}_output" / "result.json"
+        aggregate_path = output_dir / "all_results.json"
+        temporary_aggregate_path = output_dir / "all_results.json.tmp"
+        result_count = 0
+        # Stream the aggregate instead of retaining every raw response in RAM.
+        with open(temporary_aggregate_path, "w") as aggregate_file:
+            aggregate_file.write("[\n")
+            for index, curr_section in enumerate(sections, start=1):
+                result_path = output_dir / f"{curr_section.name}_output" / "result.json"
 
-            # Reuse completed sections after an interrupted run.
-            if result_path.is_file():
-                with open(result_path) as result_file:
-                    section_result = json.load(result_file)
-                if "events" not in section_result:
-                    section_result["events"] = self._events_with_seconds(
-                        section_result, manifest
-                    )
+                # Reuse completed sections after an interrupted run.
+                if result_path.is_file():
+                    with open(result_path) as result_file:
+                        section_result = json.load(result_file)
+                    if "events" not in section_result:
+                        section_result["events"] = self._events_with_seconds(
+                            section_result, manifest
+                        )
+                        with open(result_path, "w") as result_file:
+                            json.dump(section_result, result_file, indent=2)
+                    print(f"  [{index}/{len(sections)}] {curr_section.name} (cached)")
+                else:
+                    # Query the VLM and persist this section immediately.
+                    response = self.ai_parser.call_vlm(self.prompt, curr_section)
+                    section_result = {
+                        "section": curr_section.name,
+                        "response": response,
+                        "events": self._events_with_seconds(
+                            {"section": curr_section.name, "response": response},
+                            manifest,
+                        ),
+                    }
+
+                    result_path.parent.mkdir(parents=True, exist_ok=True)
                     with open(result_path, "w") as result_file:
                         json.dump(section_result, result_file, indent=2)
-                all_results.append(section_result)
-                print(f"  [{index}/{len(sections)}] {curr_section.name} (cached)")
+                    print(f"  [{index}/{len(sections)}] {curr_section.name}")
+
+                if result_count:
+                    aggregate_file.write(",\n")
+                serialized_result = json.dumps(section_result, indent=2)
+                aggregate_file.write(
+                    "  " + serialized_result.replace("\n", "\n  ")
+                )
+                result_count += 1
+
                 # Frames are no longer needed once this section is processed.
                 shutil.rmtree(curr_section, ignore_errors=True)
-                continue
 
-            # Query the VLM and persist this section immediately.
-            response = self.ai_parser.call_vlm(self.prompt, curr_section)
-            section_result = {
-                "section": curr_section.name,
-                "response": response,
-                "events": self._events_with_seconds(
-                    {"section": curr_section.name, "response": response},
-                    manifest,
-                ),
-            }
+            aggregate_file.write("\n]\n")
 
-            # make and store the result
-            result_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(result_path, "w") as result_file:
-                json.dump(section_result, result_file, indent=2)
-
-            all_results.append(section_result)
-            print(f"  [{index}/{len(sections)}] {curr_section.name}")
-            # Frames are no longer needed once this section is processed.
-            shutil.rmtree(curr_section, ignore_errors=True)
-
-        # Save an aggregate view of all section responses.
-        with open(output_dir / "all_results.json", "w") as result_file:
-            json.dump(all_results, result_file, indent=2)
+        # Keep the previous aggregate intact if extraction is interrupted.
+        temporary_aggregate_path.replace(aggregate_path)
 
         # all_results.json now holds every response, so drop per-section folders.
         for section_output in output_dir.glob("section_*_output"):
             shutil.rmtree(section_output, ignore_errors=True)
 
-        print(f"  Saved {len(all_results)} section responses to {config['output']}")
+        print(f"  Saved {result_count} section responses to {config['output']}")
 
     def _load_section_results(self) -> list[dict]:
         """Load persisted section results from the extract stage."""
