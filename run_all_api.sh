@@ -4,7 +4,7 @@
 #PBS -q copyq
 #PBS -l ncpus=1
 #PBS -l mem=4GB
-#PBS -l walltime=01:30:00
+#PBS -l walltime=03:30:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
@@ -22,7 +22,6 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 # Boreas lists to process, in the requested order.
 LISTS=(
-    "boreas-2024-12-04-14-44"
     "boreas-2025-02-15-16-58"
     "boreas-2025-07-18-11-53"
 )
