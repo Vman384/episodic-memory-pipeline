@@ -9,6 +9,11 @@ class AIParser:
     """
     Interface for local vLLM and OpenAI-compatible API inference,
     with structured output parsing for object detection and bounding boxes.
+
+    Backends:
+        "local"        vLLM, frames passed as one video (needs video metadata)
+        "local-image"  vLLM, frames passed as multiple images
+        "api"          OpenAI-compatible Responses API
     """
 
     IMAGE_MEDIA_TYPES = {
@@ -25,8 +30,8 @@ class AIParser:
         temperature = config.get("temperature")
         max_tokens = config.get("max_tokens", 100)
 
-        if backend not in {"local", "api"}:
-            raise ValueError("backend must be either 'local' or 'api'")
+        if backend not in {"local", "local-image", "api"}:
+            raise ValueError("backend must be 'local', 'local-image' or 'api'")
         if not model:
             raise ValueError("A model must be configured")
 
@@ -37,14 +42,22 @@ class AIParser:
         self.max_tokens = max_tokens
         self.reasoning_effort = config.get("reasoning_effort")
         self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+        # Longest side (px) for frames sent to the VLM. Aspect ratio is preserved.
+        self.max_image_side = config.get("max_frame_size", 640)
 
-        if backend == "local" or backend == "local-image":
+        if backend in {"local", "local-image"}:
             # Set offline mode before importing libraries that may resolve models.
             os.environ["HF_HUB_OFFLINE"] = "1"
             os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
             from transformers import AutoProcessor
             from vllm import LLM, SamplingParams
+
+            if backend == "local-image":
+                # Allow N images per prompt, and skip profiling for video entirely
+                mm_limits = {"image": config.get("max_images_per_prompt", 16), "video": 0}
+            else:
+                mm_limits = {"video": 1}
 
             self.model = LLM(
                 model=model,
@@ -53,6 +66,7 @@ class AIParser:
                 max_model_len=config.get("max_model_len", 4096),
                 gpu_memory_utilization=config.get("gpu_memory_utilization", 0.9),
                 tensor_parallel_size=config.get("tensor_parallel_size", 1),
+                limit_mm_per_prompt=mm_limits,
             )
             self.sampling_params = SamplingParams(
                 temperature=self.local_temperature,
@@ -94,6 +108,14 @@ class AIParser:
     def _get_api_text(response) -> str:
         """Return text from an OpenAI Responses API response."""
         return response.output_text
+
+    def _fit_image(self, image):
+        """Return an RGB copy scaled so its longest side is <= max_image_side (aspect preserved)."""
+        from PIL import Image
+
+        img = image.convert("RGB").copy()
+        img.thumbnail((self.max_image_side, self.max_image_side), Image.Resampling.LANCZOS)
+        return img
 
     def _call_api(self, input_data: str | list[dict], max_tokens: int | None = None) -> str:
         request = {
@@ -148,14 +170,29 @@ class AIParser:
         )
         return self._get_text(outputs)
 
-    def call_vlm(self, prompt: str, folder_path: str | Path | None, video = None) -> str:
-        """Generate a response from a prompt and all frames in a folder."""
-        if (self.backend == "api" or self.backend == "local-image") and folder_path != None:
+    def call_vlm(
+        self,
+        prompt: str,
+        folder_path: str | Path | None = None,
+        video=None,
+        video_fps: float | None = None,
+    ) -> str:
+        """Generate a response from a prompt plus either a folder of frames or in-memory PIL frames.
+
+        Args:
+            prompt: instruction text.
+            folder_path: folder of image frames (used by the api / local-image backends).
+            video: list of PIL images (in-memory frames, in chronological order).
+            video_fps: effective fps of `video` (only used by the "local" video backend).
+        """
+        image_paths: list[Path] = []
+        prompt_with_manifest = prompt
+
+        if folder_path is not None and self.backend in {"api", "local-image"}:
             folder = Path(folder_path)
             if not folder.is_dir():
                 raise FileNotFoundError(f"Frame folder not found: {folder}")
 
-            image_paths = []
             for path in folder.iterdir():
                 if path.is_file() and path.suffix.lower() in self.image_extensions:
                     image_paths.append(path)
@@ -181,6 +218,8 @@ class AIParser:
         # BACKEND: API
         # ----------------------------------------------------
         if self.backend == "api":
+            if not image_paths:
+                raise ValueError("The api backend requires folder_path")
             image_content = []
             for image_path in image_paths:
                 with open(image_path, "rb") as image_file:
@@ -208,26 +247,35 @@ class AIParser:
                     }
                 ]
             )
+
+        # ----------------------------------------------------
+        # BACKEND: LOCAL, MULTI-IMAGE (vLLM)
+        # ----------------------------------------------------
         if self.backend == "local-image":
-            # ----------------------------------------------------
-            # BACKEND: LOCAL (vLLM)
-            # ----------------------------------------------------
-            # # Define target dimensions (width, height)
-            TARGET_SIZE = (448, 448)
             from PIL import Image
-            images = []
-            for image_path in image_paths:
-                with Image.open(image_path) as image:
-                    # Resize image using high-quality Lanczos resampling
-                    resized_img = image.resize(TARGET_SIZE, Image.Resampling.LANCZOS)
-                    images.append(resized_img)
+
+            if image_paths:
+                images = []
+                for image_path in image_paths:
+                    with Image.open(image_path) as image:
+                        images.append(self._fit_image(image))
+                text = prompt_with_manifest
+            elif video:
+                images = [self._fit_image(frame) for frame in video]
+                text = (
+                    f"{prompt}\n\n"
+                    f"The {len(images)} images are consecutive frames from one driving video, "
+                    "in chronological order."
+                )
+            else:
+                raise ValueError("local-image backend needs folder_path or video frames")
 
             messages = [
                 {
                     "role": "user",
                     "content": [
-                        *[{"type": "image", "image": img} for img in images],
-                        {"type": "text", "text": prompt_with_manifest},
+                        *[{"type": "image"} for _ in images],
+                        {"type": "text", "text": text},
                     ],
                 }
             ]
@@ -246,32 +294,49 @@ class AIParser:
                 sampling_params=self.sampling_params,
             )
             return self._get_text(outputs)
-        else:
-            messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        # 1. Pass the entire list of frames as a SINGLE video object
-                        {"type": "video", "video": video}, 
-                        {"type": "text", "text": prompt},
-                    ],
-                }
-            ]
-            
-            formatted_prompt = self.processor.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True,
-            )
 
-            outputs = self.model.generate(
-                {
-                    "prompt": formatted_prompt,
-                    "multi_modal_data": {"video": video},
-                },
-                sampling_params=self.sampling_params,
-            )
-            return self._get_text(outputs)
+        # ----------------------------------------------------
+        # BACKEND: LOCAL, VIDEO (vLLM)
+        # ----------------------------------------------------
+        import numpy as np
+
+        # vLLM wants a (T, H, W, 3) array plus metadata, not a list of PIL images
+        frames = np.stack([np.asarray(f.convert("RGB")) for f in video])
+        n = len(frames)
+        fps = video_fps or 1.0
+        metadata = {
+            "fps": fps,
+            "duration": n / fps,
+            "total_num_frames": n,
+            "frames_indices": list(range(n)),
+            "video_backend": "opencv",
+            "do_sample_frames": False,  # frames are already sampled
+        }
+
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "video"},
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ]
+
+        formatted_prompt = self.processor.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+
+        outputs = self.model.generate(
+            {
+                "prompt": formatted_prompt,
+                "multi_modal_data": {"video": (frames, metadata)},
+            },
+            sampling_params=self.sampling_params,
+        )
+        return self._get_text(outputs)
 
     # PARSING METHODS (Added for Object Detection & SAM 2 Support)
     def parse_objects(self, response_text: str) -> list[str]:
@@ -297,11 +362,11 @@ class AIParser:
                     cleaned = item.strip().lower()
                     if cleaned:
                         objects.append(cleaned)
-        return list(set(objects))
+        return list(dict.fromkeys(objects))
 
     def parse_objects_with_boxes(
-        self, 
-        response_text: str, 
+        self,
+        response_text: str,
         image_size: tuple[int, int] | None = None
     ) -> list[tuple[str, list[int]]]:
         """
@@ -324,7 +389,7 @@ class AIParser:
 
                     if label and box and len(box) == 4:
                         box = [int(coord) for coord in box]
-                        
+
                         # Scale 0-1000 normalized coordinates (e.g., Qwen2-VL standard) if image size supplied
                         if image_size and max(box) <= 1000 and any(c > 1 for c in box):
                             width, height = image_size
@@ -334,7 +399,7 @@ class AIParser:
                                 int((box[2] / 1000.0) * width),
                                 int((box[3] / 1000.0) * height),
                             ]
-                            
+
                         results.append((str(label).lower().strip(), box))
         except (json.JSONDecodeError, TypeError, KeyError):
             pass

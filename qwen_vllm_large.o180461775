@@ -1,0 +1,164 @@
+INFO 10-04 20:18:54 [utils.py:240] non-default args: {'dtype': 'bfloat16', 'max_model_len': 262144, 'tensor_parallel_size': 4, 'gpu_memory_utilization': 0.8, 'disable_log_stats': True, 'enforce_eager': True, 'model': '/g/data/pg06/FYP2026S1_3473/huggingface_cache/hub/models--Qwen--Qwen3-VL-235B-A22B-Instruct-FP8/snapshots/7fbcd8c9e2ad011808ed8a57d64c462605c3e381'}
+INFO 10-04 20:18:54 [model.py:568] Resolved architecture: Qwen3VLMoeForConditionalGeneration
+INFO 10-04 20:18:54 [model.py:1697] Using max model len 262144
+INFO 10-04 20:19:00 [scheduler.py:239] Chunked prefill is enabled with max_num_batched_tokens=16384.
+INFO 10-04 20:19:00 [vllm.py:886] Asynchronous scheduling is enabled.
+WARNING 10-04 20:19:00 [vllm.py:942] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+WARNING 10-04 20:19:00 [vllm.py:960] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+INFO 10-04 20:19:00 [kernel.py:212] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+INFO 10-04 20:19:00 [vllm.py:1135] Cudagraph is disabled under eager mode
+INFO 10-04 20:19:03 [compilation.py:303] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+WARNING 10-04 20:19:09 [system_utils.py:157] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+(EngineCore pid=586154) INFO 10-04 20:19:39 [core.py:109] Initializing a V1 LLM engine (v0.21.0) with config: model='/g/data/pg06/FYP2026S1_3473/huggingface_cache/hub/models--Qwen--Qwen3-VL-235B-A22B-Instruct-FP8/snapshots/7fbcd8c9e2ad011808ed8a57d64c462605c3e381', speculative_config=None, tokenizer='/g/data/pg06/FYP2026S1_3473/huggingface_cache/hub/models--Qwen--Qwen3-VL-235B-A22B-Instruct-FP8/snapshots/7fbcd8c9e2ad011808ed8a57d64c462605c3e381', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=262144, download_dir=None, load_format=auto, tensor_parallel_size=4, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=fp8, quantization_config=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=/g/data/pg06/FYP2026S1_3473/huggingface_cache/hub/models--Qwen--Qwen3-VL-235B-A22B-Instruct-FP8/snapshots/7fbcd8c9e2ad011808ed8a57d64c462605c3e381, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['+quant_fp8', 'all', '+quant_fp8'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [256, 16384], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': True, 'fuse_act_padding': False}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native']), enable_flashinfer_autotune=False, moe_backend='auto')
+(EngineCore pid=586154) INFO 10-04 20:19:39 [multiproc_executor.py:139] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=10.6.106.29 (local), world_size=4, local_world_size=4
+(Worker pid=586168) INFO 10-04 20:20:12 [parallel_state.py:1410] world_size=4 rank=0 local_rank=0 distributed_init_method=tcp://127.0.0.1:47395 backend=nccl
+(Worker pid=586170) INFO 10-04 20:20:13 [parallel_state.py:1410] world_size=4 rank=2 local_rank=2 distributed_init_method=tcp://127.0.0.1:47395 backend=nccl
+(Worker pid=586169) INFO 10-04 20:20:13 [parallel_state.py:1410] world_size=4 rank=1 local_rank=1 distributed_init_method=tcp://127.0.0.1:47395 backend=nccl
+(Worker pid=586171) INFO 10-04 20:20:13 [parallel_state.py:1410] world_size=4 rank=3 local_rank=3 distributed_init_method=tcp://127.0.0.1:47395 backend=nccl
+(Worker pid=586168) INFO 10-04 20:20:14 [pynccl.py:111] vLLM is using nccl==2.28.9
+(Worker pid=586170) WARNING 10-04 20:20:16 [symm_mem.py:106] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=586168) WARNING 10-04 20:20:16 [symm_mem.py:106] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=586171) WARNING 10-04 20:20:16 [symm_mem.py:106] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=586169) WARNING 10-04 20:20:16 [symm_mem.py:106] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=586168) INFO 10-04 20:20:17 [parallel_state.py:1723] rank 0 in world size 4 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank 0, EPLB rank N/A
+(Worker pid=586168) INFO 10-04 20:20:18 [topk_topp_sampler.py:45] Using FlashInfer for top-p & top-k sampling.
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [gpu_model_runner.py:4857] Starting to load model /g/data/pg06/FYP2026S1_3473/huggingface_cache/hub/models--Qwen--Qwen3-VL-235B-A22B-Instruct-FP8/snapshots/7fbcd8c9e2ad011808ed8a57d64c462605c3e381...
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [cuda.py:427] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP1 pid=586169) WARNING 10-04 20:20:22 [vllm.py:942] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(Worker_TP1 pid=586169) WARNING 10-04 20:20:22 [vllm.py:960] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(Worker_TP1 pid=586169) INFO 10-04 20:20:22 [kernel.py:212] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(Worker_TP2 pid=586170) WARNING 10-04 20:20:22 [vllm.py:942] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(Worker_TP1 pid=586169) INFO 10-04 20:20:22 [vllm.py:1135] Cudagraph is disabled under eager mode
+(Worker_TP2 pid=586170) WARNING 10-04 20:20:22 [vllm.py:960] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(Worker_TP2 pid=586170) INFO 10-04 20:20:22 [kernel.py:212] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(Worker_TP2 pid=586170) INFO 10-04 20:20:22 [vllm.py:1135] Cudagraph is disabled under eager mode
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [vllm.py:886] Asynchronous scheduling is enabled.
+(Worker_TP0 pid=586168) WARNING 10-04 20:20:22 [vllm.py:942] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(Worker_TP0 pid=586168) WARNING 10-04 20:20:22 [vllm.py:960] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [kernel.py:212] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [vllm.py:1135] Cudagraph is disabled under eager mode
+(Worker_TP3 pid=586171) WARNING 10-04 20:20:22 [vllm.py:942] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(Worker_TP3 pid=586171) WARNING 10-04 20:20:22 [vllm.py:960] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(Worker_TP3 pid=586171) INFO 10-04 20:20:22 [kernel.py:212] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(Worker_TP3 pid=586171) INFO 10-04 20:20:22 [vllm.py:1135] Cudagraph is disabled under eager mode
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [compilation.py:303] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [__init__.py:393] Selected CutlassFp8BlockScaledMMKernel for Fp8LinearMethod
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [cuda.py:372] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [flash_attn.py:641] Using FlashAttention version 3
+(Worker_TP0 pid=586168) INFO 10-04 20:20:22 [fp8.py:407] Using TRITON Fp8 MoE backend out of potential backends: ['TRITON', 'AITER', 'FLASHINFER_TRTLLM', 'FLASHINFER_CUTLASS', 'MARLIN', 'BATCHED_TRITON', 'XPU', 'CPU'].
+(Worker_TP0 pid=586168) INFO 10-04 20:20:23 [weight_utils.py:938] Filesystem type for checkpoints: LUSTRE. Checkpoint size: 221.28 GiB. Available RAM: 960.52 GiB.
+(Worker_TP0 pid=586168) INFO 10-04 20:20:23 [weight_utils.py:900] Prefetching checkpoint files into page cache started (in background, num_threads=8, block_size=16777216 bytes)
+(Worker_TP3 pid=586171) INFO 10-04 20:20:23 [weight_utils.py:900] Prefetching checkpoint files into page cache started (in background, num_threads=8, block_size=16777216 bytes)
+(Worker_TP2 pid=586170) INFO 10-04 20:20:23 [weight_utils.py:900] Prefetching checkpoint files into page cache started (in background, num_threads=8, block_size=16777216 bytes)
+(Worker_TP1 pid=586169) INFO 10-04 20:20:23 [weight_utils.py:900] Prefetching checkpoint files into page cache started (in background, num_threads=8, block_size=16777216 bytes)
+(Worker_TP2 pid=586170) INFO 10-04 20:20:33 [weight_utils.py:872] Prefetching checkpoint files: 10% (1/6)
+(Worker_TP0 pid=586168) INFO 10-04 20:20:34 [weight_utils.py:872] Prefetching checkpoint files: 10% (1/6)
+(Worker_TP3 pid=586171) INFO 10-04 20:20:34 [weight_utils.py:872] Prefetching checkpoint files: 10% (1/6)
+(Worker_TP3 pid=586171) INFO 10-04 20:20:34 [weight_utils.py:872] Prefetching checkpoint files: 20% (2/6)
+(Worker_TP0 pid=586168) INFO 10-04 20:20:34 [weight_utils.py:872] Prefetching checkpoint files: 20% (2/6)
+(Worker_TP2 pid=586170) INFO 10-04 20:20:34 [weight_utils.py:872] Prefetching checkpoint files: 20% (2/6)
+(Worker_TP1 pid=586169) INFO 10-04 20:20:35 [weight_utils.py:872] Prefetching checkpoint files: 10% (1/6)
+(Worker_TP1 pid=586169) INFO 10-04 20:20:35 [weight_utils.py:872] Prefetching checkpoint files: 20% (2/6)
+(Worker_TP3 pid=586171) INFO 10-04 20:20:35 [weight_utils.py:872] Prefetching checkpoint files: 30% (3/6)
+(Worker_TP2 pid=586170) INFO 10-04 20:20:36 [weight_utils.py:872] Prefetching checkpoint files: 30% (3/6)
+(Worker_TP0 pid=586168) INFO 10-04 20:20:36 [weight_utils.py:872] Prefetching checkpoint files: 30% (3/6)
+(Worker_TP2 pid=586170) INFO 10-04 20:20:38 [weight_utils.py:872] Prefetching checkpoint files: 40% (4/6)
+(Worker_TP3 pid=586171) INFO 10-04 20:20:38 [weight_utils.py:872] Prefetching checkpoint files: 40% (4/6)
+(Worker_TP3 pid=586171) INFO 10-04 20:20:38 [weight_utils.py:872] Prefetching checkpoint files: 50% (5/6)
+(Worker_TP0 pid=586168) INFO 10-04 20:20:39 [weight_utils.py:872] Prefetching checkpoint files: 40% (4/6)
+(Worker_TP0 pid=586168) INFO 10-04 20:20:40 [weight_utils.py:872] Prefetching checkpoint files: 50% (5/6)
+(Worker_TP2 pid=586170) INFO 10-04 20:20:40 [weight_utils.py:872] Prefetching checkpoint files: 50% (5/6)
+(Worker_TP1 pid=586169) INFO 10-04 20:20:41 [weight_utils.py:872] Prefetching checkpoint files: 30% (3/6)
+(Worker_TP3 pid=586171) INFO 10-04 20:20:41 [weight_utils.py:872] Prefetching checkpoint files: 60% (6/6)
+(Worker_TP3 pid=586171) INFO 10-04 20:20:41 [weight_utils.py:895] Prefetching checkpoint files into page cache finished in 18.24s
+(Worker_TP1 pid=586169) INFO 10-04 20:20:42 [weight_utils.py:872] Prefetching checkpoint files: 40% (4/6)
+(Worker_TP2 pid=586170) INFO 10-04 20:20:43 [weight_utils.py:872] Prefetching checkpoint files: 60% (6/6)
+(Worker_TP2 pid=586170) INFO 10-04 20:20:43 [weight_utils.py:895] Prefetching checkpoint files into page cache finished in 19.78s
+(Worker_TP0 pid=586168) INFO 10-04 20:20:44 [weight_utils.py:872] Prefetching checkpoint files: 60% (6/6)
+(Worker_TP0 pid=586168) INFO 10-04 20:20:44 [weight_utils.py:895] Prefetching checkpoint files into page cache finished in 21.01s
+(Worker_TP1 pid=586169) INFO 10-04 20:20:47 [weight_utils.py:872] Prefetching checkpoint files: 50% (5/6)
+(Worker_TP1 pid=586169) INFO 10-04 20:20:50 [weight_utils.py:872] Prefetching checkpoint files: 60% (6/6)
+(Worker_TP1 pid=586169) INFO 10-04 20:20:50 [weight_utils.py:895] Prefetching checkpoint files into page cache finished in 27.42s
+(Worker_TP0 pid=586168) INFO 10-04 20:24:53 [default_loader.py:397] Loading weights took 269.95 seconds
+(Worker_TP0 pid=586168) INFO 10-04 20:24:53 [fp8.py:609] Using MoEPrepareAndFinalizeNoDPEPModular
+(Worker_TP0 pid=586168) INFO 10-04 20:24:54 [gpu_model_runner.py:4959] Model loading took 56.03 GiB memory and 271.005664 seconds
+(Worker_TP0 pid=586168) INFO 10-04 20:24:54 [gpu_model_runner.py:5920] Encoder cache will be initialized with a budget of 16384 tokens, and profiled with 1 image items of the maximum feature size.
+(Worker_TP0 pid=586168) INFO 10-04 20:24:58 [fused_moe.py:1060] Using configuration from /scratch/pg06/vm4618/envs/vllm_env/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/configs/E=128,N=384,device_name=NVIDIA_H200,dtype=fp8_w8a8,block_shape=[128,128].json for MoE layer.
+(Worker_TP0 pid=586168) INFO 10-04 20:25:01 [gpu_worker.py:462] Available KV cache memory: 50.51 GiB
+(EngineCore pid=586154) INFO 10-04 20:25:01 [kv_cache_utils.py:1710] GPU KV cache size: 1,126,976 tokens
+(EngineCore pid=586154) INFO 10-04 20:25:01 [kv_cache_utils.py:1711] Maximum concurrency for 262,144 tokens per request: 4.30x
+(Worker_TP2 pid=586170) INFO 10-04 20:25:02 [kernel_warmup.py:44] Skipping FlashInfer autotune because it is disabled.
+(Worker_TP0 pid=586168) INFO 10-04 20:25:02 [kernel_warmup.py:44] Skipping FlashInfer autotune because it is disabled.
+(Worker_TP1 pid=586169) INFO 10-04 20:25:02 [kernel_warmup.py:44] Skipping FlashInfer autotune because it is disabled.
+(Worker_TP3 pid=586171) INFO 10-04 20:25:02 [kernel_warmup.py:44] Skipping FlashInfer autotune because it is disabled.
+(Worker_TP1 pid=586169) INFO 10-04 20:25:02 [jit_monitor.py:54] Kernel JIT monitor activated — Triton JIT compilations during inference will be logged as warnings.
+(Worker_TP0 pid=586168) INFO 10-04 20:25:02 [jit_monitor.py:54] Kernel JIT monitor activated — Triton JIT compilations during inference will be logged as warnings.
+(Worker_TP2 pid=586170) INFO 10-04 20:25:02 [jit_monitor.py:54] Kernel JIT monitor activated — Triton JIT compilations during inference will be logged as warnings.
+(Worker_TP3 pid=586171) INFO 10-04 20:25:02 [jit_monitor.py:54] Kernel JIT monitor activated — Triton JIT compilations during inference will be logged as warnings.
+(EngineCore pid=586154) INFO 10-04 20:25:02 [core.py:306] init engine (profile, create kv cache, warmup model) took 8.10 s
+(EngineCore pid=586154) INFO 10-04 20:25:06 [vllm.py:886] Asynchronous scheduling is enabled.
+(EngineCore pid=586154) WARNING 10-04 20:25:06 [vllm.py:942] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(EngineCore pid=586154) WARNING 10-04 20:25:06 [vllm.py:960] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=586154) INFO 10-04 20:25:06 [kernel.py:212] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(EngineCore pid=586154) INFO 10-04 20:25:06 [vllm.py:1135] Cudagraph is disabled under eager mode
+(EngineCore pid=586154) INFO 10-04 20:25:07 [compilation.py:303] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+(Worker_TP0 pid=586168) WARNING 10-04 20:25:37 [jit_monitor.py:103] Triton kernel JIT compilation during inference: _compute_slot_mapping_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=586168) WARNING 10-04 20:25:40 [jit_monitor.py:103] Triton kernel JIT compilation during inference: _bilinear_pos_embed_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=586168) WARNING 10-04 20:26:10 [jit_monitor.py:103] Triton kernel JIT compilation during inference: _triton_mrope_forward. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=586168) WARNING 10-04 20:26:16 [jit_monitor.py:103] Triton kernel JIT compilation during inference: fused_moe_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+[00:00 - 00:10] section 0: counts so far {'white car': 3}
+[00:09 - 00:19] section 1: counts so far {'white car': 3}
+[00:18 - 00:28] section 2: counts so far {'white car': 4}
+[00:27 - 00:37] section 3: counts so far {'white car': 4}
+[00:36 - 00:46] section 4: counts so far {'white car': 4}
+[00:45 - 00:55] section 5: counts so far {'white car': 4}
+[00:54 - 01:04] section 6: counts so far {'white car': 4}
+[01:03 - 01:13] section 7: counts so far {'white car': 4}
+[01:12 - 01:22] section 8: counts so far {'white car': 4}
+[01:21 - 01:31] section 9: counts so far {'white car': 4}
+[01:30 - 01:40] section 10: counts so far {'white car': 5}
+[01:39 - 01:49] section 11: counts so far {'white car': 5}
+[01:48 - 01:58] section 12: counts so far {'white car': 6}
+[01:57 - 02:07] section 13: counts so far {'white car': 6}
+[02:06 - 02:16] section 14: counts so far {'white car': 6}
+[02:15 - 02:25] section 15: counts so far {'white car': 6}
+[02:24 - 02:34] section 16: counts so far {'white car': 6}
+[02:33 - 02:43] section 17: counts so far {'white car': 6}
+[02:42 - 02:52] section 18: counts so far {'white car': 6}
+[02:51 - 03:01] section 19: counts so far {'white car': 6, 'white truck': 3}
+[03:00 - 03:10] section 20: counts so far {'white car': 6, 'white truck': 3, 'black tractor': 3}
+[03:09 - 03:19] section 21: counts so far {'white car': 6, 'white truck': 4, 'black tractor': 3}
+[03:18 - 03:28] section 22: counts so far {'white car': 6, 'white truck': 5, 'black tractor': 3}
+[03:27 - 03:37] section 23: counts so far {'white car': 6, 'white truck': 6, 'black tractor': 6}
+[03:36 - 03:46] section 24: counts so far {'white car': 6, 'white truck': 7, 'black tractor': 6}
+[03:45 - 03:55] section 25: counts so far {'white car': 6, 'white truck': 7, 'black tractor': 6}
+[03:54 - 04:04] section 26: counts so far {'white car': 6, 'white truck': 7, 'black tractor': 6}
+[04:03 - 04:13] section 27: counts so far {'white car': 6, 'white truck': 7, 'black tractor': 6}
+[04:12 - 04:22] section 28: counts so far {'white car': 6, 'white truck': 7, 'black tractor': 6}
+[04:21 - 04:31] section 29: counts so far {'white car': 6, 'white truck': 7, 'black tractor': 6}
+[04:30 - 04:40] section 30: counts so far {'white car': 6, 'white truck': 8, 'black tractor': 7}
+[04:39 - 04:49] section 31: counts so far {'white car': 6, 'white truck': 9, 'black tractor': 8}
+(EngineCore pid=586154) INFO 10-04 20:30:33 [core.py:1242] Shutdown initiated (timeout=0)
+(EngineCore pid=586154) INFO 10-04 20:30:33 [core.py:1265] Shutdown complete
+(Worker_TP0 pid=586168) INFO 10-04 20:30:33 [multiproc_executor.py:775] Parent process exited, terminating worker queues
+(Worker_TP1 pid=586169) INFO 10-04 20:30:33 [multiproc_executor.py:872] WorkerProc shutting down.
+(Worker_TP2 pid=586170) INFO 10-04 20:30:33 [multiproc_executor.py:872] WorkerProc shutting down.
+(Worker_TP0 pid=586168) INFO 10-04 20:30:33 [multiproc_executor.py:872] WorkerProc shutting down.
+(Worker_TP3 pid=586171) INFO 10-04 20:30:33 [multiproc_executor.py:872] WorkerProc shutting down.
+[04:48 - 04:50] section 32: counts so far {'white car': 7, 'white truck': 9, 'black tractor': 8}
+Pipeline execution finished. Final Object Counts: {'white car': 7, 'white truck': 9, 'black tractor': 8}
+
+======================================================================================
+                  Resource Usage on 2026-10-04 20:30:44:
+   Job Id:             180461775.gadi-pbs
+   Project:            pg06
+   Exit Status:        0
+   Service Units:      86.50
+   NCPUs Requested:    48                  CPU Time Used: 01:03:23        
+   Memory Requested:   128.0GB               Memory Used: 128.0GB         
+   NGPUs Requested:    4                 GPU Utilisation: 76%             
+                                         GPU Memory Used: 456.92GB        
+   Walltime Requested: 01:30:00            Walltime Used: 00:14:25        
+   JobFS Requested:    100.0GB                JobFS Used: 11.92MB         
+======================================================================================

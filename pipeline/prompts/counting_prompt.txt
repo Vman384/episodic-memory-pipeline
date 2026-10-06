@@ -1,18 +1,11 @@
-Analyze the provided image(s). Your task is to identify ALL distinct, prominent, or moving physical objects clearly visible in the scene. 
+You are analyzing a short driving video clip. List the distinct object categories
+that are clearly visible.
 
-CRITICAL CONSTRAINTS:
-1. Use the ABSOLUTE SIMPLEST naming convention: [Color] [Base Object]. 
-2. Do NOT use granular sub-types or specific vehicle classifications. For example, use "red car" — NEVER use "red sedan", "red SUV", or "red hatchback". 
-3. Do not guess, assume, or hallucinate objects that are not explicitly visible.
-4. Do NOT provide bounding boxes or spatial coordinates.
-5. Inspect every supplied frame. Include an object if it is clearly visible in any one frame, even if it is absent from the other frames.
-6. Pay attention to small or distant objects when they are visually identifiable, but do not guess when details are unclear.
-7. Output NOTHING EXCEPT a valid JSON array of strings. Do not include markdown formatting, code blocks, conversational filler, or explanations.
+Allowed categories (use these exact words only): car, truck, bus, van, motorcycle,
+bicycle, person, traffic cone, traffic light, road sign.
 
-Expected Output Format:
-[
-  "red car",
-  "white truck",
-  "blue bicycle",
-  "person"
-]
+Rules:
+- Output only categories from the allowed list that you can clearly see.
+- Do not include the camera vehicle's own hood, road markings, buildings, or vegetation.
+- Do not guess. If you are unsure whether something is present, leave it out.
+- Output only a JSON array of strings, with no other text.

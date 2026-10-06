@@ -2,10 +2,10 @@
 #PBS -N qwen_vllm_large
 #PBS -P pg06
 #PBS -q gpuhopper
-#PBS -l ncpus=24
-#PBS -l ngpus=4
+#PBS -l ncpus=12
+#PBS -l ngpus=1
 #PBS -l mem=128GB
-#PBS -l walltime=00:30:00
+#PBS -l walltime=01:00:00
 #PBS -l jobfs=100GB
 #PBS -l storage=gdata/pg06+scratch/pg06
 #PBS -l wd

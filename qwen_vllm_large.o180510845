@@ -1,0 +1,17 @@
+INFO 10-05 16:42:31 [utils.py:240] non-default args: {'dtype': 'bfloat16', 'max_model_len': 262144, 'tensor_parallel_size': 4, 'gpu_memory_utilization': 0.8, 'disable_log_stats': True, 'enforce_eager': True, 'limit_mm_per_prompt': {'image': 16, 'video': 0}, 'model': '/g/data/pg06/FYP2026S1_3473/huggingface_cache/hub/models--Qwen--Qwen3-VL-235B-A22B-Instruct-FP8/snapshots/7fbcd8c9e2ad011808ed8a57d64c462605c3e381'}
+INFO 10-05 16:42:32 [model.py:568] Resolved architecture: Qwen3VLMoeForConditionalGeneration
+INFO 10-05 16:42:32 [model.py:1697] Using max model len 262144
+
+======================================================================================
+                  Resource Usage on 2026-10-05 16:42:51:
+   Job Id:             180510845.gadi-pbs
+   Project:            pg06
+   Exit Status:        1
+   Service Units:      4.47
+   NCPUs Requested:    12                  CPU Time Used: 00:00:37        
+   Memory Requested:   128.0GB               Memory Used: 2.63GB          
+   NGPUs Requested:    1                 GPU Utilisation: 0%              
+                                         GPU Memory Used: 0B              
+   Walltime Requested: 01:00:00            Walltime Used: 00:02:59        
+   JobFS Requested:    100.0GB                JobFS Used: 0B              
+======================================================================================
