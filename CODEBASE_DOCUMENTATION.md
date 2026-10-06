@@ -388,7 +388,10 @@ multi-image requests within the vision-token budget of API models such as
 | `process(src, dst)` | Convert `src` to RGB, optionally fit the longest side to `max_size`, and save as a JPEG at `dst` |
 
 Both pipelines pass `ImagePreprocessor.from_config(self.config)` to
-`FrameParser`, so frames are only preprocessed when a configuration opts in.
+`FrameParser`, so frames are preprocessed when either image setting is
+configured. The temporal and sparse configs set `image_max_size: null` and
+`image_quality: 80`, which converts sampled PNGs to timestamp-named JPEGs at
+their original dimensions while leaving the source frames unchanged.
 
 ---
 
@@ -794,14 +797,15 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 
 The current sparse configuration uses local `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8`
 with `frames_per_section: 7`, `step: 8`, `skip: 2`, `image_max_size: null`,
-`image_quality: 85`, `temperature: 0.4`, `max_tokens: 10000`,
+`image_quality: 80`, `temperature: 0.4`, `max_tokens: 10000`,
 `review_window: 50`, `question_max_tokens: 10000`, `max_model_len: 50000`, and
 `tensor_parallel_size: 4`. The `backend` and `model` fields are the single
 source of truth for what a run uses; the batch scripts only rewrite per-list
 paths.
 The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 `frames_per_section: 5`, `step: 10`, `skip: 10`, `max_tokens: 3090`,
-`merge_window: 50`, `storyline_max_tokens: 3000`, `question_max_tokens: 3000`,
+`image_max_size: null`, `image_quality: 80`, `merge_window: 50`,
+`storyline_max_tokens: 3000`, `question_max_tokens: 3000`,
 `max_model_len: 50000`, and `tensor_parallel_size: 4`.
 
 
