@@ -64,6 +64,7 @@ episodic-memory-pipeline/
 ├── sparse_event.pbs
 ├── temporal_event.pbs
 ├── forest_run.sh
+├── download_boreas.pbs
 ├── CODEBASE_DOCUMENTATION.md
 ├── pipeline/
 │   ├── ConfigLoader.py
@@ -251,6 +252,19 @@ configuration. It requests four GPUs, loads CUDA, enables offline Hugging Face
 resolution, uses the model already present in the shared cache, and exports
 `VLLM_USE_DEEP_GEMM=0` so vLLM does not JIT-compile DeepGEMM kernels with the
 `cuda/12.2.2` module's NVCC, which is older than DeepGEMM's 12.3 minimum.
+
+---
+
+### `download_boreas.pbs`
+
+**Purpose:** PBS job that downloads the `camera/` frames for the listed public
+Boreas S3 sequences into `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>`.
+
+**Resources:** `copyq` queue, one CPU, 8 GB of memory, four-hour walltime, and
+`scratch/pg06+gdata/pg06` storage.
+
+The script uses anonymous S3 access (`--no-sign-request`) and creates the target
+directory before syncing each sequence.
 
 ---
 
