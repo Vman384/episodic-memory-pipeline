@@ -14,6 +14,7 @@
     "api_key_env": "OPENCODE_API_KEY",
     "temperature": 0.4,
     "api_temperature": null,
+    "reasoning_effort": "low",
     "max_tokens": 10000,
     "review_window": 50,
     "question_max_tokens": 10000,

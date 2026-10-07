@@ -268,8 +268,8 @@ section coverage matters less.
 | `frames_per_section` | Number of sampled frames grouped into one extraction request. Increase it for wider context, but keep it within the model's image/context limits; `5` is the supplied starting point. |
 | `step` | Stride between sampled frames inside one section. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed. |
 | `skip` | Number of frames from a section's last sampled frame to the next section's first frame. Defaults to `step` when omitted, which samples without gaps; use a larger value to leave unsampled gaps between sections. |
-| `image_max_size` | Longest side, in pixels, of frames written into sections. Frames are downscaled to fit (never upscaled). Omit it to keep original frame sizes. Use a small value, such as `1024`, to keep API request payloads small and stay within the vision-token budget of models such as `grok-4.6`; omit it for local vLLM runs that accept full-resolution frames. |
-| `image_quality` | JPEG quality, from `1` to `95`, used when frames are re-encoded for sections. `90` is the supplied value. Omit it with `image_max_size` to copy frames through untouched. |
+| `image_max_size` | Longest side, in pixels, of frames written into sections. Frames are downscaled to fit (never upscaled). `null` keeps the original dimensions. Use a small value, such as `1024`, to keep API request payloads small and stay within the vision-token budget of models such as `grok-4.6`; omit it for local vLLM runs that accept full-resolution frames. |
+| `image_quality` | JPEG quality, from `1` to `95`, used when frames are re-encoded for sections. The supplied sparse value is `80`. Setting this alone converts frames to JPEG without resizing; if both image settings are omitted, frames are copied unchanged. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
 | `model` | Model used for extraction and later sparse stages. Pick a model that accepts the selected backend and image inputs. |
 | `backend` | `local` for vLLM or `api` for the OpenAI-compatible Responses API. The configuration selects the backend for a run; the batch scripts in `scripts/` do not override it. The backend must match the model and available infrastructure. |
@@ -303,6 +303,8 @@ context.
 | `frames_per_section` | Number of sampled frames grouped into one extraction request. Increase it for wider context, but keep it within the model's image/context limits; `5` is the supplied starting point. |
 | `step` | Stride between sampled frames inside one section. Use `1` for maximum temporal coverage; increase it when adjacent frames are redundant. Reduce it when brief events may be missed; `15` is the supplied starting point. |
 | `skip` | Number of frames from a section's last sampled frame to the next section's first frame. Defaults to `step` when omitted, which samples without gaps; use a larger value to leave unsampled gaps between sections. |
+| `image_max_size` | Longest side, in pixels, of frames written into sections. Frames are downscaled to fit (never upscaled). The supplied `null` keeps the original dimensions. |
+| `image_quality` | JPEG quality, from `1` to `95`, used when frames are re-encoded for sections. The supplied value `80` converts sampled PNG frames to JPEG without resizing. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
 | `model` | Model used for extraction and later temporal stages. The supplied configuration uses `Qwen/Qwen2.5-VL-72B-Instruct` locally. |
 | `backend` | Use `local` for the supplied four-GPU vLLM configuration or `api` for a Responses API model. The backend must match the model and available infrastructure. |
