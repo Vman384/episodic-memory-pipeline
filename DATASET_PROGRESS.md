@@ -10,11 +10,7 @@ This md file contains all dataset status
 6. boreas-2025-07-18-15-12 (done)
 7. boreas-2024-12-04-14-44 (ER)
 9. boreas-2025-02-15-16-58 (ER)
-<<<<<<< HEAD
 10. boreas-2025-07-18-11-53 (ER)
-=======
-10. boreas-2025-07-18-11-53 (ER) 
->>>>>>> refs/remotes/origin/main
 11. boreas-2024-12-04-14-34 
 12. boreas-2024-12-04-14-38
 13. forest_dataset
