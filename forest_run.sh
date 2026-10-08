@@ -106,7 +106,7 @@ EOF
 # set_config "$SPARSE_CONFIG" output "$SPARSE_OUTPUT"
 # python3 main.py --mode sparse
 
----- Temporal (API): extract then timeline ----
+# ---- Temporal (API): extract then timeline ----
 echo "=== [api] temporal: K-01 extract + timeline ==="
 set_config "$TEMPORAL_CONFIG" backend api
 set_config "$TEMPORAL_CONFIG" model gpt-5.6-luna
