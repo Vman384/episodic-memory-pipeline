@@ -11,28 +11,28 @@
 # Comment out the version (header and run blocks) you are not running.
 #===============================================================================
 
-## ---- PBS header: local model run (active) ----
-#PBS -N forest_local
+## # ---- PBS header: local model run (active) ----
+## PBS -N forest_local
+## PBS -P pg06
+## PBS -q gpuhopper
+## PBS -l ncpus=48
+## PBS -l ngpus=4
+## PBS -l mem=1024GB
+## PBS -l walltime=10:00:00
+## PBS -l storage=scratch/pg06+gdata/pg06
+## PBS -l wd
+## PBS -V
+
+# ---- PBS header: API run
+#PBS -N forest_api
 #PBS -P pg06
-#PBS -q gpuhopper
-#PBS -l ncpus=48
-#PBS -l ngpus=4
-#PBS -l mem=1024GB
-#PBS -l walltime=10:00:00
+#PBS -q copyq
+#PBS -l ncpus=1
+#PBS -l mem=8GB
+#PBS -l walltime=03:30:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
-
-# ---- PBS header: API run
-##PBS -N forest_api
-##PBS -P pg06
-##PBS -q copyq
-##PBS -l ncpus=1
-##PBS -l mem=4GB
-##PBS -l walltime=01:30:00
-##PBS -l storage=scratch/pg06+gdata/pg06
-##PBS -l wd
-##PBS -V
 
 set -euo pipefail
 
@@ -106,28 +106,28 @@ EOF
 # set_config "$SPARSE_CONFIG" output "$SPARSE_OUTPUT"
 # python3 main.py --mode sparse
 
-# ---- Temporal (API): extract then timeline ----
-# echo "=== [api] temporal: K-01 extract + timeline ==="
-# set_config "$TEMPORAL_CONFIG" backend api
-# set_config "$TEMPORAL_CONFIG" model gpt-5.6-luna
-# set_config "$TEMPORAL_CONFIG" frames_dir "$FRAMES_DIR"
-# set_config "$TEMPORAL_CONFIG" sections_dir "$TEMPORAL_SECTIONS"
-# set_config "$TEMPORAL_CONFIG" output "$TEMPORAL_OUTPUT"
-# python3 main.py --mode temporal
+---- Temporal (API): extract then timeline ----
+echo "=== [api] temporal: K-01 extract + timeline ==="
+set_config "$TEMPORAL_CONFIG" backend api
+set_config "$TEMPORAL_CONFIG" model gpt-5.6-luna
+set_config "$TEMPORAL_CONFIG" frames_dir "$FRAMES_DIR"
+set_config "$TEMPORAL_CONFIG" sections_dir "$TEMPORAL_SECTIONS"
+set_config "$TEMPORAL_CONFIG" output "$TEMPORAL_OUTPUT"
+python3 main.py --mode temporal
 
 #===============================================================================
 # LOCAL MODEL RUNS
 # Comment out this whole section when running the API model.
 #===============================================================================
 
-# ---- Sparse (local): extract then review ----
-echo "=== [local] sparse: K-01 extract + review ==="
-set_config "$SPARSE_CONFIG" backend local
-set_config "$SPARSE_CONFIG" model Qwen/Qwen3-VL-235B-A22B-Instruct-FP8
-set_config "$SPARSE_CONFIG" frames_dir "$FRAMES_DIR"
-set_config "$SPARSE_CONFIG" sections_dir "$SPARSE_SECTIONS"
-set_config "$SPARSE_CONFIG" output "$SPARSE_OUTPUT"
-python3 main.py --mode sparse
+# # ---- Sparse (local): extract then review ----
+# echo "=== [local] sparse: K-01 extract + review ==="
+# set_config "$SPARSE_CONFIG" backend local
+# set_config "$SPARSE_CONFIG" model Qwen/Qwen3-VL-235B-A22B-Instruct-FP8
+# set_config "$SPARSE_CONFIG" frames_dir "$FRAMES_DIR"
+# set_config "$SPARSE_CONFIG" sections_dir "$SPARSE_SECTIONS"
+# set_config "$SPARSE_CONFIG" output "$SPARSE_OUTPUT"
+# python3 main.py --mode sparse
 
 # ---- Temporal (local): extract then timeline ----
 # echo "=== [local] temporal: K-01 extract + timeline ==="
