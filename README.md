@@ -112,6 +112,51 @@ python main.py --mode counting
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | Local vLLM temporal PBS job script |
 | `forest_run.sh` | Local Qwen3-VL sparse-event PBS job for the forest K-01 dataset; API and temporal examples are inactive |
+| `run_model_answers.py` | Asks a model every question in a question JSON file against one drive's camera frames and writes the answers |
+| `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
+| `configs/answer_eval.json` | Model configuration used by `run_model_answers.py` |
+
+## Testing Questions Against a Model
+
+`run_model_answers.py` and `grade_answers.py` test generated questions
+(`questions.json` from either pipeline) against a VLM. Both are command-line
+scripts; run them from the repository root.
+
+1. Get the model's answers. Pass the camera folder for one drive and the
+   question file:
+
+   ```bash
+   python run_model_answers.py \
+       --frames_dir /path/to/camera \
+       --questions /path/to/questions.json \
+       --output answers.json
+   ```
+
+   Each question is sent with the drive's frames sampled evenly across the whole
+   drive (`--max_frames`, default `100`). Sampling keeps a one-hour drive within
+   the model's request limits. The model is configured in
+   `configs/answer_eval.json` (`backend`, `model`, and API settings; use
+   `--config` to pick another file). Set `OPENCODE_API_KEY` for the default API
+   backend.
+
+2. Grade the answers:
+
+   ```bash
+   python grade_answers.py \
+       --questions /path/to/questions.json \
+       --answers answers.json \
+       --output graded_results.json
+   ```
+
+`answers.json` contains the model name, frame count, and an `answers` list with
+each `question_id`, the selected `answer_indices`, and the `raw_response`. A
+response that cannot be parsed is stored with `answer_indices: null` and counted
+as wrong.
+
+`graded_results.json` contains a `score` object (`correct`, `total`,
+`accuracy`) and a `results` list. Each result has `correct` (true/false), the
+`selected_indices` and `selected_answers` text, and the `correct_indices` and
+`correct_answers` text. The score is also printed to the terminal.
 
 ## Sparse-Event Pipeline
 

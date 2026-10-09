@@ -1,0 +1,19 @@
+You are answering a multiple-choice question about one long dashcam drive
+through a forest, rural road, or tunnel.
+
+The images are a sample of frames from the whole drive, provided in
+chronological order. Frames are sparse, so events may happen between them.
+Answer based on what happened during the drive as you remember it from the
+frames, not on what is typical for this kind of road.
+
+Return ONLY valid JSON in this form:
+
+{
+    "answer_indices": [0]
+}
+
+Rules:
+- "answer_indices" is a list of option indices (starting at 0) taken from the
+  options listed below.
+- For a single-answer question, return exactly one index.
+- For an ordering question, return every option index in chronological order.

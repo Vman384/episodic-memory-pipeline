@@ -282,6 +282,12 @@ class AIParser:
         if not image_paths:
             raise ValueError(f"No image frames found in folder: {folder}")
 
+        return self.call_vlm_images(prompt, image_paths)
+
+    def call_vlm_images(self, prompt: str, image_paths: list[Path]) -> str:
+        """
+        Generate a response from a prompt and an ordered list of frame images.
+        """
         # Keep the original filenames available to the VLM. Image payloads do
         # not preserve the local filenames on their own.
         frame_manifest = "\n".join(
