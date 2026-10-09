@@ -23,7 +23,7 @@ This md file contains all dataset status
 
 
 
-**Spatial**
+**Sparse**
 1. boreas-2025-07-18-14-55 (done)
 2. boreas-2024-12-03-13-13 (done)
 3. boreas-2024-12-03-13-34 (done)
@@ -33,8 +33,8 @@ This md file contains all dataset status
 7. boreas-2024-12-04-14-44 (done)
 9. boreas-2025-02-15-16-58 (done)
 10. boreas-2025-07-18-11-53 
-11. boreas-2024-12-04-14-34 
-12. boreas-2024-12-04-14-38
+11. boreas-2024-12-04-14-34 (done)
+12. boreas-2024-12-04-14-38 (done)
 13. forest_dataset
 14. boreas-2025-02-21-14-51
 16. boreas-2025-02-15-17-19

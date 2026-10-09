@@ -112,6 +112,81 @@ python main.py --mode counting
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | Local vLLM temporal PBS job script |
 | `forest_run.sh` | Local Qwen3-VL sparse-event PBS job for the forest K-01 dataset; API and temporal examples are inactive |
+| `run_model_answers.py` | Asks a model every question in a question JSON file against one drive's camera frames and writes the answers |
+| `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
+| `run_all_eval.sh` | PBS job that runs `run_model_answers.py` and then `grade_answers.py` over the Boreas lists on the `copyq` queue |
+| `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
+| `configs/answer_eval.json` | Model configuration used by `run_model_answers.py` |
+
+## Testing Questions Against a Model
+
+`run_model_answers.py` and `grade_answers.py` test generated questions
+(`questions.json` from either pipeline) against a VLM. Both are command-line
+scripts; run them from the repository root.
+
+1. Get the model's answers. Pass the camera folder for one drive and the
+   question file:
+
+   ```bash
+   python run_model_answers.py \
+       --frames_dir /path/to/camera \
+       --questions /path/to/questions.json \
+       --output answers.json
+   ```
+
+   Each question is sent with the drive's frames sampled evenly across the whole
+   drive (`--max_frames`, default `100`). Sampling keeps a one-hour drive within
+   the model's request limits. The model is configured in
+   `configs/answer_eval.json` (`backend`, `model`, and API settings; use
+   `--config` to pick another file). Set `OPENCODE_API_KEY` for the default API
+   backend.
+
+2. Grade the answers:
+
+   ```bash
+   python grade_answers.py \
+       --questions /path/to/questions.json \
+       --answers answers.json \
+       --output graded_results.json
+   ```
+
+Batch mode sends every frame of the drive instead of a sample. It needs the API
+backend and works in conversation batches:
+
+```bash
+python run_model_answers.py \
+    --frames_dir /path/to/camera \
+    --questions /path/to/questions.json \
+    --output answers.json \
+    --batch_size 10
+```
+
+The frames go in order, `batch_size` at a time, in one stored conversation
+(`previous_response_id`). Each batch's input tokens are logged. If the API
+rejects a batch, for example because the context is full, the run stops there
+and the questions are asked about the frames already accepted. Batch mode
+ignores `--max_frames`.
+
+`answers.json` contains the model name, frame count, and an `answers` list with
+each `question_id`, the selected `answer_indices`, and the `raw_response`. A
+response that cannot be parsed is stored with `answer_indices: null` and counted
+as wrong.
+
+`graded_results.json` contains a `score` object (`correct`, `total`,
+`accuracy`) and a `results` list. Each result has `correct` (true/false), the
+`selected_indices` and `selected_answers` text, and the `correct_indices` and
+`correct_answers` text. The score is also printed to the terminal.
+
+To run both steps over all Boreas lists as a Gadi job, submit:
+
+```bash
+qsub run_all_eval.sh
+```
+
+For each list it reads `boreas_dataset/<list>/camera` and
+`<list>/sparse_outputs/events/questions.json`, and writes `answers.json` and
+`graded_results.json` to `<list>/eval_outputs/`. Edit `LISTS` and the paths in the
+script to change them.
 
 ## Sparse-Event Pipeline
 

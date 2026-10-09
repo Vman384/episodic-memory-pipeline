@@ -211,7 +211,13 @@ class AIParser:
             f"{self.api_base_url} (status={status_code}{request_info}): {details}"
         )
 
-    def _call_api(self, input_data: str | list[dict], max_tokens: int | None = None) -> str:
+    def _build_api_request(
+        self,
+        input_data: str | list[dict],
+        max_tokens: int | None = None,
+        conversation: bool = False,
+        previous_response_id: str | None = None,
+    ) -> dict:
         request = {
             "model": self.model_name,
             "input": input_data,
@@ -224,12 +230,21 @@ class AIParser:
             request["temperature"] = self.api_temperature
         if self.reasoning_effort:
             request["reasoning"] = {"effort": self.reasoning_effort}
+        if conversation:
+            # Stored responses let the next request continue this conversation.
+            # Truncation is disabled so an over-full context fails explicitly
+            # instead of silently dropping earlier input.
+            request["store"] = True
+            request["truncation"] = "disabled"
+        if previous_response_id:
+            request["previous_response_id"] = previous_response_id
+        return request
 
+    def _create_api_response(self, request: dict):
         retry_number = 0
         while True:
             try:
-                response = self.client.responses.create(**request)
-                return self._get_api_text(response)
+                return self.client.responses.create(**request)
             except Exception as error:
                 if not self._is_retryable_api_error(error):
                     raise RuntimeError(self._format_api_error(error)) from error
@@ -242,6 +257,62 @@ class AIParser:
                     flush=True,
                 )
                 time.sleep(delay)
+
+    def _call_api(self, input_data: str | list[dict], max_tokens: int | None = None) -> str:
+        request = self._build_api_request(input_data, max_tokens)
+        return self._get_api_text(self._create_api_response(request))
+
+    def call_api_conversation(
+        self,
+        input_data: str | list[dict],
+        previous_response_id: str | None = None,
+        max_tokens: int | None = None,
+    ):
+        """
+        Send one request in a stored API conversation and return the full response.
+        """
+        if self.backend != "api":
+            raise ValueError("Conversation calls require the api backend")
+
+        request = self._build_api_request(
+            input_data,
+            max_tokens,
+            conversation=True,
+            previous_response_id=previous_response_id,
+        )
+        return self._create_api_response(request)
+
+    def build_api_message(self, text: str, image_paths: list[Path]) -> list[dict]:
+        """
+        Build one user message with text followed by base64-encoded images.
+        """
+        import base64
+
+        image_content = []
+        for image_path in image_paths:
+            with open(image_path, "rb") as image_file:
+                encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
+
+            media_type = self.IMAGE_MEDIA_TYPES.get(image_path.suffix.lower())
+            if not media_type:
+                raise ValueError(f"Unsupported image type: {image_path.suffix}")
+
+            image_content.append(
+                {
+                    "type": "input_image",
+                    "image_url": f"data:{media_type};base64,{encoded_image}",
+                }
+            )
+
+        return [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": text},
+                    *image_content,
+                ],
+            }
+        ]
 
     def call_llm(self, prompt: str, max_tokens: int | None = None) -> str:
         """
@@ -282,6 +353,12 @@ class AIParser:
         if not image_paths:
             raise ValueError(f"No image frames found in folder: {folder}")
 
+        return self.call_vlm_images(prompt, image_paths)
+
+    def call_vlm_images(self, prompt: str, image_paths: list[Path]) -> str:
+        """
+        Generate a response from a prompt and an ordered list of frame images.
+        """
         # Keep the original filenames available to the VLM. Image payloads do
         # not preserve the local filenames on their own.
         frame_manifest = "\n".join(
@@ -301,34 +378,8 @@ class AIParser:
         # BACKEND: API
         # ----------------------------------------------------
         if self.backend == "api":
-            import base64
-
-            image_content = []
-            for image_path in image_paths:
-                with open(image_path, "rb") as image_file:
-                    encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
-
-                media_type = self.IMAGE_MEDIA_TYPES.get(image_path.suffix.lower())
-                if not media_type:
-                    raise ValueError(f"Unsupported image type: {image_path.suffix}")
-
-                image_content.append(
-                    {
-                        "type": "input_image",
-                        "image_url": f"data:{media_type};base64,{encoded_image}",
-                    }
-                )
-
             return self._call_api(
-                [
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "input_text", "text": prompt_with_manifest},
-                            *image_content,
-                        ],
-                    }
-                ]
+                self.build_api_message(prompt_with_manifest, image_paths)
             )
 
         # ----------------------------------------------------

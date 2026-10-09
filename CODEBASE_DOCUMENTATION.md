@@ -41,6 +41,8 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
+11. **Model Answer Evaluation** (`run_model_answers.py`, `grade_answers.py`, `run_all_eval.sh`) — Asks a VLM every question in a `questions.json` against one drive's frames (sampled evenly across the drive) and writes an answers JSON; then grades that answers JSON against the question file and writes the score with per-question correct/incorrect results, selected answer, and correct answer. `run_all_eval.sh` runs both steps for each Boreas list.
+
 ### What Is Not Yet Implemented
 
 - The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
@@ -58,6 +60,10 @@ episodic-memory-pipeline/
 ├── main.py
 ├── README.md
 ├── run_timeframe_converter.py
+├── run_model_answers.py
+├── grade_answers.py
+├── run_all_eval.sh
+├── test_gateway.sh
 ├── requirements.txt
 ├── test_vlm.py
 ├── vllm.pbs
@@ -81,10 +87,12 @@ episodic-memory-pipeline/
 │       ├── temporal_question_gen.txt
 │       ├── sparse_event_prompt.txt
 │       ├── sparse_event_filter.txt
-│       └── sparse_event_question_gen.txt
+│       ├── sparse_event_question_gen.txt
+│       └── benchmark_answer.txt
 ├── boreas-*/                       (sample frame data)
 ├── configs/                        (pipeline configuration files)
 │   ├── sparse_events.json
+│   ├── answer_eval.json
 │   └── .temporal_events.json
 ```
 
@@ -461,6 +469,136 @@ filenames.
 
 ---
 
+### `run_model_answers.py`
+
+**Purpose:** Tests generated questions against a VLM. It loads the questions
+from a `questions.json` file (sparse or temporal), asks the model each question,
+and writes the model's choices to an answers JSON.
+
+**Usage:**
+
+```bash
+python run_model_answers.py --frames_dir <camera folder> --questions <questions.json> --output answers.json
+```
+
+**Behavior:**
+
+- Frames are read from `--frames_dir`, sorted by parsed timestamp, and sampled
+  evenly across the whole drive down to `--max_frames` (default `100`). The same
+  sampled frames are sent with every question.
+- **Batch mode (`--batch_size N`, API backend only):** every frame is sent in
+  order, `N` at a time, as messages in one stored conversation. Each batch is a
+  request linked to the previous one with `previous_response_id`, with
+  `store: true` and `truncation: "disabled"`, so an over-full context fails
+  explicitly rather than dropping frames. The batch log records each batch's
+  frame range, status, and input tokens. The first rejected batch stops the
+  frame phase; `frames_received` is the last frame the model accepted. Each
+  question is then a separate request linked to the last accepted response, so
+  answers don't affect one another. Each answer records `frames_received` and
+  `input_tokens`. `--max_frames` is ignored in this mode.
+- Each question is sent as one request: the shared prompt
+  `pipeline/prompts/benchmark_answer.txt`, followed by the question text and its
+  numbered options. The model replies with `{"answer_indices": [...]}`.
+- A response that is not valid JSON or does not contain a list of integers is
+  stored with `answer_indices: null` and logged; the run continues.
+- The model comes from `--config` (default `configs/answer_eval.json`) through
+  `ConfigLoader` and `AIParser`.
+
+**Output (`answers.json`):**
+
+```json
+{
+    "model": "gpt-5.6-luna",
+    "frames_dir": "/path/to/camera",
+    "frames_used": 100,
+    "answers": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "answer_indices": [0],
+            "raw_response": "{\"answer_indices\": [0]}"
+        }
+    ]
+}
+```
+
+---
+
+### `grade_answers.py`
+
+**Purpose:** Scores an answers JSON produced by `run_model_answers.py` against
+the question file. It does not call a model.
+
+**Usage:**
+
+```bash
+python grade_answers.py --questions <questions.json> --answers answers.json --output graded_results.json
+```
+
+**Grading rule:** A question is correct when the selected `answer_indices` equal
+the question's `answer_indices` exactly. For single-answer questions this is a
+one-element list. For `sequence_order` questions the order matters. A question
+with no matching answer, or with `answer_indices: null`, is counted as incorrect.
+
+**Output (`graded_results.json`):** A `score` object with `correct`, `total`,
+and `accuracy` (a fraction rounded to four decimal places), plus a `results`
+list. Each result contains `question_id`, `type`, `question`, `correct`,
+`selected_indices`, `selected_answers` (option text), `correct_indices`, and
+`correct_answers` (option text). The score is also printed to the terminal.
+
+---
+
+### `run_all_eval.sh`
+
+**Purpose:** PBS batch script that runs the answer and grading steps for each
+Boreas list in one job. The answer step uses `--batch_size 10`, so every frame
+of the drive is sent in batches in one conversation before the questions. It follows the layout of `run_all_api.sh`: `copyq`
+queue, one CPU, 8 GB of memory, a 3.5-hour walltime, and
+`scratch/pg06+gdata/pg06` storage.
+
+**Entry point:** For each list it runs two commands:
+
+1. `run_model_answers.py` with `--frames_dir`
+   `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera`, `--questions`
+   `/g/data/pg06/FYP2026S1_3473/<list>/sparse_outputs/events/questions.json`, and
+   `--output` `.../<list>/eval_outputs/answers.json`.
+2. `grade_answers.py` with the same questions file, `--answers` pointing at that
+   `answers.json`, and `--output` `.../<list>/eval_outputs/graded_results.json`.
+
+The model is read from `configs/answer_eval.json`; the script does not change
+it. Submit from the repository root with `qsub run_all_eval.sh`. Because
+`set -euo pipefail` is set, a failing step stops the job, so grading does not
+run after a failed answer step.
+
+---
+
+### `test_gateway.sh`
+
+**Purpose:** One-off check that the OpenCode API gateway keeps a conversation
+across Responses API requests. It sends a text prompt that stores a secret word,
+then a second request linked with `previous_response_id` that asks for it, and
+prints `PASS` or `FAIL` along with the second request's input token count.
+
+**Usage:** `OPENCODE_API_KEY=... bash test_gateway.sh` from the repository root.
+Set `PYTHON` to change the interpreter (defaults to `python3`).
+
+Optionally set `FRAME_DIR` to a camera folder. The script then sends the first
+frame in that folder (sorted by name) in the same conversation and prints its
+size in bytes, the input tokens of that request, and the tokens the image added
+compared with the text-only request before it.
+
+---
+
+### `configs/answer_eval.json`
+
+**Purpose:** Model configuration for `run_model_answers.py`. It uses the same
+keys as the pipeline configs and is read through `ConfigLoader` and `AIParser`.
+The supplied file uses the API backend with `gpt-5.6-luna`,
+`OPENCODE_API_KEY`, and `max_tokens: 4000`. Change `backend` and `model` (and
+the vLLM settings for `backend: "local"`) to test a different model.
+
+---
+
 ### `pipeline/AIParser.py`
 
 **Purpose:** Provides a small interface for local vLLM or OpenAI-compatible API text and multi-image generation.
@@ -506,7 +644,10 @@ Gadi jobs.
 | Method | Purpose |
 |--------|---------|
 | `call_llm(prompt, max_tokens=None)` → `str` | Sends a text prompt to the selected backend and returns generated text. An optional per-call token limit overrides the configured default. |
-| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by parsed frame timestamp, includes an in-memory ordered filename manifest in the prompt, sends them together to the selected backend, and returns generated text. |
+| `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by parsed frame timestamp, and passes them to `call_vlm_images`. |
+| `call_vlm_images(prompt, image_paths)` → `str` | Takes an ordered list of frame image paths, includes an in-memory ordered filename manifest in the prompt, sends the images together to the selected backend, and returns generated text. Used by `run_model_answers.py` to send a sampled subset of frames. |
+| `call_api_conversation(input_data, previous_response_id=None, max_tokens=None)` → response | API backend only. Sends one request with `store: true` and `truncation: "disabled"`, linked to `previous_response_id` when given, and returns the full Responses API object (`id`, `output_text`, `usage.input_tokens`). Used by batch mode in `run_model_answers.py`. |
+| `build_api_message(text, image_paths)` → `list[dict]` | Builds one API user message with a text part followed by base64-encoded images. Shared by `call_vlm_images` and batch mode. |
 
 Configuration loading belongs to the pipeline classes, which read the JSON file and pass the complete dictionary into the `AIParser` constructor. In API mode, the API key is read from the environment variable named by `api_key_env`; it is not stored in configuration files.
 
@@ -794,6 +935,17 @@ with its rationale and the `question_id` of the question that uses it for
 human verification. False events are invented per question and never reused,
 so each question has its own incorrect answers.
 
+---
+
+### `pipeline/prompts/benchmark_answer.txt`
+
+**Purpose:** Prompt used by `run_model_answers.py` to ask the model a benchmark
+question. It states that the images are a sparse chronological sample of the
+whole drive and asks for `{"answer_indices": [...]}`: one index for
+single-answer questions, or every index in chronological order for ordering
+questions. The wording is neutral, so it does not favour "yes" or "no" for
+deceptive questions.
+
 
 ---
 
@@ -808,6 +960,7 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 |------|------|---------|
 | `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`, `sparse_event_filter.txt`, and `sparse_event_question_gen.txt`) |
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
+| `answer_eval.json` | — | Model settings for `run_model_answers.py` (not a pipeline config; no `task` or paths) |
 
 The current sparse configuration uses local `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8`
 with `frames_per_section: 7`, `step: 8`, `skip: 2`, `image_max_size: null`,
@@ -874,6 +1027,8 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 | Temporal question prompt (`prompts/temporal_question_gen.txt`) | Complete |
 | Temporal PBS job script (`temporal_event.pbs`) | Local vLLM temporal wrapper; requests four GPUs for the 72B model |
 | Forest run script (`forest_run.sh`) | Local Qwen3-VL sparse-event run for forest K-01; API and temporal examples are inactive |
+| Model answer runner (`run_model_answers.py`) | Implemented; asks a model all questions in a question file against a drive's frames |
+| Answer grader (`grade_answers.py`) | Implemented; scores answers against the question file |
 | Temporal question generation | Implemented; requires human-reviewed timeline |
 | Sparse event question generation | Implemented; requires human-reviewed events list |
 | Benchmark categories 2–4 | Not yet implemented |
