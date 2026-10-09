@@ -10,7 +10,7 @@
 #PBS -V
 
 set -euo pipefail
- 
+
 module load python3/3.11.7
 module load cuda/12.2.2
 
