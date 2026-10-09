@@ -299,15 +299,18 @@ completed section results are reused so the job can be resubmitted.
 
 ### `run_all_api.sh`
 
-**Purpose:** PBS batch script that runs temporal extraction over Boreas lists
-on the CPU-only `copyq` queue.
+**Purpose:** PBS batch script that generates temporal questions from existing,
+human-reviewed timelines for Boreas lists on the CPU-only `copyq` queue.
 
-**Resources:** One CPU, 8 GB of memory, and a 3.5-hour walltime.
+**Resources:** One CPU, 8 GB of memory, and a 45-minute walltime.
 
 **Entry point:** Before the loop it forces `backend: "api"` and
 `model: "gpt-6-luna"` in `configs/temporal_events.json`. For each list it
-rewrites the `frames_dir`, `sections_dir`, and `output` paths and runs
-`python3 main.py --mode temporal`. The original config is restored on exit.
+rewrites the `frames_dir`, `sections_dir`, and `output` paths to that list's
+temporal directories, then runs `python3 main.py --mode temporal --stage questions`.
+It reads the reviewed `timeline.json` and writes `questions.json` under
+`<list>/temporal_outputs/narratives/`; the timeline must already exist. The
+original config is restored on exit.
 
 ---
 

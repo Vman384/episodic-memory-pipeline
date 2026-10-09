@@ -272,10 +272,13 @@ temporal configuration is stored in `configs/temporal_events.json`.
 
 The batch scripts (`run_all_local.sh`, `run_all_api.sh`) rewrite the per-list
 `frames_dir`, `sections_dir`, and `output` paths before each run.
-`run_all_api.sh` also forces `backend: "api"` and `model: "gpt-6-luna"`; it
-runs on `copyq` with 8 GB of memory. `run_all_local.sh` reads `backend`,
-`model`, and every other inference setting from the configuration file, so set
-those there before submitting a local batch job.
+`run_all_api.sh` uses `configs/temporal_events.json`, forces `backend: "api"`
+and `model: "gpt-6-luna"`, and runs `--mode temporal --stage questions` on
+`copyq` with 8 GB of memory. Each list must already have a human-reviewed
+`timeline.json` in `<list>/temporal_outputs/narratives/`; the script writes
+`questions.json` alongside it. `run_all_local.sh` reads `backend`, `model`,
+and every other inference setting from the configuration file, so set those
+there before submitting a local batch job.
 
 `forest_run.sh` is currently configured to run the local
 `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` model for sparse-event extraction and
