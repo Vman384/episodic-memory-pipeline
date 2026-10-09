@@ -1,10 +1,10 @@
 #!/bin/bash
-#PBS -N temporal_questions
+#PBS -N sparse_questions
 #PBS -P pg06
 #PBS -q copyq
 #PBS -l ncpus=1
 #PBS -l mem=8GB
-#PBS -l walltime=03:30:00
+#PBS -l walltime=06:30:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
@@ -22,16 +22,12 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 # Boreas lists to process, in the requested order.
 LISTS=(
-    "boreas-2024-12-04-14-44"
-    "boreas-2025-02-15-16-58"
     "boreas-2025-07-18-11-53"
-    "boreas-2024-12-04-14-38"
-    "boreas-2025-02-21-14-51"
-    "boreas-2025-02-15-17-19"
+    "forest_dataset"
 )
 
 BASE="/g/data/pg06/FYP2026S1_3473"
-CONFIG="configs/temporal_events.json"
+CONFIG="configs/sparse_events.json"
 # Keep the original config so we can restore it after the loop.
 ORIGINAL_CONFIG="$(cat "$CONFIG")"
 trap 'printf "%s\n" "$ORIGINAL_CONFIG" > "$CONFIG"' EXIT
@@ -56,7 +52,7 @@ EOF
 
 for LIST in "${LISTS[@]}"; do
   echo "=============================================="
-  echo "Running temporal questions stage for: $LIST"
+  echo "Running sparse questions stage for: $LIST"
   echo "=============================================="
 
   # Only the per-list paths differ between runs; the API backend and model are
@@ -71,14 +67,17 @@ with open(config_path) as f:
     config = json.load(f)
 
 config["frames_dir"] = f"{base}/boreas_dataset/{list_name}/camera"
-config["sections_dir"] = f"{base}/{list_name}/temporal_outputs/sections"
-config["output"] = f"{base}/{list_name}/temporal_outputs/narratives"
+config["sections_dir"] = f"{base}/{list_name}/sparse_outputs/sections"
+config["output"] = f"{base}/{list_name}/sparse_outputs/narratives"
 
 with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
 EOF
 
-  python3 main.py --mode temporal --stage questions
+    python main.py --mode sparse --stage extract
+    python main.py --mode sparse --stage review
+    python main.py --mode sparse --stage questions
+
 done
 
 echo "All lists done."
