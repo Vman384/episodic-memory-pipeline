@@ -100,7 +100,7 @@ EOF
 # ---- Sparse (API): extract then review ----
 # echo "=== [api] sparse: K-01 extract + review ==="
 # set_config "$SPARSE_CONFIG" backend api
-# set_config "$SPARSE_CONFIG" model gpt-5.6-luna
+# set_config "$SPARSE_CONFIG" model gpt-6-luna
 # set_config "$SPARSE_CONFIG" frames_dir "$FRAMES_DIR"
 # set_config "$SPARSE_CONFIG" sections_dir "$SPARSE_SECTIONS"
 # set_config "$SPARSE_CONFIG" output "$SPARSE_OUTPUT"

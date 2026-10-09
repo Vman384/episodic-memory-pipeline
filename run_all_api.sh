@@ -4,7 +4,7 @@
 #PBS -q copyq
 #PBS -l ncpus=1
 #PBS -l mem=8GB
-#PBS -l walltime=06:30:00
+#PBS -l walltime=00:45:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
@@ -78,9 +78,7 @@ with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
 EOF
 
-    python main.py --mode sparse --stage extract
-    python main.py --mode sparse --stage review
-    python main.py --mode sparse --stage questions
+    python main.py --mode temporal --stage questions
 
 done
 
