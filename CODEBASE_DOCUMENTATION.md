@@ -41,7 +41,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
-11. **Model Answer Evaluation** (`run_model_answers.py`, `grade_answers.py`) — Asks a VLM every question in a `questions.json` against one drive's frames (sampled evenly across the drive) and writes an answers JSON; then grades that answers JSON against the question file and writes the score with per-question correct/incorrect results, selected answer, and correct answer.
+11. **Model Answer Evaluation** (`run_model_answers.py`, `grade_answers.py`, `run_all_eval.sh`) — Asks a VLM every question in a `questions.json` against one drive's frames (sampled evenly across the drive) and writes an answers JSON; then grades that answers JSON against the question file and writes the score with per-question correct/incorrect results, selected answer, and correct answer. `run_all_eval.sh` runs both steps for each Boreas list.
 
 ### What Is Not Yet Implemented
 
@@ -62,6 +62,8 @@ episodic-memory-pipeline/
 ├── run_timeframe_converter.py
 ├── run_model_answers.py
 ├── grade_answers.py
+├── run_all_eval.sh
+├── test_gateway.sh
 ├── requirements.txt
 ├── test_vlm.py
 ├── vllm.pbs
@@ -484,6 +486,16 @@ python run_model_answers.py --frames_dir <camera folder> --questions <questions.
 - Frames are read from `--frames_dir`, sorted by parsed timestamp, and sampled
   evenly across the whole drive down to `--max_frames` (default `100`). The same
   sampled frames are sent with every question.
+- **Batch mode (`--batch_size N`, API backend only):** every frame is sent in
+  order, `N` at a time, as messages in one stored conversation. Each batch is a
+  request linked to the previous one with `previous_response_id`, with
+  `store: true` and `truncation: "disabled"`, so an over-full context fails
+  explicitly rather than dropping frames. The batch log records each batch's
+  frame range, status, and input tokens. The first rejected batch stops the
+  frame phase; `frames_received` is the last frame the model accepted. Each
+  question is then a separate request linked to the last accepted response, so
+  answers don't affect one another. Each answer records `frames_received` and
+  `input_tokens`. `--max_frames` is ignored in this mode.
 - Each question is sent as one request: the shared prompt
   `pipeline/prompts/benchmark_answer.txt`, followed by the question text and its
   numbered options. The model replies with `{"answer_indices": [...]}`.
@@ -533,6 +545,47 @@ and `accuracy` (a fraction rounded to four decimal places), plus a `results`
 list. Each result contains `question_id`, `type`, `question`, `correct`,
 `selected_indices`, `selected_answers` (option text), `correct_indices`, and
 `correct_answers` (option text). The score is also printed to the terminal.
+
+---
+
+### `run_all_eval.sh`
+
+**Purpose:** PBS batch script that runs the answer and grading steps for each
+Boreas list in one job. The answer step uses `--batch_size 10`, so every frame
+of the drive is sent in batches in one conversation before the questions. It follows the layout of `run_all_api.sh`: `copyq`
+queue, one CPU, 8 GB of memory, a 3.5-hour walltime, and
+`scratch/pg06+gdata/pg06` storage.
+
+**Entry point:** For each list it runs two commands:
+
+1. `run_model_answers.py` with `--frames_dir`
+   `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera`, `--questions`
+   `/g/data/pg06/FYP2026S1_3473/<list>/sparse_outputs/events/questions.json`, and
+   `--output` `.../<list>/eval_outputs/answers.json`.
+2. `grade_answers.py` with the same questions file, `--answers` pointing at that
+   `answers.json`, and `--output` `.../<list>/eval_outputs/graded_results.json`.
+
+The model is read from `configs/answer_eval.json`; the script does not change
+it. Submit from the repository root with `qsub run_all_eval.sh`. Because
+`set -euo pipefail` is set, a failing step stops the job, so grading does not
+run after a failed answer step.
+
+---
+
+### `test_gateway.sh`
+
+**Purpose:** One-off check that the OpenCode API gateway keeps a conversation
+across Responses API requests. It sends a text prompt that stores a secret word,
+then a second request linked with `previous_response_id` that asks for it, and
+prints `PASS` or `FAIL` along with the second request's input token count.
+
+**Usage:** `OPENCODE_API_KEY=... bash test_gateway.sh` from the repository root.
+Set `PYTHON` to change the interpreter (defaults to `python3`).
+
+Optionally set `FRAME_DIR` to a camera folder. The script then sends the first
+frame in that folder (sorted by name) in the same conversation and prints its
+size in bytes, the input tokens of that request, and the tokens the image added
+compared with the text-only request before it.
 
 ---
 
@@ -593,6 +646,8 @@ Gadi jobs.
 | `call_llm(prompt, max_tokens=None)` → `str` | Sends a text prompt to the selected backend and returns generated text. An optional per-call token limit overrides the configured default. |
 | `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by parsed frame timestamp, and passes them to `call_vlm_images`. |
 | `call_vlm_images(prompt, image_paths)` → `str` | Takes an ordered list of frame image paths, includes an in-memory ordered filename manifest in the prompt, sends the images together to the selected backend, and returns generated text. Used by `run_model_answers.py` to send a sampled subset of frames. |
+| `call_api_conversation(input_data, previous_response_id=None, max_tokens=None)` → response | API backend only. Sends one request with `store: true` and `truncation: "disabled"`, linked to `previous_response_id` when given, and returns the full Responses API object (`id`, `output_text`, `usage.input_tokens`). Used by batch mode in `run_model_answers.py`. |
+| `build_api_message(text, image_paths)` → `list[dict]` | Builds one API user message with a text part followed by base64-encoded images. Shared by `call_vlm_images` and batch mode. |
 
 Configuration loading belongs to the pipeline classes, which read the JSON file and pass the complete dictionary into the `AIParser` constructor. In API mode, the API key is read from the environment variable named by `api_key_env`; it is not stored in configuration files.
 

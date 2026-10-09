@@ -38,7 +38,8 @@ for LIST in "${LISTS[@]}"; do
   python3 run_model_answers.py \
     --frames_dir "$BASE/boreas_dataset/$LIST/camera" \
     --questions "$BASE/$LIST/sparse_outputs/events/questions.json" \
-    --output "$OUTPUT_DIR/answers.json"
+    --output "$OUTPUT_DIR/answers.json" \
+    --batch_size 10
 
   python3 grade_answers.py \
     --questions "$BASE/$LIST/sparse_outputs/events/questions.json" \
