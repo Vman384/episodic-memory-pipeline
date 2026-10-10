@@ -4,6 +4,7 @@
     "input_mode": "frames",
     "api_base_url": "https://opencode.ai/zen/go/v1",
     "api_key_env": "OPENCODE_API_KEY",
+    "api_batch_size": 20,
     "temperature": null,
     "api_temperature": null,
     "reasoning_effort": "low",

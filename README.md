@@ -119,6 +119,7 @@ python main.py --mode counting
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
 | `run_all_eval.sh` | PBS job that runs `run_model_answers.py` and then `grade_answers.py` over the Boreas lists on the `copyq` queue |
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
+| `run_model_eval_api.sh` | PBS job that runs the QA runner and grader with GPT-6 Luna through OpenCode on `copyq` |
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by `run_model_answers.py` |
@@ -210,10 +211,10 @@ script to change them.
 
 ## Ask Questions from a Video
 
-The `QA/` runner takes an MP4 and a generated `questions.json` (sparse-event or
-temporal schema), shuffles the questions, removes answer/evidence metadata, and
-asks the configured model to answer the remaining questions. The model config
-selects one of two input modes:
+The `QA/` runner takes an MP4 or a folder of timestamp-named camera frames and a
+generated `questions.json` (sparse-event or temporal schema). It shuffles the
+questions, removes answer/evidence metadata, and asks the configured model to
+answer the remaining questions. The model config selects one of two input modes:
 
 ```bash
 # GPT-6 Luna: uniformly sampled frame images (default config)
@@ -228,26 +229,42 @@ python -m QA.run_questionnaire \
     --questions /path/to/questions.json \
     --config configs/qa_gemini_video.json \
     --output answers.json
+
+# GPT-6 Luna: use an existing camera frame folder
+python -m QA.run_questionnaire \
+    --frames-dir /path/to/camera \
+    --questions /path/to/questions.json \
+    --output answers.json
 ```
 
 `configs/qa_gpt6_luna.json` is the default and uses the OpenCode API with
-`OPENCODE_API_KEY`. Frame mode samples at most 100 frames uniformly, resizes
-each to at most 768 pixels per side, and sends them with all shuffled questions
-through `pipeline/AIParser.py`. `--max-frames` and `--max-image-size` adjust this
-preprocessing. `configs/qa_gemini_video.json` uses `GEMINI_API_KEY` and the
+`OPENCODE_API_KEY`. Frame mode uniformly samples up to 100 images from the MP4
+or camera folder, resizes each to at most 768 pixels per side, and sends them
+with all shuffled questions through `pipeline/AIParser.py`. For API backends,
+API frames use the model config's `api_batch_size` (fallback: five); the GPT-6
+Luna config sets it to 20. Use `--api-batch-size` to override it.
+`--max-frames 0` uses every frame in the input. `--max-frames` and
+`--max-image-size` adjust preprocessing.
+`configs/qa_gemini_video.json`
+uses `GEMINI_API_KEY` and the
 Gemini Files API to upload the original MP4; the runner waits for provider-side
 video processing and does not decode frames locally. Set `input_mode` in the
 model config, or override it with `--input-mode frames` or
 `--input-mode native_video`. Native video input currently supports local
 Qwen3-VL through vLLM/`qwen-vl-utils` and Gemini through its Files API. Use
-`--seed` to make question ordering reproducible.
+`--seed` to make question ordering reproducible. If an API context limit is
+reached while adding batches, the runner stops and records the number of frames
+accepted before asking the questions.
 
 The output JSON records `input_mode`, input metadata, question order, parsed
 answer indices, and the raw model response. The model-facing questionnaire
-contains only `question_id`, `type`, `question`, and `options`; answer indices,
-event/frame evidence, false-event flags, and the top-level `false_events`
-reviewer list are omitted. If an MP4 contains audio, the prompt instructs the
-model to ignore it; use an audio-free file for a strict vision-only run.
+contains only `type`, `question`, and `options`; it omits IDs, answers,
+event/frame evidence, false-event flags, and the top-level `false_events` list.
+The model returns one positional list per question (for example,
+`[[0], [1], [3, 0, 1, 2]]`); the runner maps those positions back to question IDs
+for grading. Option indexes are 0-based. If an MP4 contains audio, the prompt
+instructs the model to ignore it; use an audio-free file for strict vision-only
+scoring.
 
 ## Run the Qwen3 QA Test on Gadi
 
@@ -281,6 +298,32 @@ compare against externally sampled images:
 ```bash
 INPUT_MODE=frames MAX_FRAMES=32 qsub run_model_eval.sh
 ```
+
+## Run the GPT-6 Luna API Test on Gadi
+
+`run_model_eval_api.sh` uses the `copyq` queue (1 CPU, 8 GB RAM) and
+`configs/qa_gpt6_luna.json`. GPT-6 Luna accepts image inputs, so this job sends
+uniformly sampled images from the sequence's existing `camera/` PNGs; it does
+not upload the MP4 as native video. It sends up to 20 JPEG images per API
+request in a stored conversation.
+
+Submit from the repository root:
+
+```bash
+qsub run_model_eval_api.sh
+```
+
+The default sequence is `boreas-2025-02-15-16-58`; frames are read from
+`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/camera/`. It reads the
+repository-root `questions.json` and writes
+`gpt6_luna_answers.json` and `gpt6_luna_graded_results.json` under the
+sequence's `eval_outputs/` directory. Set `OPENCODE_API_KEY` in the submitter's
+environment or in `.env`. `LIST`, `QUESTIONS`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
+`API_BATCH_SIZE`, `CONFIG`, and `SEED` can be overridden when submitting the
+job. The default batch size is 20. Set `MAX_FRAMES=0` to attempt all camera
+frames; the API context limit or PBS walltime may stop the conversation before
+all frames are accepted. The script checks frame coverage before grading, so a
+partial-context run keeps its answers file but is not scored as a full run.
 
 ## Sparse-Event Pipeline
 

@@ -5,7 +5,7 @@ import random
 from pathlib import Path
 
 
-MODEL_QUESTION_FIELDS = ("question_id", "type", "question", "options")
+SAFE_QUESTION_FIELDS = ("question_id", "type", "question", "options")
 
 
 class QuestionnaireParser:
@@ -32,7 +32,7 @@ class QuestionnaireParser:
         if not isinstance(questions, list) or not questions:
             raise ValueError("Question file must contain a non-empty 'questions' list")
 
-        model_questions = []
+        safe_questions = []
         seen_ids = set()
         for number, question in enumerate(questions, start=1):
             if not isinstance(question, dict):
@@ -67,15 +67,14 @@ class QuestionnaireParser:
                     f"Question {question_id} must have a non-empty string options list"
                 )
 
-            model_question = {
+            safe_question = {
                 field: question[field]
-                for field in MODEL_QUESTION_FIELDS
+                for field in SAFE_QUESTION_FIELDS
                 if field in question
             }
-            model_questions.append(model_question)
+            safe_questions.append(safe_question)
 
-        self.random.shuffle(model_questions)
-        # Only pass fields needed to answer questions. This also removes
-        # answer_indices, event/frame evidence, false-event flags, and the
-        # top-level false_events list used during human review.
-        return {"questions": model_questions}
+        self.random.shuffle(safe_questions)
+        # Keep question IDs internally for grading, but strip them from the
+        # model prompt. Gold answers and review evidence are discarded.
+        return {"questions": safe_questions}

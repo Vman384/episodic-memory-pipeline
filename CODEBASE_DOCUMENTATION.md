@@ -47,6 +47,8 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 13. **Qwen3 QA Evaluation Job** (`run_model_eval.sh`) — PBS wrapper that runs the video questionnaire and grader with local Qwen3-VL on the four-GPU Gadi queue.
 
+14. **GPT-6 Luna QA Evaluation Job** (`run_model_eval_api.sh`) — PBS wrapper that runs the frame-input QA path and grader using the OpenCode API on the CPU-only `copyq` queue.
+
 ### What Is Not Yet Implemented
 
 - The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
@@ -68,6 +70,7 @@ episodic-memory-pipeline/
 ├── grade_answers.py
 ├── run_all_eval.sh
 ├── run_model_eval.sh
+├── run_model_eval_api.sh
 ├── QA/
 │   ├── __init__.py
 │   ├── QuestionnaireParser.py
@@ -637,11 +640,38 @@ expected `boreas_dataset/<sequence>/video.mp4` path.
 
 ---
 
+### `run_model_eval_api.sh` — GPT-6 Luna API QA job
+
+**Purpose:** Run the QA questionnaire with GPT-6 Luna through OpenCode, then
+grade its answers against the original question file.
+
+**Submission:** `qsub run_model_eval_api.sh` from the repository root. The PBS
+job requests one CPU and 8 GB of memory on `copyq`, activates the shared Python
+environment, and reads camera frames from
+`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/camera/`.
+
+GPT-6 Luna accepts text and image inputs, so this job uses
+`configs/qa_gpt6_luna.json` with `input_mode: "frames"`. The QA runner uniformly
+samples up to 100 of the sequence's pre-extracted PNGs, resizes them to JPEG,
+and sends them in batches of 20 in a stored API conversation. It does not
+send the MP4 as native video. It reads the repository-root `questions.json` by
+default and writes
+`gpt6_luna_answers.json` and `gpt6_luna_graded_results.json` to the sequence's
+`eval_outputs/` directory. `OPENCODE_API_KEY` must be available in the job
+environment or repository `.env` file. `LIST`, `QUESTIONS`, `MAX_FRAMES`,
+`MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, `CONFIG`, and `SEED` can be overridden
+through the exported environment. Setting `MAX_FRAMES=0` attempts all camera
+frames, but the API context window may stop ingestion before the full folder is
+accepted. The script checks `frames_received == frames_sampled` before grading;
+partial-context answers remain saved but are not scored as a full run.
+
+---
+
 ### `QA/` — Video questionnaire runner
 
 **Purpose:** Ask the benchmark questions in a sparse-event or temporal
-`questions.json` about an MP4 video and save the model's answers without grading
-them.
+`questions.json` about an MP4 video or timestamped camera frame folder and save
+the model's answers without grading them.
 
 **Usage:** Run from the repository root:
 
@@ -650,13 +680,24 @@ python -m QA.run_questionnaire \
     --video /path/to/video.mp4 \
     --questions /path/to/questions.json \
     --output answers.json
+
+python -m QA.run_questionnaire \
+    --frames-dir /path/to/camera \
+    --questions /path/to/questions.json \
+    --output answers.json
 ```
 
 The default config is `configs/qa_gpt6_luna.json`. Each model config declares
 `input_mode` as `frames` or `native_video`; `--input-mode` can override it for a
-run. Frame mode uses Decord to sample at most 100 frames uniformly, resizes them
-to at most 768 pixels, and sends them with the questions through
-`pipeline/AIParser.py`. `--max-frames` and `--max-image-size` adjust that path.
+run. Frame mode uniformly samples up to 100 frames, resizes them to at most 768
+pixels, and sends them through `pipeline/AIParser.py`. It can sample from an MP4
+or from an existing `--frames-dir` of timestamp-named images. API frame mode
+sends stored-conversation batches using the model config's `api_batch_size`
+(fallback: five), then asks the questions after the accepted batches. The
+GPT-6 Luna config sets this to 20. `--max-frames 0` uses all
+available frames, though the API context window may stop ingestion before all
+are accepted. `--max-frames`, `--max-image-size`, and `--api-batch-size` adjust
+frame mode.
 Native-video mode passes the MP4 through the selected model's video stack.
 The local Qwen3-VL adapter uses `qwen-vl-utils` with vLLM. The Gemini adapter
 uses the Gemini Files API, waits for provider-side processing, and requires
@@ -664,16 +705,18 @@ uses the Gemini Files API, waits for provider-side processing, and requires
 because its API only accepts text and image inputs.
 
 `QuestionnaireParser.py` accepts the `{"questions": [...]}` structures from the
-sparse and temporal question-generation prompts. It gives the model only
-`question_id`, `type`, `question`, and `options`, omitting `answer_indices`,
-`event_ids`, `frame_evidence`, `false_event`, and the top-level `false_events`
-review list. It shuffles question objects without changing option order.
+sparse and temporal question-generation prompts. It shuffles question objects
+without changing option order. The model prompt includes only `type`, `question`,
+and `options`; it omits IDs, answer keys, evidence, false-event flags, and the
+top-level `false_events` reviewer list. The model returns a positional JSON
+array of index lists, with zero-based option indexes; the runner maps array
+positions back to original question IDs for grading.
 
 `VideoAIParser.py` dispatches based on `input_mode`. `frames` uses the existing
-local/API `AIParser`; `native_video` uses Gemini's upload and video-processing
-flow or Qwen3-VL's local video processor without QA-side frame sampling. Output
-JSON records the mode, mode-specific input metadata, parsed answer indices, raw
-model text, and question order.
+local/API `AIParser`; `native_video` uses Gemini's upload flow or Qwen3-VL's
+local video processor without QA-side frame sampling. Output JSON records the
+mode, mode-specific input metadata, parsed answer indices, raw model text, and
+question order.
 Unparseable or invalid answers are recorded with `answer_indices: null`.
 
 ---
