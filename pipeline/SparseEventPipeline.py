@@ -139,6 +139,9 @@ class SparseEventPipeline:
 
         events = []
         for event in parsed.get("interesting_events", []):
+            if not isinstance(event, dict):
+                print(f"  Warning: skipping malformed event in {section_name}: {event!r}")
+                continue
             events.append(
                 {
                     "section": section_name,

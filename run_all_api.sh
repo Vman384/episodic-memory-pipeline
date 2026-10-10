@@ -22,10 +22,6 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 # Boreas lists to process, in the requested order.
 LISTS=(
-    "boreas-2024-12-04-14-34"
-    "boreas-2024-12-04-14-59"
-    "boreas-2025-07-18-10-33"
-    "boreas-2025-02-22-12-26"
     "boreas-2025-08-13-10-36"
 )
 

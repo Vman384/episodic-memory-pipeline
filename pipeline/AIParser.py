@@ -21,14 +21,6 @@ class AIParser:
     API_RETRY_INITIAL_DELAY_SECONDS = 2
     API_RETRY_MAX_DELAY_SECONDS = 300
 
-    IMAGE_MEDIA_TYPES = {
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-        ".webp": "image/webp",
-        ".bmp": "image/bmp",
-    }
-
     def __init__(self, config: dict):
         backend = config.get("backend", "local").lower()
         model = config.get("model")
@@ -290,23 +282,24 @@ class AIParser:
 
     def build_api_message(self, text: str, image_paths: list[Path]) -> list[dict]:
         """
-        Build one user message with text followed by base64-encoded images.
+        Build one user message with text followed by base64-encoded PNG images.
         """
         import base64
+        from io import BytesIO
+
+        from PIL import Image
 
         image_content = []
         for image_path in image_paths:
-            with open(image_path, "rb") as image_file:
-                encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
-
-            media_type = self.IMAGE_MEDIA_TYPES.get(image_path.suffix.lower())
-            if not media_type:
-                raise ValueError(f"Unsupported image type: {image_path.suffix}")
+            with Image.open(image_path) as image:
+                image = image.convert("RGB")
+                buffer = BytesIO()
+            encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
             image_content.append(
                 {
                     "type": "input_image",
-                    "image_url": f"data:{media_type};base64,{encoded_image}",
+                    "image_url": f"data:image/jpeg;base64,{encoded_image}",
                 }
             )
 

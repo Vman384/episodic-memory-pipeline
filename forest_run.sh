@@ -98,22 +98,22 @@ EOF
 #===============================================================================
 
 # ---- Sparse (API): extract then review ----
-# echo "=== [api] sparse: K-01 extract + review ==="
-# set_config "$SPARSE_CONFIG" backend api
-# set_config "$SPARSE_CONFIG" model gpt-6-luna
-# set_config "$SPARSE_CONFIG" frames_dir "$FRAMES_DIR"
-# set_config "$SPARSE_CONFIG" sections_dir "$SPARSE_SECTIONS"
-# set_config "$SPARSE_CONFIG" output "$SPARSE_OUTPUT"
-# python3 main.py --mode sparse
+echo "=== [api] sparse: K-01 extract + review ==="
+set_config "$SPARSE_CONFIG" backend api
+set_config "$SPARSE_CONFIG" model gpt-5.6-luna
+set_config "$SPARSE_CONFIG" frames_dir "$FRAMES_DIR"
+set_config "$SPARSE_CONFIG" sections_dir "$SPARSE_SECTIONS"
+set_config "$SPARSE_CONFIG" output "$SPARSE_OUTPUT"
+python main.py --mode sparse --stage questions
 
 # ---- Temporal (API): extract then timeline ----
-echo "=== [api] temporal: K-01 extract + timeline ==="
-set_config "$TEMPORAL_CONFIG" backend api
-set_config "$TEMPORAL_CONFIG" model gpt-5.6-luna
-set_config "$TEMPORAL_CONFIG" frames_dir "$FRAMES_DIR"
-set_config "$TEMPORAL_CONFIG" sections_dir "$TEMPORAL_SECTIONS"
-set_config "$TEMPORAL_CONFIG" output "$TEMPORAL_OUTPUT"
-python3 main.py --mode temporal
+# echo "=== [api] temporal: K-01 extract + timeline ==="
+# set_config "$TEMPORAL_CONFIG" backend api
+# set_config "$TEMPORAL_CONFIG" model gpt-5.6-luna
+# set_config "$TEMPORAL_CONFIG" frames_dir "$FRAMES_DIR"
+# set_config "$TEMPORAL_CONFIG" sections_dir "$TEMPORAL_SECTIONS"
+# set_config "$TEMPORAL_CONFIG" output "$TEMPORAL_OUTPUT"
+# python3 main.py --mode temporal
 
 #===============================================================================
 # LOCAL MODEL RUNS

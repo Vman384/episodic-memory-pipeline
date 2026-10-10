@@ -4,7 +4,7 @@
 #PBS -q copyq
 #PBS -l ncpus=1
 #PBS -l mem=8GB
-#PBS -l walltime=03:30:00
+#PBS -l walltime=0:05:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
@@ -39,7 +39,7 @@ for LIST in "${LISTS[@]}"; do
     --frames_dir "$BASE/boreas_dataset/$LIST/camera" \
     --questions "$BASE/$LIST/sparse_outputs/events/questions.json" \
     --output "$OUTPUT_DIR/answers.json" \
-    --batch_size 10
+    --batch_size 5
 
   python3 grade_answers.py \
     --questions "$BASE/$LIST/sparse_outputs/events/questions.json" \
