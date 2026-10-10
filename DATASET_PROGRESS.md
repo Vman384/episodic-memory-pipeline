@@ -16,10 +16,10 @@ This md file contains all dataset status
 13. forest_dataset
 14. boreas-2025-02-21-14-51 (done)
 16. boreas-2025-02-15-17-19 (done)
-17. boreas-2024-12-04-14-59
-18. boreas-2025-07-18-10-33
-19. boreas-2025-02-22-12-26
-20. boreas-2025-08-13-10-36
+17. boreas-2024-12-04-14-59 (ER)
+18. boreas-2025-07-18-10-33 (ER)
+19. boreas-2025-02-22-12-26 (ER)
+20. boreas-2025-08-13-10-36 (ER)
 
 
 

@@ -1,0 +1,67 @@
+#!/bin/bash
+#PBS -N boreas_video_download
+#PBS -P pg06
+#PBS -q copyq
+#PBS -l ncpus=1
+#PBS -l mem=8GB
+#PBS -l walltime=4:00:00
+#PBS -l storage=scratch/pg06+gdata/pg06
+#PBS -l wd
+
+set -euo pipefail
+
+module load python3/3.11.7
+cd "$PBS_O_WORKDIR"
+source .venv/bin/activate
+
+PROGRESS_FILE="$PBS_O_WORKDIR/DATASET_PROGRESS.md"
+DESTINATION="/g/data/pg06/FYP2026S1_3473/boreas_dataset"
+EXCLUDED_DATASET="boreas-2025-07-18-15-12"
+
+if [[ ! -f "$PROGRESS_FILE" ]]; then
+    echo "Dataset progress file not found: $PROGRESS_FILE" >&2
+    exit 1
+fi
+
+mapfile -t DATASETS < <(
+    python3 - "$PROGRESS_FILE" "$EXCLUDED_DATASET" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+progress = Path(sys.argv[1]).read_text()
+excluded = sys.argv[2]
+pattern = re.compile(r"\bboreas-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}\b")
+
+for dataset in dict.fromkeys(pattern.findall(progress)):
+    if dataset != excluded:
+        print(dataset)
+PY
+)
+
+if [[ ${#DATASETS[@]} -eq 0 ]]; then
+    echo "No Boreas datasets found in $PROGRESS_FILE" >&2
+    exit 1
+fi
+
+echo "Downloading videos for ${#DATASETS[@]} Boreas datasets to $DESTINATION"
+
+for dataset in "${DATASETS[@]}"; do
+    dataset_dir="$DESTINATION/$dataset"
+    video_path="$dataset_dir/video.mp4"
+
+    if [[ -s "$video_path" ]]; then
+        echo "Skipping $dataset; video.mp4 already exists"
+        continue
+    fi
+
+    mkdir -p "$dataset_dir"
+    echo "Downloading video.mp4 for $dataset"
+    (
+        cd "$dataset_dir"
+        aws s3 cp "s3://boreas/$dataset/video.mp4" video.mp4.part --no-sign-request
+        mv video.mp4.part video.mp4
+    )
+done
+
+echo "Boreas video downloads completed."

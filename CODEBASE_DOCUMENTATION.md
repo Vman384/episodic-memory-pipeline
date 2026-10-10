@@ -71,6 +71,7 @@ episodic-memory-pipeline/
 ├── temporal_event.pbs
 ├── forest_run.sh
 ├── download_boreas.pbs
+├── download_boreas_videos.pbs
 ├── CODEBASE_DOCUMENTATION.md
 ├── pipeline/
 │   ├── ConfigLoader.py
@@ -273,6 +274,22 @@ Boreas S3 sequences into `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>`
 
 The script uses anonymous S3 access (`--no-sign-request`) and creates the target
 directory before syncing each sequence.
+
+---
+
+### `download_boreas_videos.pbs`
+
+**Purpose:** Downloads `video.mp4` from the public Boreas S3 bucket for each
+Boreas sequence named in `DATASET_PROGRESS.md`, excluding
+`boreas-2025-07-18-15-12`. Duplicate sequence names are downloaded once, and
+existing non-empty video files are skipped.
+
+Each video is saved under
+`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/video.mp4`. Submit the job
+from the repository root with `qsub download_boreas_videos.pbs`.
+
+**Resources:** `copyq` queue, one CPU, 8 GB of memory, four-hour walltime, and
+`scratch/pg06+gdata/pg06` storage. The script uses anonymous AWS S3 access.
 
 ---
 

@@ -109,6 +109,7 @@ python main.py --mode counting
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
 | `configs/*.json` | Pipeline configuration files |
 | `download_boreas.pbs` | Downloads camera frames for the listed Boreas S3 sequences to `/g/data/pg06/FYP2026S1_3473/boreas_dataset` |
+| `download_boreas_videos.pbs` | Downloads each Boreas sequence's `video.mp4` from `DATASET_PROGRESS.md`, excluding `boreas-2025-07-18-15-12` |
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | Local vLLM temporal PBS job script |
 | `forest_run.sh` | Local Qwen3-VL sparse-event PBS job for the forest K-01 dataset; API and temporal examples are inactive |
@@ -117,6 +118,18 @@ python main.py --mode counting
 | `run_all_eval.sh` | PBS job that runs `run_model_answers.py` and then `grade_answers.py` over the Boreas lists on the `copyq` queue |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by `run_model_answers.py` |
+
+To download the full videos for the Boreas sequences listed in
+`DATASET_PROGRESS.md` (except `boreas-2025-07-18-15-12`), submit the PBS job from
+the repository root:
+
+```bash
+qsub download_boreas_videos.pbs
+```
+
+The job saves each file as
+`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/video.mp4` and skips files
+that are already present.
 
 ## Testing Questions Against a Model
 
