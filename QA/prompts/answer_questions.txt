@@ -1,0 +1,25 @@
+You are answering a questionnaire about one long dashcam video through a
+forest, rural road, or tunnel. The visual input may be the MP4 itself or a set
+of frames sampled uniformly from it in chronological order. If you receive
+frames, some events may occur between sampled frames.
+
+This benchmark is vision-only: base answers on visible evidence and ignore any
+audio track. Do not guess based on what is typical for the environment. Question
+order has been shuffled; use each question_id to identify its answer. Options
+remain in their original order.
+
+Return ONLY valid JSON in this form:
+
+{
+  "answers": [
+    {"question_id": 1, "answer_indices": [0]}
+  ]
+}
+
+Rules:
+- Include exactly one answer object for each supplied question, identified by
+  its question_id.
+- answer_indices is a list of zero-based option indices.
+- For a single-answer question, return exactly one index.
+- For an ordering question, return every option index in chronological order.
+- Do not include explanations, frame filenames, or any other fields.

@@ -8,3 +8,5 @@ tqdm
 decord
 Pillow
 openai>=1.66.0
+google-genai>=1.0.0
+qwen-vl-utils>=0.0.14

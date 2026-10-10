@@ -26,6 +26,8 @@ pip install -r requirements.txt
 API mode requires the environment variable named by `api_key_env` in the
 selected configuration. The supplied sparse configuration uses
 `OPENCODE_API_KEY`, loaded from the environment or the repository `.env` file.
+Gemini native-video QA uses `GEMINI_API_KEY` for the Gemini Files API. Local
+Qwen3-VL video input uses `qwen-vl-utils` inside the vLLM environment.
 
 ## Gadi Data Paths
 
@@ -116,8 +118,13 @@ python main.py --mode counting
 | `run_model_answers.py` | Asks a model every question in a question JSON file against one drive's camera frames and writes the answers |
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
 | `run_all_eval.sh` | PBS job that runs `run_model_answers.py` and then `grade_answers.py` over the Boreas lists on the `copyq` queue |
+| `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
+| `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by `run_model_answers.py` |
+| `configs/qa_gpt6_luna.json` | GPT-6 Luna QA config using frame input |
+| `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
+| `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
 
 To download the full videos for the Boreas sequences listed in
 `DATASET_PROGRESS.md` (except `boreas-2025-07-18-15-12`), submit the PBS job from
@@ -200,6 +207,80 @@ For each list it reads `boreas_dataset/<list>/camera` and
 `<list>/sparse_outputs/events/questions.json`, and writes `answers.json` and
 `graded_results.json` to `<list>/eval_outputs/`. Edit `LISTS` and the paths in the
 script to change them.
+
+## Ask Questions from a Video
+
+The `QA/` runner takes an MP4 and a generated `questions.json` (sparse-event or
+temporal schema), shuffles the questions, removes answer/evidence metadata, and
+asks the configured model to answer the remaining questions. The model config
+selects one of two input modes:
+
+```bash
+# GPT-6 Luna: uniformly sampled frame images (default config)
+python -m QA.run_questionnaire \
+    --video /path/to/video.mp4 \
+    --questions /path/to/questions.json \
+    --output answers.json
+
+# Gemini: upload and pass the original MP4
+python -m QA.run_questionnaire \
+    --video /path/to/video.mp4 \
+    --questions /path/to/questions.json \
+    --config configs/qa_gemini_video.json \
+    --output answers.json
+```
+
+`configs/qa_gpt6_luna.json` is the default and uses the OpenCode API with
+`OPENCODE_API_KEY`. Frame mode samples at most 100 frames uniformly, resizes
+each to at most 768 pixels per side, and sends them with all shuffled questions
+through `pipeline/AIParser.py`. `--max-frames` and `--max-image-size` adjust this
+preprocessing. `configs/qa_gemini_video.json` uses `GEMINI_API_KEY` and the
+Gemini Files API to upload the original MP4; the runner waits for provider-side
+video processing and does not decode frames locally. Set `input_mode` in the
+model config, or override it with `--input-mode frames` or
+`--input-mode native_video`. Native video input currently supports local
+Qwen3-VL through vLLM/`qwen-vl-utils` and Gemini through its Files API. Use
+`--seed` to make question ordering reproducible.
+
+The output JSON records `input_mode`, input metadata, question order, parsed
+answer indices, and the raw model response. The model-facing questionnaire
+contains only `question_id`, `type`, `question`, and `options`; answer indices,
+event/frame evidence, false-event flags, and the top-level `false_events`
+reviewer list are omitted. If an MP4 contains audio, the prompt instructs the
+model to ignore it; use an audio-free file for a strict vision-only run.
+
+## Run the Qwen3 QA Test on Gadi
+
+`run_model_eval.sh` submits the QA runner and grader to the four-GPU `gpuhopper`
+queue using `configs/qa_qwen3.json`. Qwen3-VL supports video input, so this
+first test passes the MP4 through its vLLM video processor instead of sampling
+frames in the QA script. The config requests 2 FPS and caps processing at 768
+frames. It defaults to Boreas sequence
+`boreas-2025-02-15-16-58`, reads the repository-root `questions.json`, and uses
+the sequence's `video.mp4`. Results are written to:
+
+```text
+/g/data/pg06/FYP2026S1_3473/<sequence>/eval_outputs/
+    qwen3_answers.json
+    qwen3_graded_results.json
+```
+
+Submit from the repository root:
+
+```bash
+qsub run_model_eval.sh
+```
+
+The video must already exist at
+`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/video.mp4`; submit
+`download_boreas_videos.pbs` first if needed. Since the PBS script exports the
+submitter's environment, you can override `LIST`, `QUESTIONS`, `MAX_FRAMES`,
+`MAX_IMAGE_SIZE`, `INPUT_MODE`, `CONFIG`, or `SEED`. Set `INPUT_MODE=frames` to
+compare against externally sampled images:
+
+```bash
+INPUT_MODE=frames MAX_FRAMES=32 qsub run_model_eval.sh
+```
 
 ## Sparse-Event Pipeline
 

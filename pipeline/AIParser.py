@@ -56,13 +56,19 @@ class AIParser:
             from transformers import AutoProcessor
             from vllm import LLM, SamplingParams
 
+            llm_config = {
+                "model": model,
+                "enforce_eager": config.get("enforce_eager", True),
+                "dtype": config.get("dtype", "half"),
+                "max_model_len": config.get("max_model_len", 4096),
+                "gpu_memory_utilization": config.get("gpu_memory_utilization", 0.9),
+                "tensor_parallel_size": config.get("tensor_parallel_size", 1),
+            }
+            if config.get("limit_mm_per_prompt") is not None:
+                llm_config["limit_mm_per_prompt"] = config["limit_mm_per_prompt"]
+
             self.model = LLM(
-                model=model,
-                enforce_eager=config.get("enforce_eager", True),
-                dtype=config.get("dtype", "half"),
-                max_model_len=config.get("max_model_len", 4096),
-                gpu_memory_utilization=config.get("gpu_memory_utilization", 0.9),
-                tensor_parallel_size=config.get("tensor_parallel_size", 1),
+                **llm_config,
             )
             self.sampling_params = SamplingParams(
                 temperature=self.local_temperature,
@@ -355,24 +361,35 @@ class AIParser:
 
         return self.call_vlm_images(prompt, image_paths)
 
-    def call_vlm_images(self, prompt: str, image_paths: list[Path]) -> str:
+    def call_vlm_images(
+        self,
+        prompt: str,
+        image_paths: list[Path],
+        include_frame_manifest: bool = True,
+    ) -> str:
         """
         Generate a response from a prompt and an ordered list of frame images.
+
+        Set include_frame_manifest=False for tasks that do not need frame
+        filenames in the prompt or response.
         """
-        # Keep the original filenames available to the VLM. Image payloads do
-        # not preserve the local filenames on their own.
-        frame_manifest = "\n".join(
-            f"Frame {index}: {image_path.name}"
-            for index, image_path in enumerate(image_paths, start=1)
-        )
-        prompt_with_manifest = (
-            f"{prompt}\n\n"
-            "The images are provided in the same order as this frame filename "
-            "manifest:\n"
-            f"{frame_manifest}\n"
-            "Use the exact filenames from this manifest in your response. "
-            "Do not create replacement filenames."
-        )
+        if include_frame_manifest:
+            # Keep original filenames available to tasks that return frame
+            # references. Image payloads do not preserve local filenames.
+            frame_manifest = "\n".join(
+                f"Frame {index}: {image_path.name}"
+                for index, image_path in enumerate(image_paths, start=1)
+            )
+            prompt_with_manifest = (
+                f"{prompt}\n\n"
+                "The images are provided in the same order as this frame filename "
+                "manifest:\n"
+                f"{frame_manifest}\n"
+                "Use the exact filenames from this manifest in your response. "
+                "Do not create replacement filenames."
+            )
+        else:
+            prompt_with_manifest = prompt
 
         # ----------------------------------------------------
         # BACKEND: API

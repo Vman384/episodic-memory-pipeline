@@ -1,0 +1,8 @@
+{
+    "model": "gemini-3.8-flash",
+    "backend": "gemini",
+    "input_mode": "native_video",
+    "api_key_env": "GEMINI_API_KEY",
+    "max_tokens": 4000,
+    "video_processing_timeout_seconds": 1800
+}
