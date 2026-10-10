@@ -1,10 +1,10 @@
 #!/bin/bash
-#PBS -N temporal_questions
+#PBS -N temporal_extract
 #PBS -P pg06
 #PBS -q copyq
 #PBS -l ncpus=1
 #PBS -l mem=8GB
-#PBS -l walltime=00:45:00
+#PBS -l walltime=06:45:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
