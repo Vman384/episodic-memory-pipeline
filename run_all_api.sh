@@ -77,7 +77,7 @@ with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
 EOF
 
-    python3 main.py --mode temporal
+    python3 main.py --mode temporal --stage questions
 
 done
 
