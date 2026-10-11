@@ -41,7 +41,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
-11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` runs GPT-6 Luna on the Boreas sequences listed in the selected `DATASET_PROGRESS.md` section and stores each answer, detailed grading, and final mark under `model_answers/` in the submission directory.
+11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` runs Kimi K3 through OpenCode Go on the Boreas sequences listed in the selected `DATASET_PROGRESS.md` section and stores each answer, detailed grading, and final mark under `model_answers/` in the submission directory.
 
 12. **Video Questionnaire Runner** (`QA/`) — Loads sparse or temporal `questions.json`, removes answer and evidence metadata from the model prompt, randomizes question order, then uses configured frame-sequence or native MP4 input. Frame mode defaults to 128 frames resized to a maximum 512-pixel side.
 
@@ -106,6 +106,7 @@ episodic-memory-pipeline/
 │   ├── sparse_events.json
 │   ├── answer_eval.json
 │   ├── qa_gpt6_luna.json
+│   ├── qa_kimi_k3.json
 │   ├── qa_gemini_video.json
 │   ├── qa_qwen3.json
 │   └── .temporal_events.json
@@ -592,7 +593,7 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 
 ### `run_all_eval.sh`
 
-**Purpose:** PBS batch script that runs GPT-6 Luna QA and grading for the Boreas
+**Purpose:** PBS batch script that runs Kimi K3 QA and grading for the Boreas
 sequence IDs in its `LISTS` array. The default array contains the 17 Boreas
 entries from the Temporal section of `DATASET_PROGRESS.md`; non-Boreas entries
 such as `forest_dataset` are excluded. Each QA run samples up to 256 frames,
@@ -606,8 +607,9 @@ job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour walltime, and
    and question file, then calls `QA.run_questionnaire` once per dataset. Temporal
    questions default to `<list>/temporal_outputs/narratives/questions.json`;
    sparse questions default to `<list>/sparse_outputs/events/questions.json`.
-   The API configuration is `configs/qa_gpt6_luna.json`, with a default frame
-   budget of `256`, image side limit of `512`, and API batch size `20`.
+    The API configuration is `configs/qa_kimi_k3.json`, with a default frame
+    budget of `256` and image side limit of `512`. It sends sampled frames and
+    questions together in one OpenCode Go Chat Completions request.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
    answer file, and `--output` `graded_results.json` in the same output folder.
 
@@ -615,7 +617,7 @@ The default output path, relative to the directory from which the job was
 submitted, is:
 
 ```text
-model_answers/gpt-6-luna/<dataset>/temporal/
+model_answers/kimi-k3/<dataset>/temporal/
     question_answer.json
     graded_results.json
     final_mark.txt
@@ -688,19 +690,19 @@ elapsed video time, resizes each to a longest side of at most 512 pixels while
 preserving aspect ratio, and sends them through `pipeline/AIParser.py`. It can
 sample from an MP4 or from an existing `--frames-dir` of timestamp-named images.
 `--frame-budget` (alias `--max-frames`) controls the maximum; `0` explicitly
-uses all available frames. API frame mode sends the sampled images in
-stored-conversation batches using the model config's `api_batch_size` (fallback:
-five), then asks the full question list in one final request. The GPT-6 Luna
-config sets the batch size to 20; it limits images per request, not the total
-frame count. `--max-image-size` and `--api-batch-size` also adjust frame mode.
+uses all available frames. Responses API frame mode sends sampled images in
+stored-conversation batches, then asks the full question list in one final
+request. Chat Completions frame mode sends all sampled images and questions in
+one request; `api_batch_size` is not used in this mode. `--max-image-size` and
+`--api-batch-size` also adjust frame mode.
 Sampling metadata records the selected frame names/indices and timestamps,
 frame budget, and image-size limit. API usage metadata includes token counts for
 the image batches and final question request.
 Native-video mode passes the MP4 through the selected model's video stack.
 The local Qwen3-VL adapter uses `qwen-vl-utils` with vLLM. The Gemini adapter
 uses the Gemini Files API, waits for provider-side processing, and requires
-`google-genai` plus the key named by `api_key_env`. GPT-6 Luna uses frame mode
-because its API only accepts text and image inputs.
+`google-genai` plus the key named by `api_key_env`. GPT-6 Luna and Kimi K3 use
+frame mode in the supplied configs.
 
 `QuestionnaireParser.py` accepts the `{"questions": [...]}` structures from the
 sparse and temporal question-generation prompts. It shuffles question objects
@@ -1109,6 +1111,7 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 | `answer_eval.json` | — | Model settings for `run_model_answers.py` (not a pipeline config; no `task` or paths) |
 | `qa_gpt6_luna.json` | — | QA runner config for GPT-6 Luna using frame input |
+| `qa_kimi_k3.json` | — | Default `run_all_eval.sh` config for OpenCode Go Kimi K3 using Chat Completions and frame input |
 | `qa_gemini_video.json` | — | QA runner config for Gemini using native MP4 input |
 | `qa_qwen3.json` | — | Local Qwen3-VL native-video QA config for Gadi |
 

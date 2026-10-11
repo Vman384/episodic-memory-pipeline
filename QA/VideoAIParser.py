@@ -406,10 +406,59 @@ class VideoAIParser:
         if api_batch_size < 1:
             raise ValueError("api_batch_size must be at least 1")
 
+        total_frames = len(frame_paths)
+        if self.ai_parser.api_protocol == "chat_completions":
+            sampled_frames = metadata.get("frames_used", total_frames)
+            batch_metadata = {
+                **metadata,
+                "provider": "api",
+                "api_protocol": "chat_completions",
+                "api_batch_size": total_frames,
+                "frames_sampled": sampled_frames,
+                "frames_received": 0,
+                "frames_used": 0,
+                "api_batches": [],
+            }
+            try:
+                response = self.ai_parser.call_vlm_images(
+                    "These sampled frames are from the video in chronological "
+                    "order. Consider them together as one sequence.\n\n"
+                    + prompt,
+                    frame_paths,
+                    include_frame_manifest=False,
+                )
+            except RuntimeError as error:
+                print(f"Chat Completions request failed: {error}", flush=True)
+                batch_metadata["error"] = str(error)
+                batch_metadata["api_batches"].append(
+                    {
+                        "frames_from": 1,
+                        "frames_to": total_frames,
+                        "status": "failed",
+                        "error": str(error),
+                    }
+                )
+                return "", batch_metadata
+
+            batch_metadata["frames_received"] = total_frames
+            batch_metadata["frames_used"] = total_frames
+            batch_metadata["api_batches"].append(
+                {
+                    "frames_from": 1,
+                    "frames_to": total_frames,
+                    "status": "ok",
+                }
+            )
+            print(
+                f"Sampled frames 1-{total_frames} accepted in one Chat "
+                "Completions request",
+                flush=True,
+            )
+            return response, batch_metadata
+
         previous_response_id = None
         frames_received = 0
         batches = []
-        total_frames = len(frame_paths)
         batch_count = (total_frames + api_batch_size - 1) // api_batch_size
 
         for batch_number, start in enumerate(

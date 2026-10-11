@@ -36,9 +36,18 @@ class AIParser:
         self.model_name = model
         self.local_temperature = 0.2 if temperature is None else temperature
         self.api_temperature = config.get("api_temperature")
+        self.api_protocol = str(config.get("api_protocol", "responses")).lower()
         self.max_tokens = max_tokens
         self.reasoning_effort = config.get("reasoning_effort")
         self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+
+        if backend == "api" and self.api_protocol not in {
+            "responses",
+            "chat_completions",
+        }:
+            raise ValueError(
+                "api_protocol must be 'responses' or 'chat_completions'"
+            )
 
         if backend == "local":
             # Set offline mode before importing libraries that may resolve models.
@@ -106,9 +115,10 @@ class AIParser:
         """Return the first generated response as plain text."""
         return outputs[0].outputs[0].text
 
-    @staticmethod
-    def _get_api_text(response) -> str:
-        """Return text from an OpenAI Responses API response."""
+    def _get_api_text(self, response) -> str:
+        """Return generated text from the configured OpenAI-compatible API."""
+        if self.api_protocol == "chat_completions":
+            return response.choices[0].message.content or ""
         return response.output_text
 
     @staticmethod
@@ -216,6 +226,29 @@ class AIParser:
         conversation: bool = False,
         previous_response_id: str | None = None,
     ) -> dict:
+        if self.api_protocol == "chat_completions":
+            if conversation or previous_response_id:
+                raise ValueError(
+                    "Stored conversations are only supported by the Responses API"
+                )
+            messages = (
+                input_data
+                if isinstance(input_data, list)
+                else [{"role": "user", "content": input_data}]
+            )
+            request = {
+                "model": self.model_name,
+                "messages": messages,
+                "max_completion_tokens": max_tokens
+                if max_tokens is not None
+                else self.max_tokens,
+            }
+            if self.api_temperature is not None:
+                request["temperature"] = self.api_temperature
+            if self.reasoning_effort:
+                request["reasoning_effort"] = self.reasoning_effort
+            return request
+
         request = {
             "model": self.model_name,
             "input": input_data,
@@ -242,6 +275,8 @@ class AIParser:
         retry_number = 0
         while True:
             try:
+                if self.api_protocol == "chat_completions":
+                    return self.client.chat.completions.create(**request)
                 return self.client.responses.create(**request)
             except Exception as error:
                 if not self._is_retryable_api_error(error):
@@ -271,6 +306,10 @@ class AIParser:
         """
         if self.backend != "api":
             raise ValueError("Conversation calls require the api backend")
+        if self.api_protocol != "responses":
+            raise ValueError(
+                "Stored conversations are only supported by the Responses API"
+            )
 
         request = self._build_api_request(
             input_data,
@@ -300,16 +339,29 @@ class AIParser:
 
             image_content.append(
                 {
-                    "type": "input_image",
-                    "image_url": f"data:image/jpeg;base64,{encoded_image}",
+                    "type": (
+                        "image_url"
+                        if self.api_protocol == "chat_completions"
+                        else "input_image"
+                    ),
+                    "image_url": (
+                        {"url": f"data:image/jpeg;base64,{encoded_image}"}
+                        if self.api_protocol == "chat_completions"
+                        else f"data:image/jpeg;base64,{encoded_image}"
+                    ),
                 }
             )
 
+        text_content = (
+            {"type": "text", "text": text}
+            if self.api_protocol == "chat_completions"
+            else {"type": "input_text", "text": text}
+        )
         return [
             {
                 "role": "user",
                 "content": [
-                    {"type": "input_text", "text": text},
+                    text_content,
                     *image_content,
                 ],
             }

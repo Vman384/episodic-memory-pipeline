@@ -1,0 +1,17 @@
+Criterion	HD	D	C	P	N
+Slide quality and organisation	Slides are highly professional, visually effective, and exceptionally well structured. Content clearly communicates the project motivation, objectives, engineering approach, development process, and outcomes. Appropriate figures, diagrams, and evidence are used to support key messages.	Slides are professional, well organised, and clearly communicate the project objectives, approach, and outcomes. Visuals and supporting evidence are used effectively, with only minor omissions or areas for improvement.	Slides communicate the key aspects of the project but may lack clarity, organisation, or appropriate technical detail in some areas. Supporting visuals or evidence may be limited.	Slides provide a basic overview of the project but lack organisation, clarity, or sufficient supporting evidence. Important information may be missing or difficult to follow.	Slides are incomplete, poorly organised, or fail to adequately communicate the project, engineering work, or outcomes.
+Presentation delivery and communication	Presentation is engaging, confident, and delivered professionally within the allocated time. Technical concepts are explained clearly and effectively to the intended audience. Team members communicate seamlessly and demonstrate excellent preparation.	Presentation is clear, professional, and delivered effectively within the allocated time. Technical concepts are communicated well, with only minor issues in delivery, pacing, or emphasis.	Presentation is generally understandable and covers the key project elements. Some issues with delivery, pacing, confidence, or clarity may be evident.	Presentation communicates only the basic aspects of the project. Delivery may lack confidence, exceed timing constraints, rely heavily on reading from slides, or provide limited explanation of technical content.	Presentation is unclear, incomplete, significantly outside the allocated time, or does not demonstrate professional communication.
+
+
+
+You are limited to 10 slides. Please use 18pt font for text on the slides, and 22pt font for headings, throughout. 
+Your slides should not be cluttered with text, but rather, highlight your story, and support your demonstration. 
+More specifically, your presentation should communicate the project clearly and convincingly to the client. It should explain the engineering problem your team addressed, why it matters, and the three extensions your team selected beyond the Interim Product Delivery. Please refer to the rubric. 
+
+The presentation should communicate:
+the project context and client need;
+the three selected extensions;
+the engineering and customer value created by the extensions;
+supporting evidence such as plots, screenshots, logs, comparison results, diagrams, and other relevant visuals;
+limitations, trade-offs, and recommended future improvements.
+Slides should be professional, well organised, and visually effective. Team members should communicate clearly, explain technical concepts appropriately for the client, and present as a coordinated and well-prepared team.

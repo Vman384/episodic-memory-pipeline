@@ -122,7 +122,8 @@ python main.py --mode counting
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by legacy `run_model_answers.py` |
-| `configs/qa_gpt6_luna.json` | Default GPT-6 Luna frame-input configuration used by `run_all_eval.sh` |
+| `configs/qa_kimi_k3.json` | Default OpenCode Go Kimi K3 frame-input configuration used by `run_all_eval.sh` |
+| `configs/qa_gpt6_luna.json` | GPT-6 Luna frame-input configuration for the QA runner |
 | `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
 | `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
 
@@ -176,9 +177,10 @@ and `grade_answers.py` to score them. Run both from the repository root.
 
 The legacy `run_model_answers.py` script is retained for compatibility. Its
 `--batch_size` mode sends every frame in batches and ignores its frame cap; use
-the QA command above for normal evaluation. In QA API frame mode, sampled image
-batches are added to one stored conversation, then the full question list is
-sent once after the frames.
+the QA command above for normal evaluation. Responses API frame mode adds sampled
+image batches to one stored conversation, then sends the full question list.
+Chat Completions frame mode sends all sampled images and the full question list
+in one request.
 
 `answers.json` contains model and input metadata, question order, an `answers`
 list with each `question_id` and selected `answer_indices`, and the raw model
@@ -196,17 +198,17 @@ To submit the QA and grading job on Gadi, run from the repository root:
 qsub run_all_eval.sh
 ```
 
-By default it runs GPT-6 Luna on the 17 Boreas sequence IDs in the `LISTS`
-array in `run_all_eval.sh`, copied from the **Temporal** section of
+By default it runs Kimi K3 through OpenCode Go on the 17 Boreas sequence IDs in
+the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
 from `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`.
-Each sequence uses up to 256 frames at a maximum side of 512 pixels, with 20
-images per API request. Results are saved under the directory from which the
-job was submitted:
+Each sequence uses up to 256 frames resized to a maximum side of 512 pixels.
+Kimi K3 receives all sampled frames and questions in one Chat Completions
+request. Results are saved under the directory from which the job was submitted:
 
 ```text
-model_answers/gpt-6-luna/<dataset>/temporal/
+model_answers/kimi-k3/<dataset>/temporal/
     question_answer.json
     graded_results.json
     final_mark.txt
@@ -248,17 +250,18 @@ python -m QA.run_questionnaire \
     --output answers.json
 ```
 
-`configs/qa_gpt6_luna.json` is the default and uses the OpenCode API with
-`OPENCODE_API_KEY`. Frame mode deterministically samples up to 128 images from
+`configs/qa_gpt6_luna.json` remains the default for a direct
+`QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to
+`configs/qa_kimi_k3.json`, using OpenCode Go and `OPENCODE_API_KEY`. Frame mode
+deterministically samples up to 128 images from
 the MP4 or camera folder, uniformly across elapsed video time, and resizes each
 to a longest side of at most 512 pixels while preserving aspect ratio. Use
 `--frame-budget` (alias: `--max-frames`) to change the maximum number of frames;
 `--max-image-size` adjusts the resize limit. `--frame-budget 0` uses every frame.
-For frame-based API backends, all sampled frames are sent in batches in a stored
-conversation, followed by one request containing the full question list. The
-model config's `api_batch_size` controls images per request (fallback: five);
-the GPT-6 Luna config sets it to 20. This batch size does not change the total
-frame budget.
+The model config's `api_protocol` selects the API request format. Responses API
+configs send sampled frames in stored-conversation batches and then send the
+questions. Chat Completions configs send all sampled frames with the questions
+in a single request; `api_batch_size` applies only to Responses API mode.
 `configs/qa_gemini_video.json`
 uses `GEMINI_API_KEY` and the
 Gemini Files API to upload the original MP4; the runner waits for provider-side
