@@ -15,23 +15,43 @@ module load python3/3.11.7
 
 cd "$PBS_O_WORKDIR"
 
-# run script for awscli
+# Use the project environment containing awscli.
 source .venv/bin/activate
 
 DESTINATION="/g/data/pg06/FYP2026S1_3473/boreas_dataset"
 mkdir -p "$DESTINATION"
 
-echo "Starting download into $DESTINATION..."
+LISTS=(
+    "boreas-2024-12-03-13-13"
+    "boreas-2024-12-03-13-34"
+    "boreas-2024-12-04-11-45"
+    "boreas-2024-12-04-11-56"
+    "boreas-2024-12-04-14-34"
+    "boreas-2024-12-04-14-38"
+    "boreas-2024-12-04-14-44"
+    "boreas-2024-12-04-14-59"
+    "boreas-2025-02-15-16-58"
+    "boreas-2025-02-15-17-19"
+    "boreas-2025-02-21-14-51"
+    "boreas-2025-02-22-12-26"
+    "boreas-2025-07-18-10-33"
+    "boreas-2025-07-18-11-53"
+    "boreas-2025-07-18-14-55"
+    "boreas-2025-07-18-15-12"
+    "boreas-2025-08-13-10-36"
+)
 
-for d in \
-    boreas-2025-02-21-14-51 \
-    boreas-2025-02-15-17-19 \
-    boreas-2024-12-04-14-59 \
-    boreas-2025-07-18-10-33 \
-    boreas-2025-02-22-12-26 \
-    boreas-2025-08-13-10-36; do
-     aws s3 sync "s3://boreas/$d" "$DESTINATION/$d" \
-        --exclude "*" --include "camera/*" --no-sign-request
+echo "Starting camera downloads into $DESTINATION..."
+
+for d in "${LISTS[@]}"; do
+    CAMERA_DIR="$DESTINATION/$d/camera"
+    if [[ -d "$CAMERA_DIR" ]]; then
+        echo "Skipping $d: $CAMERA_DIR already exists"
+        continue
+    fi
+
+    echo "Downloading camera/ for $d..."
+    aws s3 sync "s3://boreas/$d/camera/" "$CAMERA_DIR/" --no-sign-request
 done
 
-echo "Download completed."
+echo "Camera downloads completed."

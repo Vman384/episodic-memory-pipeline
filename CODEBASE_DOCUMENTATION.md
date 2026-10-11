@@ -282,14 +282,18 @@ resolution, uses the model already present in the shared cache, and exports
 
 ### `download_boreas.pbs`
 
-**Purpose:** PBS job that downloads the `camera/` frames for the listed public
-Boreas S3 sequences into `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>`.
+**Purpose:** PBS job that downloads only `camera/` for the 17 Boreas sequences
+listed explicitly in the script, into
+`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/camera/`. It skips a
+sequence when that destination camera directory already exists.
 
 **Resources:** `copyq` queue, one CPU, 8 GB of memory, four-hour walltime, and
 `scratch/pg06+gdata/pg06` storage.
 
-The script uses anonymous S3 access (`--no-sign-request`) and creates the target
-directory before syncing each sequence.
+The script uses anonymous S3 access (`--no-sign-request`) and syncs directly
+from `s3://boreas/<sequence>/camera/`. Edit the `LISTS` array to change the
+sequences it processes. Submit from the repository root with
+`qsub download_boreas.pbs`.
 
 ---
 

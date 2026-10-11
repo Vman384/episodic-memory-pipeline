@@ -110,7 +110,7 @@ python main.py --mode counting
 | `pipeline/AIParser.py` | Configurable local vLLM or OpenAI-compatible API wrapper |
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
 | `configs/*.json` | Pipeline configuration files |
-| `download_boreas.pbs` | Downloads camera frames for the listed Boreas S3 sequences to `/g/data/pg06/FYP2026S1_3473/boreas_dataset` |
+| `download_boreas.pbs` | Downloads only `camera/` for its explicit Boreas sequence list, skipping sequences whose destination camera folder already exists |
 | `download_boreas_videos.pbs` | Downloads each Boreas sequence's `video.mp4` from `DATASET_PROGRESS.md`, excluding `boreas-2025-07-18-15-12` |
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | Local vLLM temporal PBS job script |
