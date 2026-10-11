@@ -32,14 +32,28 @@ LIST="${LIST:-boreas-2025-02-15-16-58}"
 VIDEO="$BASE/boreas_dataset/$LIST/video.mp4"
 QUESTIONS="${QUESTIONS:-$PBS_O_WORKDIR/questions.json}"
 CONFIG="${CONFIG:-configs/qa_qwen3.json}"
-MAX_FRAMES="${MAX_FRAMES:-32}"
-MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-768}"
+MAX_FRAMES="${MAX_FRAMES:-128}"
+MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
 INPUT_MODE="${INPUT_MODE:-native_video}"
 SEED="${SEED:-42}"
 
-OUTPUT_DIR="$BASE/$LIST/eval_outputs"
-ANSWERS="$OUTPUT_DIR/qwen3_answers.json"
-GRADED_RESULTS="$OUTPUT_DIR/qwen3_graded_results.json"
+if [[ ! -f "$CONFIG" ]]; then
+  echo "Model config not found: $CONFIG" >&2
+  exit 1
+fi
+MODEL_NAME="$(python3 - "$CONFIG" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+print(json.loads(Path(sys.argv[1]).read_text())["model"])
+PY
+)"
+MODEL_FOLDER="${MODEL_NAME//\//-}"
+BENCHMARK="${BENCHMARK:-temporal}"
+OUTPUT_DIR="$PBS_O_WORKDIR/model_answers/$MODEL_FOLDER/$BENCHMARK/$LIST"
+ANSWERS="$OUTPUT_DIR/answers.json"
+GRADED_RESULTS="$OUTPUT_DIR/results.json"
 
 for INPUT_FILE in "$VIDEO" "$QUESTIONS" "$CONFIG"; do
   if [[ ! -f "$INPUT_FILE" ]]; then
@@ -53,6 +67,7 @@ echo "Running Qwen3 questionnaire evaluation"
 echo "Drive: $LIST"
 echo "Video: $VIDEO"
 echo "Questions: $QUESTIONS"
+echo "Output: $OUTPUT_DIR"
 echo "Input mode: $INPUT_MODE"
 if [[ "$INPUT_MODE" == "frames" ]]; then
   echo "Frames: up to $MAX_FRAMES, max side $MAX_IMAGE_SIZE px"

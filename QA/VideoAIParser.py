@@ -3,11 +3,67 @@
 import math
 import os
 import time
+from bisect import bisect_left
+from collections.abc import Sequence
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from pipeline.AIParser import AIParser
 from pipeline.timeframe_converter import parse_frame_timestamp
+
+
+def _uniform_timestamp_indices(
+    timestamps: Sequence[int | float],
+    sample_count: int,
+) -> list[int]:
+    """Return deterministic indices nearest to evenly spaced timestamps."""
+    total = len(timestamps)
+    if sample_count < 0:
+        raise ValueError("sample_count must be 0 or greater")
+    if sample_count == 0 or total == 0:
+        return []
+    if sample_count >= total:
+        return list(range(total))
+
+    first_timestamp = timestamps[0]
+    last_timestamp = timestamps[-1]
+    if sample_count == 1:
+        target = (first_timestamp + last_timestamp) / 2
+        insertion = bisect_left(timestamps, target)
+        candidates = [
+            index
+            for index in (insertion - 1, insertion)
+            if 0 <= index < total
+        ]
+        return [
+            min(
+                candidates,
+                key=lambda index: (abs(timestamps[index] - target), index),
+            )
+        ]
+
+    selected_indices = []
+    previous_index = -1
+    for sample_number in range(sample_count):
+        target = first_timestamp + (last_timestamp - first_timestamp) * sample_number / (
+            sample_count - 1
+        )
+        min_index = previous_index + 1
+        max_index = total - (sample_count - sample_number)
+        insertion = bisect_left(timestamps, target, min_index, max_index + 1)
+        candidates = [
+            index
+            for index in (insertion - 1, insertion)
+            if min_index <= index <= max_index
+        ]
+        selected_index = min(
+            candidates,
+            key=lambda index: (abs(timestamps[index] - target), index),
+        )
+        selected_indices.append(selected_index)
+        previous_index = selected_index
+
+    return selected_indices
 
 
 class VideoAIParser:
@@ -222,13 +278,7 @@ class VideoAIParser:
             raise ValueError(f"Could not read a valid frame rate from: {video_path}")
 
         frame_count = total_frames if max_frames == 0 else min(total_frames, max_frames)
-        if frame_count == 1:
-            frame_indices = [round((total_frames - 1) / 2)]
-        else:
-            last_index = total_frames - 1
-            frame_indices = sorted(
-                {round(index * last_index / (frame_count - 1)) for index in range(frame_count)}
-            )
+        frame_indices = _uniform_timestamp_indices(range(total_frames), frame_count)
 
         frame_paths = []
         timestamps = []
@@ -248,6 +298,9 @@ class VideoAIParser:
             "total_frames": total_frames,
             "fps": fps,
             "frames_used": len(frame_paths),
+            "frame_budget": max_frames,
+            "max_image_size": max_image_size,
+            "sampling_method": "uniform_elapsed_time",
             "sampled_frame_indices": frame_indices,
             "sampled_timestamps_seconds": timestamps,
         }
@@ -283,17 +336,9 @@ class VideoAIParser:
         if not frames:
             raise ValueError(f"No image frames found in folder: {frames_dir}")
 
+        frame_timestamps = [parse_frame_timestamp(path.name) for path in frames]
         frame_count = len(frames) if max_frames == 0 else min(len(frames), max_frames)
-        if frame_count == 1:
-            selected_indices = [round((len(frames) - 1) / 2)]
-        else:
-            last_index = len(frames) - 1
-            selected_indices = sorted(
-                {
-                    round(index * last_index / (frame_count - 1))
-                    for index in range(frame_count)
-                }
-            )
+        selected_indices = _uniform_timestamp_indices(frame_timestamps, frame_count)
 
         sampled_paths = []
         for sample_number, index in enumerate(selected_indices, start=1):
@@ -312,10 +357,36 @@ class VideoAIParser:
             "frames_dir": str(frames_dir),
             "total_frames": len(frames),
             "frames_used": len(sampled_paths),
+            "frame_budget": max_frames,
+            "max_image_size": max_image_size,
+            "sampling_method": "uniform_elapsed_time",
             "sampled_frame_indices": selected_indices,
             "sampled_frame_names": [frames[index].name for index in selected_indices],
+            "sampled_timestamps_seconds": [
+                round((frame_timestamps[index] - frame_timestamps[0]) / 1_000_000, 3)
+                for index in selected_indices
+            ],
         }
         return sampled_paths, metadata
+
+    @staticmethod
+    def _response_usage(response) -> dict:
+        """Return API token counts when the provider reports them."""
+        usage = getattr(response, "usage", None)
+        if usage is None:
+            return {}
+
+        result = {}
+        for field in ("input_tokens", "output_tokens"):
+            value = getattr(usage, field, None)
+            if value is not None:
+                result[field] = value
+
+        input_details = getattr(usage, "input_tokens_details", None)
+        cached_tokens = getattr(input_details, "cached_tokens", None)
+        if cached_tokens is not None:
+            result["cached_input_tokens"] = cached_tokens
+        return result
 
     def _call_frame_images(
         self,
@@ -376,13 +447,12 @@ class VideoAIParser:
 
             previous_response_id = response.id
             frames_received = last_frame
-            usage = getattr(response, "usage", None)
             batches.append(
                 {
                     "frames_from": first_frame,
                     "frames_to": last_frame,
                     "status": "ok",
-                    "input_tokens": getattr(usage, "input_tokens", None),
+                    **self._response_usage(response),
                 }
             )
             print(
@@ -413,14 +483,15 @@ class VideoAIParser:
         except RuntimeError as error:
             metadata["question_error"] = str(error)
             return "", metadata
+        metadata["api_question_usage"] = self._response_usage(response)
         return response.output_text, metadata
 
     def call_frames_dir(
         self,
         frames_dir: str | Path,
         prompt: str,
-        max_frames: int = 100,
-        max_image_size: int = 768,
+        max_frames: int = 128,
+        max_image_size: int = 512,
         api_batch_size: int = 5,
     ) -> tuple[str, dict]:
         """Ask a frame-input model about uniformly sampled images in a folder."""
@@ -447,8 +518,8 @@ class VideoAIParser:
         self,
         video_path: str | Path,
         prompt: str,
-        max_frames: int = 100,
-        max_image_size: int = 768,
+        max_frames: int = 128,
+        max_image_size: int = 512,
         api_batch_size: int = 5,
     ) -> tuple[str, dict]:
         """Ask the model about a source video using its configured input mode."""

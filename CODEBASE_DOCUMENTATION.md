@@ -41,9 +41,9 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
-11. **Model Answer Evaluation** (`run_model_answers.py`, `grade_answers.py`, `run_all_eval.sh`) — Asks a VLM every question in a `questions.json` against one drive's frames (sampled evenly across the drive) and writes an answers JSON; then grades that answers JSON against the question file and writes the score with per-question correct/incorrect results, selected answer, and correct answer. `run_all_eval.sh` runs both steps for each Boreas list.
+11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` runs the QA and grading steps for each Boreas list.
 
-12. **Video Questionnaire Runner** (`QA/`) — Loads sparse or temporal `questions.json`, removes answer and evidence metadata, randomizes question order, then uses configured frame-sequence or native MP4 input for one request.
+12. **Video Questionnaire Runner** (`QA/`) — Loads sparse or temporal `questions.json`, removes answer and evidence metadata from the model prompt, randomizes question order, then uses configured frame-sequence or native MP4 input. Frame mode defaults to 128 frames resized to a maximum 512-pixel side.
 
 13. **Qwen3 QA Evaluation Job** (`run_model_eval.sh`) — PBS wrapper that runs the video questionnaire and grader with local Qwen3-VL on the four-GPU Gadi queue.
 
@@ -510,9 +510,11 @@ filenames.
 
 ### `run_model_answers.py`
 
-**Purpose:** Tests generated questions against a VLM. It loads the questions
-from a `questions.json` file (sparse or temporal), asks the model each question,
-and writes the model's choices to an answers JSON.
+**Purpose:** Legacy alternative to the `QA/` questionnaire runner. It loads the
+questions from a `questions.json` file (sparse or temporal), asks the model each
+question, and writes the model's choices to an answers JSON. Normal evaluation
+uses `QA/`, which handles a shared bounded frame sequence and all questions in
+one questionnaire.
 
 **Usage:**
 
@@ -523,8 +525,8 @@ python run_model_answers.py --frames_dir <camera folder> --questions <questions.
 **Behavior:**
 
 - Frames are read from `--frames_dir`, sorted by parsed timestamp, and sampled
-  evenly across the whole drive down to `--max_frames` (default `100`). The same
-  sampled frames are sent with every question.
+  evenly across the whole drive down to `--max_frames` (default `100`). Without
+  batch mode, the same sampled frames are sent again with every question.
 - **Batch mode (`--batch_size N`, API backend only):** every frame is sent in
   order, `N` at a time, as messages in one stored conversation. Each batch is a
   request linked to the previous one with `previous_response_id`, with
@@ -565,8 +567,8 @@ python run_model_answers.py --frames_dir <camera folder> --questions <questions.
 
 ### `grade_answers.py`
 
-**Purpose:** Scores an answers JSON produced by `run_model_answers.py` against
-the question file. It does not call a model.
+**Purpose:** Scores an answers JSON produced by `QA/` or the legacy
+`run_model_answers.py` against the question file. It does not call a model.
 
 **Usage:**
 
@@ -589,23 +591,28 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 
 ### `run_all_eval.sh`
 
-**Purpose:** PBS batch script that runs the answer and grading steps for each
-Boreas list in one job. The answer step uses `--batch_size 10`, so every frame
-of the drive is sent in batches in one conversation before the questions. It follows the layout of `run_all_api.sh`: `copyq`
-queue, one CPU, 8 GB of memory, a 3.5-hour walltime, and
+**Purpose:** PBS batch script that runs the QA and grading steps for each
+Boreas list in one job. The QA step samples up to 128 frames, resizes each to a
+maximum 512-pixel side, and asks all questions together. It uses the `copyq`
+queue, one CPU, 8 GB of memory, a five-minute walltime, and
 `scratch/pg06+gdata/pg06` storage.
 
 **Entry point:** For each list it runs two commands:
 
-1. `run_model_answers.py` with `--frames_dir`
+1. `QA.run_questionnaire` with `--frames-dir`
    `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera`, `--questions`
    `/g/data/pg06/FYP2026S1_3473/<list>/sparse_outputs/events/questions.json`, and
-   `--output` `.../<list>/eval_outputs/answers.json`.
+   `--output` `.../<list>/eval_outputs/answers.json`. It uses
+   `configs/answer_eval.json`, `--frame-budget` (default `128`),
+   `--max-image-size` (default `512`), and an API batch size of `20`.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
    `answers.json`, and `--output` `.../<list>/eval_outputs/graded_results.json`.
 
 The model is read from `configs/answer_eval.json`; the script does not change
-it. Submit from the repository root with `qsub run_all_eval.sh`. Because
+it. `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can be
+overridden through the environment. Before grading, the script checks that the
+API accepted every sampled frame. Submit from the repository root with
+`qsub run_all_eval.sh`. Because
 `set -euo pipefail` is set, a failing step stops the job, so grading does not
 run after a failed answer step.
 
@@ -628,10 +635,10 @@ and the questionnaire from the repository-root `questions.json`. It uses
 `configs/qa_qwen3.json`, which configures
 `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` with local vLLM and `native_video`
 input. Qwen-VL utilities decode/sample the MP4 at 2 FPS, capped at 768 frames.
-Set `INPUT_MODE=frames` to use the QA runner's uniform frame sampler instead.
-It writes
-`qwen3_answers.json` and `qwen3_graded_results.json` under the sequence's
-`eval_outputs/` directory.
+Set `INPUT_MODE=frames` to use the QA runner's uniform frame sampler instead;
+that frame-mode fallback defaults to 128 frames and a maximum side of 512 pixels.
+It writes `answers.json` and `results.json` under
+`$PBS_O_WORKDIR/model_answers/Qwen-Qwen3-VL-235B-A22B-Instruct-FP8/temporal/<sequence>/`.
 
 `LIST`, `QUESTIONS`, `INPUT_MODE`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `CONFIG`, and
 `SEED` can be overridden through the submitter's environment (`#PBS -V`). The source video
@@ -651,16 +658,21 @@ environment, and reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/camera/`.
 
 GPT-6 Luna accepts text and image inputs, so this job uses
-`configs/qa_gpt6_luna.json` with `input_mode: "frames"`. The QA runner uniformly
-samples up to 100 of the sequence's pre-extracted PNGs, resizes them to JPEG,
+`configs/qa_gpt6_luna.json` with `input_mode: "frames"`. The QA runner samples
+up to 128 of the sequence's pre-extracted PNGs uniformly across elapsed time,
+resizes them to JPEG with a maximum 512-pixel side,
 and sends them in batches of 20 in a stored API conversation. It does not
-send the MP4 as native video. It reads the repository-root `questions.json` by
-default and writes
-`gpt6_luna_answers.json` and `gpt6_luna_graded_results.json` to the sequence's
-`eval_outputs/` directory. `OPENCODE_API_KEY` must be available in the job
-environment or repository `.env` file. `LIST`, `QUESTIONS`, `MAX_FRAMES`,
-`MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, `CONFIG`, and `SEED` can be overridden
-through the exported environment. Setting `MAX_FRAMES=0` attempts all camera
+send the MP4 as native video. `LISTS` in the script holds the sequences to run;
+the default list is `boreas-2025-02-15-16-58`. For each sequence it reads
+`<list>/temporal_outputs/narratives/questions.json` and writes
+`answers.json` and `results.json` to
+`$PBS_O_WORKDIR/model_answers/gpt-6-luna/temporal/<sequence>/`. This per-sequence
+subdirectory prevents outputs from different `LISTS` entries overwriting one
+another. `OPENCODE_API_KEY` must be available in the job
+environment or repository `.env` file. `QUESTIONS` can override the question
+file for a one-list run; `QUESTION_RELATIVE_PATH`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
+`API_BATCH_SIZE`, `CONFIG`, and `SEED` can be overridden through the exported
+environment. Setting `MAX_FRAMES=0` attempts all camera
 frames, but the API context window may stop ingestion before the full folder is
 accepted. The script checks `frames_received == frames_sampled` before grading;
 partial-context answers remain saved but are not scored as a full run.
@@ -684,20 +696,26 @@ python -m QA.run_questionnaire \
 python -m QA.run_questionnaire \
     --frames-dir /path/to/camera \
     --questions /path/to/questions.json \
+    --frame-budget 128 \
+    --max-image-size 512 \
     --output answers.json
 ```
 
 The default config is `configs/qa_gpt6_luna.json`. Each model config declares
 `input_mode` as `frames` or `native_video`; `--input-mode` can override it for a
-run. Frame mode uniformly samples up to 100 frames, resizes them to at most 768
-pixels, and sends them through `pipeline/AIParser.py`. It can sample from an MP4
-or from an existing `--frames-dir` of timestamp-named images. API frame mode
-sends stored-conversation batches using the model config's `api_batch_size`
-(fallback: five), then asks the questions after the accepted batches. The
-GPT-6 Luna config sets this to 20. `--max-frames 0` uses all
-available frames, though the API context window may stop ingestion before all
-are accepted. `--max-frames`, `--max-image-size`, and `--api-batch-size` adjust
-frame mode.
+run. Frame mode deterministically samples up to 128 frames uniformly across
+elapsed video time, resizes each to a longest side of at most 512 pixels while
+preserving aspect ratio, and sends them through `pipeline/AIParser.py`. It can
+sample from an MP4 or from an existing `--frames-dir` of timestamp-named images.
+`--frame-budget` (alias `--max-frames`) controls the maximum; `0` explicitly
+uses all available frames. API frame mode sends the sampled images in
+stored-conversation batches using the model config's `api_batch_size` (fallback:
+five), then asks the full question list in one final request. The GPT-6 Luna
+config sets the batch size to 20; it limits images per request, not the total
+frame count. `--max-image-size` and `--api-batch-size` also adjust frame mode.
+Sampling metadata records the selected frame names/indices and timestamps,
+frame budget, and image-size limit. API usage metadata includes token counts for
+the image batches and final question request.
 Native-video mode passes the MP4 through the selected model's video stack.
 The local Qwen3-VL adapter uses `qwen-vl-utils` with vLLM. The Gemini adapter
 uses the Gemini Files API, waits for provider-side processing, and requires
@@ -795,8 +813,8 @@ Gadi jobs.
 | `call_llm(prompt, max_tokens=None)` → `str` | Sends a text prompt to the selected backend and returns generated text. An optional per-call token limit overrides the configured default. |
 | `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by parsed frame timestamp, and passes them to `call_vlm_images`. |
 | `call_vlm_images(prompt, image_paths, include_frame_manifest=True)` → `str` | Takes an ordered list of frame image paths, optionally includes an in-memory ordered filename manifest, sends the images together to the selected backend, and returns generated text. The video questionnaire disables the manifest because its answer format does not include frame filenames. |
-| `call_api_conversation(input_data, previous_response_id=None, max_tokens=None)` → response | API backend only. Sends one request with `store: true` and `truncation: "disabled"`, linked to `previous_response_id` when given, and returns the full Responses API object (`id`, `output_text`, `usage.input_tokens`). Used by batch mode in `run_model_answers.py`. |
-| `build_api_message(text, image_paths)` → `list[dict]` | Builds one API user message with a text part followed by base64-encoded images. Shared by `call_vlm_images` and batch mode. |
+| `call_api_conversation(input_data, previous_response_id=None, max_tokens=None)` → response | API backend only. Sends one request with `store: true` and `truncation: "disabled"`, linked to `previous_response_id` when given, and returns the full Responses API object (`id`, `output_text`, `usage.input_tokens`). Used by QA frame ingestion and the legacy `run_model_answers.py` batch mode. |
+| `build_api_message(text, image_paths)` → `list[dict]` | Builds one API user message with a text part followed by base64-encoded JPEG image bytes. Shared by `call_vlm_images` and API conversation frame batches. |
 
 Configuration loading belongs to the pipeline classes, which read the JSON file and pass the complete dictionary into the `AIParser` constructor. In API mode, the API key is read from the environment variable named by `api_key_env`; it is not stored in configuration files.
 

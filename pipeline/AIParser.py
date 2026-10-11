@@ -282,7 +282,7 @@ class AIParser:
 
     def build_api_message(self, text: str, image_paths: list[Path]) -> list[dict]:
         """
-        Build one user message with text followed by base64-encoded PNG images.
+        Build one user message with text followed by base64-encoded JPEG images.
         """
         import base64
         from io import BytesIO
@@ -292,8 +292,10 @@ class AIParser:
         image_content = []
         for image_path in image_paths:
             with Image.open(image_path) as image:
-                image = image.convert("RGB")
+                converted_image = image.convert("RGB")
                 buffer = BytesIO()
+                converted_image.save(buffer, format="JPEG", quality=85)
+                converted_image.close()
             encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
             image_content.append(

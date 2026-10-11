@@ -115,14 +115,14 @@ python main.py --mode counting
 | `sparse_event.pbs` | PBS job script for the current sparse-event pipeline |
 | `temporal_event.pbs` | Local vLLM temporal PBS job script |
 | `forest_run.sh` | Local Qwen3-VL sparse-event PBS job for the forest K-01 dataset; API and temporal examples are inactive |
-| `run_model_answers.py` | Asks a model every question in a question JSON file against one drive's camera frames and writes the answers |
+| `run_model_answers.py` | Legacy image-answer runner; use `QA/` for the bounded, shared-question evaluation path |
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
-| `run_all_eval.sh` | PBS job that runs `run_model_answers.py` and then `grade_answers.py` over the Boreas lists on the `copyq` queue |
+| `run_all_eval.sh` | PBS job that runs `QA/` and then `grade_answers.py` over the Boreas lists on the `copyq` queue |
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
 | `run_model_eval_api.sh` | PBS job that runs the QA runner and grader with GPT-6 Luna through OpenCode on `copyq` |
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
-| `configs/answer_eval.json` | Model configuration used by `run_model_answers.py` |
+| `configs/answer_eval.json` | Model configuration used by the all-list QA job |
 | `configs/qa_gpt6_luna.json` | GPT-6 Luna QA config using frame input |
 | `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
 | `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
@@ -141,26 +141,30 @@ that are already present.
 
 ## Testing Questions Against a Model
 
-`run_model_answers.py` and `grade_answers.py` test generated questions
-(`questions.json` from either pipeline) against a VLM. Both are command-line
-scripts; run them from the repository root.
+Use `QA/` to answer generated questions (`questions.json` from either pipeline)
+and `grade_answers.py` to score them. Run both from the repository root.
 
-1. Get the model's answers. Pass the camera folder for one drive and the
-   question file:
+1. Get the model's answers. The QA runner samples one bounded, deterministic
+   frame set for the drive, then answers all questions together:
 
    ```bash
-   python run_model_answers.py \
-       --frames_dir /path/to/camera \
+   python -m QA.run_questionnaire \
+       --frames-dir /path/to/camera \
        --questions /path/to/questions.json \
+       --config configs/answer_eval.json \
+       --frame-budget 128 \
+       --max-image-size 512 \
+       --api-batch-size 20 \
+       --seed 42 \
        --output answers.json
    ```
 
-   Each question is sent with the drive's frames sampled evenly across the whole
-   drive (`--max_frames`, default `100`). Sampling keeps a one-hour drive within
-   the model's request limits. The model is configured in
-   `configs/answer_eval.json` (`backend`, `model`, and API settings; use
-   `--config` to pick another file). Set `OPENCODE_API_KEY` for the default API
-   backend.
+   `--frame-budget` (alias: `--max-frames`) defaults to 128 and samples frames
+   uniformly across elapsed video time. `--max-image-size` defaults to 512 and
+   limits the longest side while preserving aspect ratio. `--frame-budget 0`
+   explicitly uses all available frames. `--api-batch-size` controls images per
+   API request, not the total frame budget. The model is configured in
+   `configs/answer_eval.json`; set `OPENCODE_API_KEY` for its API backend.
 
 2. Grade the answers:
 
@@ -171,27 +175,16 @@ scripts; run them from the repository root.
        --output graded_results.json
    ```
 
-Batch mode sends every frame of the drive instead of a sample. It needs the API
-backend and works in conversation batches:
+The legacy `run_model_answers.py` script is retained for compatibility. Its
+`--batch_size` mode sends every frame in batches and ignores its frame cap; use
+the QA command above for normal evaluation. In QA API frame mode, sampled image
+batches are added to one stored conversation, then the full question list is
+sent once after the frames.
 
-```bash
-python run_model_answers.py \
-    --frames_dir /path/to/camera \
-    --questions /path/to/questions.json \
-    --output answers.json \
-    --batch_size 10
-```
-
-The frames go in order, `batch_size` at a time, in one stored conversation
-(`previous_response_id`). Each batch's input tokens are logged. If the API
-rejects a batch, for example because the context is full, the run stops there
-and the questions are asked about the frames already accepted. Batch mode
-ignores `--max_frames`.
-
-`answers.json` contains the model name, frame count, and an `answers` list with
-each `question_id`, the selected `answer_indices`, and the `raw_response`. A
-response that cannot be parsed is stored with `answer_indices: null` and counted
-as wrong.
+`answers.json` contains model and input metadata, question order, an `answers`
+list with each `question_id` and selected `answer_indices`, and the raw model
+response. An answer that cannot be parsed is stored with `answer_indices: null`
+and counted as wrong.
 
 `graded_results.json` contains a `score` object (`correct`, `total`,
 `accuracy`) and a `results` list. Each result has `correct` (true/false), the
@@ -205,9 +198,13 @@ qsub run_all_eval.sh
 ```
 
 For each list it reads `boreas_dataset/<list>/camera` and
-`<list>/sparse_outputs/events/questions.json`, and writes `answers.json` and
-`graded_results.json` to `<list>/eval_outputs/`. Edit `LISTS` and the paths in the
-script to change them.
+`<list>/sparse_outputs/events/questions.json`, runs `QA/` with a default budget
+of 128 frames at a maximum side of 512 pixels, and writes `answers.json` and
+`graded_results.json` to `<list>/eval_outputs/`. Override `MAX_FRAMES`,
+`MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, or `SEED` in the environment to change the
+sampling or request settings. It refuses to grade if the API accepted only part
+of the sampled frames. Edit `LISTS` and the paths in the script to change the
+input datasets.
 
 ## Ask Questions from a Video
 
@@ -238,13 +235,16 @@ python -m QA.run_questionnaire \
 ```
 
 `configs/qa_gpt6_luna.json` is the default and uses the OpenCode API with
-`OPENCODE_API_KEY`. Frame mode uniformly samples up to 100 images from the MP4
-or camera folder, resizes each to at most 768 pixels per side, and sends them
-with all shuffled questions through `pipeline/AIParser.py`. For API backends,
-API frames use the model config's `api_batch_size` (fallback: five); the GPT-6
-Luna config sets it to 20. Use `--api-batch-size` to override it.
-`--max-frames 0` uses every frame in the input. `--max-frames` and
-`--max-image-size` adjust preprocessing.
+`OPENCODE_API_KEY`. Frame mode deterministically samples up to 128 images from
+the MP4 or camera folder, uniformly across elapsed video time, and resizes each
+to a longest side of at most 512 pixels while preserving aspect ratio. Use
+`--frame-budget` (alias: `--max-frames`) to change the maximum number of frames;
+`--max-image-size` adjusts the resize limit. `--frame-budget 0` uses every frame.
+For frame-based API backends, all sampled frames are sent in batches in a stored
+conversation, followed by one request containing the full question list. The
+model config's `api_batch_size` controls images per request (fallback: five);
+the GPT-6 Luna config sets it to 20. This batch size does not change the total
+frame budget.
 `configs/qa_gemini_video.json`
 uses `GEMINI_API_KEY` and the
 Gemini Files API to upload the original MP4; the runner waits for provider-side
@@ -274,12 +274,13 @@ first test passes the MP4 through its vLLM video processor instead of sampling
 frames in the QA script. The config requests 2 FPS and caps processing at 768
 frames. It defaults to Boreas sequence
 `boreas-2025-02-15-16-58`, reads the repository-root `questions.json`, and uses
-the sequence's `video.mp4`. Results are written to:
+the sequence's `video.mp4`. Outputs go under the submit directory, grouped by
+model, task, and sequence:
 
 ```text
-/g/data/pg06/FYP2026S1_3473/<sequence>/eval_outputs/
-    qwen3_answers.json
-    qwen3_graded_results.json
+model_answers/Qwen-Qwen3-VL-235B-A22B-Instruct-FP8/temporal/<sequence>/
+    answers.json
+    results.json
 ```
 
 Submit from the repository root:
@@ -288,7 +289,8 @@ Submit from the repository root:
 qsub run_model_eval.sh
 ```
 
-The video must already exist at
+The frame-mode fallback defaults to 128 frames with a maximum side of 512
+pixels. The video must already exist at
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/video.mp4`; submit
 `download_boreas_videos.pbs` first if needed. Since the PBS script exports the
 submitter's environment, you can override `LIST`, `QUESTIONS`, `MAX_FRAMES`,
@@ -303,9 +305,9 @@ INPUT_MODE=frames MAX_FRAMES=32 qsub run_model_eval.sh
 
 `run_model_eval_api.sh` uses the `copyq` queue (1 CPU, 8 GB RAM) and
 `configs/qa_gpt6_luna.json`. GPT-6 Luna accepts image inputs, so this job sends
-uniformly sampled images from the sequence's existing `camera/` PNGs; it does
-not upload the MP4 as native video. It sends up to 20 JPEG images per API
-request in a stored conversation.
+up to 128 uniformly sampled images from the sequence's existing `camera/` PNGs,
+resized to a maximum side of 512 pixels; it does not upload the MP4 as native
+video. It sends up to 20 JPEG images per API request in a stored conversation.
 
 Submit from the repository root:
 
@@ -313,17 +315,31 @@ Submit from the repository root:
 qsub run_model_eval_api.sh
 ```
 
-The default sequence is `boreas-2025-02-15-16-58`; frames are read from
-`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/camera/`. It reads the
-repository-root `questions.json` and writes
-`gpt6_luna_answers.json` and `gpt6_luna_graded_results.json` under the
-sequence's `eval_outputs/` directory. Set `OPENCODE_API_KEY` in the submitter's
-environment or in `.env`. `LIST`, `QUESTIONS`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
-`API_BATCH_SIZE`, `CONFIG`, and `SEED` can be overridden when submitting the
-job. The default batch size is 20. Set `MAX_FRAMES=0` to attempt all camera
-frames; the API context limit or PBS walltime may stop the conversation before
-all frames are accepted. The script checks frame coverage before grading, so a
-partial-context run keeps its answers file but is not scored as a full run.
+The `LISTS` array in `run_model_eval_api.sh` defaults to
+`boreas-2025-02-15-16-58`; add sequence names there to evaluate more datasets.
+Frames are read from
+`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/camera/`. For each list,
+the default questions file is
+`/g/data/pg06/FYP2026S1_3473/<sequence>/temporal_outputs/narratives/questions.json`.
+The job writes `answers.json` and `results.json` under
+`model_answers/gpt-6-luna/temporal/<sequence>/`. The per-sequence folder keeps
+results separate when `LISTS` contains multiple datasets. Set `OPENCODE_API_KEY` in the submitter's
+environment or in `.env`. Edit `LISTS` in the script to add more sequences.
+`QUESTIONS` can point one-list runs at an explicit JSON file;
+`QUESTION_RELATIVE_PATH`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`,
+`CONFIG`, and `SEED` can also be overridden at submission. The defaults are 128
+frames, a 512-pixel maximum side, and a batch size of 20. Set `MAX_FRAMES=0` to
+attempt all camera frames; the API context limit or PBS walltime may stop the
+conversation before all frames are accepted. The script checks frame coverage
+before grading, so a partial-context run keeps its answers file but is not
+scored as a full run.
+
+To run a one-list test with the repository-root `questions.json`, override the
+question file explicitly:
+
+```bash
+QUESTIONS="$PWD/questions.json" qsub run_model_eval_api.sh
+```
 
 ## Sparse-Event Pipeline
 

@@ -126,15 +126,20 @@ def main() -> None:
     )
     parser.add_argument(
         "--max-frames",
+        "--frame-budget",
+        dest="max_frames",
         type=int,
-        default=100,
-        help="Frame mode only: max uniformly sampled frames; 0 uses all (default: 100)",
+        default=128,
+        help=(
+            "Frame mode only: maximum uniformly sampled frames; 0 uses all "
+            "(default: 128)"
+        ),
     )
     parser.add_argument(
         "--max-image-size",
         type=int,
-        default=768,
-        help="Frame mode only: max image width/height sent to model (default: 768)",
+        default=512,
+        help="Frame mode only: longest image side in pixels (default: 512)",
     )
     parser.add_argument(
         "--api-batch-size",
@@ -178,7 +183,9 @@ def main() -> None:
         raise SystemExit("--input-mode native_video requires --video")
     if input_mode == "frames":
         if args.max_frames < 0:
-            raise SystemExit("--max-frames must be 0 (all frames) or greater")
+            raise SystemExit(
+                "--frame-budget/--max-frames must be 0 (all frames) or greater"
+            )
         if args.max_image_size < 1:
             raise SystemExit("--max-image-size must be at least 1")
         if api_batch_size < 1:
