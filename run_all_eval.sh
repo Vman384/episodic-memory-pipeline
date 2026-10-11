@@ -19,13 +19,11 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 BASE="/g/data/pg06/FYP2026S1_3473"
 BENCHMARK="${BENCHMARK:-temporal}"
 CONFIG="${CONFIG:-configs/qa_kimi_k3.json}"
-MAX_FRAMES="${MAX_FRAMES:-256}"
+MAX_FRAMES="${MAX_FRAMES:-650}"
 MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
 API_BATCH_SIZE="${API_BATCH_SIZE:-20}"
 SEED="${SEED:-42}"
 QUESTIONS_OVERRIDE="${QUESTIONS:-}"
-
-export MAX_FRAMES = 650
 
 case "$BENCHMARK" in
   temporal)
@@ -119,7 +117,7 @@ echo "Model: $MODEL_NAME"
 echo "Benchmark: $BENCHMARK"
 echo "Datasets: ${#LISTS[@]} Boreas sequences"
 echo "Frame budget: $MAX_FRAMES; max image side: $MAX_IMAGE_SIZE px"
-echo "API batch size: $API_BATCH_SIZE"
+echo "Responses API batch size (if used): $API_BATCH_SIZE"
 
 FAILED_LISTS=()
 for LIST in "${LISTS[@]}"; do
