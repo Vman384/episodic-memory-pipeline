@@ -1,0 +1,231 @@
+{
+    "score": {
+        "correct": 6,
+        "total": 11,
+        "accuracy": 0.5455
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle passing the parked gray SUV on the left, or passing the West Park sign and entrance on the right?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Passing the parked gray SUV on the left"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "pairwise_order",
+            "question": "Which happened first: passing the roadside mailbox and approaching the yellow 'NO EXIT' sign, or an oncoming black pickup passing on the left?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "Passing the roadside mailbox and approaching the yellow 'NO EXIT' sign"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "Passing the roadside mailbox and approaching the yellow 'NO EXIT' sign"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "pairwise_order",
+            "question": "Which happened first: passing the roadside maximum-80 sign, or an oncoming white pickup passing in the opposite lane?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "Passing the roadside maximum-80 sign"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "pairwise_order",
+            "question": "Which happened first: passing the irrigation machine on the left, or the trailer and equipment on the right shoulder disappearing from view?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "Passing the irrigation machine on the left"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "pairwise_order",
+            "question": "Which happened first: passing the tractor and trailer with people beside it on the left, or a black pickup approaching in the opposite lane?",
+            "correct": false,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A black pickup approaching in the opposite lane"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "Passing the tractor and trailer with people beside it on the left"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": true,
+            "selected_indices": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "selected_answers": [
+                "The vehicle passes the parked gray SUV on the left.",
+                "The vehicle passes the West Park sign and entrance on the right.",
+                "The vehicle approaches a right-side road or driveway entrance.",
+                "The vehicle passes a parked RV and house on the right."
+            ],
+            "correct_indices": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "correct_answers": [
+                "The vehicle passes the parked gray SUV on the left.",
+                "The vehicle passes the West Park sign and entrance on the right.",
+                "The vehicle approaches a right-side road or driveway entrance.",
+                "The vehicle passes a parked RV and house on the right."
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": true,
+            "selected_indices": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "selected_answers": [
+                "The vehicle turns left off the paved road and onto the muddy farm track.",
+                "The vehicle passes the tank-and-pipe setup on the left.",
+                "The vehicle drives past the irrigation machine on the left.",
+                "The trailer and equipment on the right shoulder recede and disappear from view."
+            ],
+            "correct_indices": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "correct_answers": [
+                "The vehicle turns left off the paved road and onto the muddy farm track.",
+                "The vehicle passes the tank-and-pipe setup on the left.",
+                "The vehicle drives past the irrigation machine on the left.",
+                "The trailer and equipment on the right shoulder recede and disappear from view."
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": false,
+            "selected_indices": [
+                2,
+                1,
+                0,
+                3
+            ],
+            "selected_answers": [
+                "A driveway or side road on the left comes into view and joins the main road.",
+                "A white SUV approaches and passes on the left.",
+                "A red pickup approaches and passes on the left.",
+                "The vehicle turns left into the gravel parking area."
+            ],
+            "correct_indices": [
+                1,
+                2,
+                0,
+                3
+            ],
+            "correct_answers": [
+                "A white SUV approaches and passes on the left.",
+                "A driveway or side road on the left comes into view and joins the main road.",
+                "A red pickup approaches and passes on the left.",
+                "The vehicle turns left into the gravel parking area."
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle passed the parked gray SUV on the left?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "It passed the West Park sign and entrance on the right."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "It passed the West Park sign and entrance on the right."
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle passed the orange traffic cone?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "It moved forward through a broad paved junction and continued onto the straight rural road."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "It moved forward through a broad paved junction and continued onto the straight rural road."
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "before_after",
+            "question": "What happened immediately before the vehicle turned right at the junction?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "It approached the crossroad and narrower track continuing straight ahead."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "It approached the crossroad and narrower track continuing straight ahead."
+            ]
+        }
+    ]
+}
