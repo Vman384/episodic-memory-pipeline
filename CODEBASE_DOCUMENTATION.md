@@ -41,7 +41,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
-11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` runs GPT-6 Luna on a configurable Boreas sequence and stores the answer, detailed grading, and final mark under `model_answers/` in the submission directory.
+11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` runs GPT-6 Luna on the Boreas sequences listed in the selected `DATASET_PROGRESS.md` section and stores each answer, detailed grading, and final mark under `model_answers/` in the submission directory.
 
 12. **Video Questionnaire Runner** (`QA/`) — Loads sparse or temporal `questions.json`, removes answer and evidence metadata from the model prompt, randomizes question order, then uses configured frame-sequence or native MP4 input. Frame mode defaults to 128 frames resized to a maximum 512-pixel side.
 
@@ -588,22 +588,22 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 
 ### `run_all_eval.sh`
 
-**Purpose:** PBS batch script that runs the QA and grading steps for one Boreas
-sequence. By default it evaluates temporal questions for
-`boreas-2024-12-04-14-44` with GPT-6 Luna. The QA step samples up to 256 frames,
-resizes each to a maximum 512-pixel side, and asks all questions together. It
-uses the `copyq` queue, one CPU, 8 GB of memory, a one-hour walltime, and
+**Purpose:** PBS batch script that runs GPT-6 Luna QA and grading for the Boreas
+sequence IDs in its `LISTS` array. The default array contains the 17 Boreas
+entries from the Temporal section of `DATASET_PROGRESS.md`; non-Boreas entries
+such as `forest_dataset` are excluded. Each QA run samples up to 256 frames,
+resizes each to a maximum 512-pixel side, and asks all questions together. The
+job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour walltime, and
 `scratch/pg06+gdata/pg06` storage.
 
-**Entry point:** For the selected sequence it runs two commands:
+**Entry point:** For each selected sequence it runs two commands:
 
-1. `QA.run_questionnaire` with `--frames-dir`
-   `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and
-   `--questions` `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`
-   by default. It uses `configs/qa_gpt6_luna.json`, `--frame-budget` (default
-   `256`), `--max-image-size` (default `512`), and an API batch size of `20`.
-   The `BENCHMARK=sparse` setting switches the default question path to
-   `sparse_outputs/events/questions.json`.
+1. It loops over the literal IDs in `LISTS`, checks every selected camera folder
+   and question file, then calls `QA.run_questionnaire` once per dataset. Temporal
+   questions default to `<list>/temporal_outputs/narratives/questions.json`;
+   sparse questions default to `<list>/sparse_outputs/events/questions.json`.
+   The API configuration is `configs/qa_gpt6_luna.json`, with a default frame
+   budget of `256`, image side limit of `512`, and API batch size `20`.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
    answer file, and `--output` `graded_results.json` in the same output folder.
 
@@ -611,19 +611,20 @@ The default output path, relative to the directory from which the job was
 submitted, is:
 
 ```text
-model_answers/gpt-6-luna/2024-12-04-14-44/temporal/
+model_answers/gpt-6-luna/<dataset>/temporal/
     question_answer.json
     graded_results.json
     final_mark.txt
 ```
 
-`final_mark.txt` contains the score as `correct/total (percent)`. `LIST`,
-`BENCHMARK`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`, `CONFIG`, `MAX_FRAMES`,
-`MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can be overridden through the
-environment. Before grading, the script checks that the API accepted every
-sampled frame. Submit from the repository root with `qsub run_all_eval.sh`. Because
-`set -euo pipefail` is set, a failing step stops the job, so grading does not
-run after a failed answer step.
+`final_mark.txt` contains the score as `correct/total (percent)`. `LIST` limits
+the job to one dataset; edit the `LISTS` array to change the multi-dataset set.
+`BENCHMARK`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`,
+`CONFIG`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can also
+be overridden through the environment. Before grading, the script checks that
+the API accepted every sampled frame. A failed dataset is recorded and the
+script continues with the next one, then exits nonzero if any dataset failed.
+Submit from the repository root with `qsub run_all_eval.sh`.
 
 ---
 

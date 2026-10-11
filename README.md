@@ -117,7 +117,7 @@ python main.py --mode counting
 | `forest_run.sh` | Local Qwen3-VL sparse-event PBS job for the forest K-01 dataset; API and temporal examples are inactive |
 | `run_model_answers.py` | Legacy image-answer runner; use `QA/` for the bounded, shared-question evaluation path |
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
-| `run_all_eval.sh` | PBS job that runs `QA/` and grading for one configurable Boreas sequence on the `copyq` queue |
+| `run_all_eval.sh` | PBS job that runs `QA/` and grading for Boreas sequences listed in `DATASET_PROGRESS.md` on the `copyq` queue |
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
@@ -196,26 +196,29 @@ To submit the QA and grading job on Gadi, run from the repository root:
 qsub run_all_eval.sh
 ```
 
-By default it runs GPT-6 Luna on Boreas sequence
-`boreas-2024-12-04-14-44`, reading camera frames from
+By default it runs GPT-6 Luna on the 17 Boreas sequence IDs in the `LISTS`
+array in `run_all_eval.sh`, copied from the **Temporal** section of
+`DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
-from `<list>/temporal_outputs/narratives/questions.json`. It uses 256 frames at
-a maximum side of 512 pixels, with 20 images per API request. Results are saved
-under the directory from which the job was submitted:
+from `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`.
+Each sequence uses up to 256 frames at a maximum side of 512 pixels, with 20
+images per API request. Results are saved under the directory from which the
+job was submitted:
 
 ```text
-model_answers/gpt-6-luna/2024-12-04-14-44/temporal/
+model_answers/gpt-6-luna/<dataset>/temporal/
     question_answer.json
     graded_results.json
     final_mark.txt
 ```
 
-`final_mark.txt` contains a score such as `10/20 (50.00%)`. Set `BENCHMARK=sparse`
-to read `sparse_outputs/events/questions.json` and write results under the
-`sparse/` folder instead. `LIST`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`,
-`CONFIG`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can be
-overridden at submission. The script refuses to grade if the API accepted only
-part of the sampled frames.
+`final_mark.txt` contains a score such as `10/20 (50.00%)`. Set
+`BENCHMARK=sparse` to read `sparse_outputs/events/questions.json` for the same
+dataset list and write results under `sparse/`. Set `LIST=boreas-2024-12-04-14-44` to
+run just one dataset. `QUESTIONS`, `QUESTION_RELATIVE_PATH`, `CONFIG`,
+`MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` are also
+overridable. The script checks full frame coverage before grading each result
+and continues to the next dataset if a run fails.
 
 ## Ask Questions from a Video
 
