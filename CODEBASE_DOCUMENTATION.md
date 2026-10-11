@@ -41,13 +41,11 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
-11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` runs the QA and grading steps for each Boreas list.
+11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` runs GPT-6 Luna on a configurable Boreas sequence and stores the answer, detailed grading, and final mark under `model_answers/` in the submission directory.
 
 12. **Video Questionnaire Runner** (`QA/`) — Loads sparse or temporal `questions.json`, removes answer and evidence metadata from the model prompt, randomizes question order, then uses configured frame-sequence or native MP4 input. Frame mode defaults to 128 frames resized to a maximum 512-pixel side.
 
 13. **Qwen3 QA Evaluation Job** (`run_model_eval.sh`) — PBS wrapper that runs the video questionnaire and grader with local Qwen3-VL on the four-GPU Gadi queue.
-
-14. **GPT-6 Luna QA Evaluation Job** (`run_model_eval_api.sh`) — PBS wrapper that runs the frame-input QA path and grader using the OpenCode API on the CPU-only `copyq` queue.
 
 ### What Is Not Yet Implemented
 
@@ -70,7 +68,6 @@ episodic-memory-pipeline/
 ├── grade_answers.py
 ├── run_all_eval.sh
 ├── run_model_eval.sh
-├── run_model_eval_api.sh
 ├── QA/
 │   ├── __init__.py
 │   ├── QuestionnaireParser.py
@@ -591,28 +588,40 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 
 ### `run_all_eval.sh`
 
-**Purpose:** PBS batch script that runs the QA and grading steps for each
-Boreas list in one job. The QA step samples up to 128 frames, resizes each to a
-maximum 512-pixel side, and asks all questions together. It uses the `copyq`
-queue, one CPU, 8 GB of memory, a five-minute walltime, and
+**Purpose:** PBS batch script that runs the QA and grading steps for one Boreas
+sequence. By default it evaluates temporal questions for
+`boreas-2024-12-04-14-44` with GPT-6 Luna. The QA step samples up to 256 frames,
+resizes each to a maximum 512-pixel side, and asks all questions together. It
+uses the `copyq` queue, one CPU, 8 GB of memory, a one-hour walltime, and
 `scratch/pg06+gdata/pg06` storage.
 
-**Entry point:** For each list it runs two commands:
+**Entry point:** For the selected sequence it runs two commands:
 
 1. `QA.run_questionnaire` with `--frames-dir`
-   `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera`, `--questions`
-   `/g/data/pg06/FYP2026S1_3473/<list>/sparse_outputs/events/questions.json`, and
-   `--output` `.../<list>/eval_outputs/answers.json`. It uses
-   `configs/answer_eval.json`, `--frame-budget` (default `128`),
-   `--max-image-size` (default `512`), and an API batch size of `20`.
+   `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and
+   `--questions` `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`
+   by default. It uses `configs/qa_gpt6_luna.json`, `--frame-budget` (default
+   `256`), `--max-image-size` (default `512`), and an API batch size of `20`.
+   The `BENCHMARK=sparse` setting switches the default question path to
+   `sparse_outputs/events/questions.json`.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
-   `answers.json`, and `--output` `.../<list>/eval_outputs/graded_results.json`.
+   answer file, and `--output` `graded_results.json` in the same output folder.
 
-The model is read from `configs/answer_eval.json`; the script does not change
-it. `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can be
-overridden through the environment. Before grading, the script checks that the
-API accepted every sampled frame. Submit from the repository root with
-`qsub run_all_eval.sh`. Because
+The default output path, relative to the directory from which the job was
+submitted, is:
+
+```text
+model_answers/gpt-6-luna/2024-12-04-14-44/temporal/
+    question_answer.json
+    graded_results.json
+    final_mark.txt
+```
+
+`final_mark.txt` contains the score as `correct/total (percent)`. `LIST`,
+`BENCHMARK`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`, `CONFIG`, `MAX_FRAMES`,
+`MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can be overridden through the
+environment. Before grading, the script checks that the API accepted every
+sampled frame. Submit from the repository root with `qsub run_all_eval.sh`. Because
 `set -euo pipefail` is set, a failing step stops the job, so grading does not
 run after a failed answer step.
 
@@ -644,40 +653,6 @@ It writes `answers.json` and `results.json` under
 `SEED` can be overridden through the submitter's environment (`#PBS -V`). The source video
 must already be downloaded; `download_boreas_videos.pbs` saves it under the
 expected `boreas_dataset/<sequence>/video.mp4` path.
-
----
-
-### `run_model_eval_api.sh` — GPT-6 Luna API QA job
-
-**Purpose:** Run the QA questionnaire with GPT-6 Luna through OpenCode, then
-grade its answers against the original question file.
-
-**Submission:** `qsub run_model_eval_api.sh` from the repository root. The PBS
-job requests one CPU and 8 GB of memory on `copyq`, activates the shared Python
-environment, and reads camera frames from
-`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/camera/`.
-
-GPT-6 Luna accepts text and image inputs, so this job uses
-`configs/qa_gpt6_luna.json` with `input_mode: "frames"`. The QA runner samples
-up to 128 of the sequence's pre-extracted PNGs uniformly across elapsed time,
-resizes them to JPEG with a maximum 512-pixel side,
-and sends them in batches of 20 in a stored API conversation. It does not
-send the MP4 as native video. `LISTS` in the script holds the sequences to run;
-the default list is `boreas-2025-02-15-16-58`. For each sequence it reads
-`<list>/temporal_outputs/narratives/questions.json` and writes
-`answers.json` and `results.json` to
-`$PBS_O_WORKDIR/model_answers/gpt-6-luna/temporal/<sequence>/`. This per-sequence
-subdirectory prevents outputs from different `LISTS` entries overwriting one
-another. `OPENCODE_API_KEY` must be available in the job
-environment or repository `.env` file. `QUESTIONS` can override the question
-file for a one-list run; `QUESTION_RELATIVE_PATH`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
-`API_BATCH_SIZE`, `CONFIG`, and `SEED` can be overridden through the exported
-environment. Setting `MAX_FRAMES=0` attempts all camera
-frames, but the API context window may stop ingestion before the full folder is
-accepted. The script checks `frames_received == frames_sampled` before grading;
-partial-context answers remain saved but are not scored as a full run.
-
----
 
 ### `QA/` — Video questionnaire runner
 
