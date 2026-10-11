@@ -68,6 +68,7 @@ episodic-memory-pipeline/
 ├── grade_answers.py
 ├── run_all_eval.sh
 ├── run_model_eval.sh
+├── count_questions.sh
 ├── QA/
 │   ├── __init__.py
 │   ├── QuestionnaireParser.py
@@ -632,6 +633,18 @@ Responses API configurations. Before grading, the script checks that
 the API accepted every sampled frame. A failed dataset is recorded and the
 script continues with the next one, then exits nonzero if any dataset failed.
 Submit from the repository root with `qsub run_all_eval.sh`.
+
+---
+
+### `count_questions.sh`
+
+**Purpose:** Counts the total number of question objects in sparse and temporal
+`questions.json` files under `/g/data/pg06/FYP2026S1_3473`.
+
+**Usage:** Submit with `qsub count_questions.sh`. The PBS job requests the
+project's Gadi storage. It checks each dataset's
+`sparse_outputs/events/questions.json` and
+`temporal_outputs/narratives/questions.json`, then prints the combined count.
 
 ---
 

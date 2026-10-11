@@ -43,6 +43,15 @@ JIT-compiles its FP8 kernels with NVCC and requires version 12.3 or newer,
 while the `cuda/12.2.2` module provides 12.2.2; disabling it lets vLLM use its
 CUTLASS FP8 kernels instead.
 
+## Count Generated Questions
+
+Submit `qsub count_questions.sh` to count all entries in `questions.json` files
+under each dataset's `sparse_outputs/events/` and
+`temporal_outputs/narratives/` directories in
+`/g/data/pg06/FYP2026S1_3473`. The PBS job requests access to the project's
+Gadi storage and prints the combined count. To run directly on a node where the
+data filesystem is already mounted, use `bash count_questions.sh`.
+
 ## Run A Benchmark Mode
 
 Run commands from the repository root because configuration paths are relative to the current working directory:
@@ -119,6 +128,7 @@ python main.py --mode counting
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
 | `run_all_eval.sh` | PBS job that runs `QA/` and grading for Boreas sequences listed in `DATASET_PROGRESS.md` on the `copyq` queue |
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
+| `count_questions.sh` | Counts questions across sparse and temporal output files on Gadi |
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by legacy `run_model_answers.py` |
