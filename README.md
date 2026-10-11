@@ -214,8 +214,9 @@ the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
 from `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`.
 Each sequence uses up to 650 frames resized to a maximum side of 512 pixels.
-Kimi K3 receives all sampled frames and questions in one Chat Completions
-request. Results are saved under the directory from which the job was submitted:
+Kimi K3 receives the sampled frames in Responses API batches of 10, then gets
+the questions in the same stored conversation. Results are saved under the
+directory from which the job was submitted:
 
 ```text
 model_answers/kimi-k3/<dataset>/temporal/
@@ -228,9 +229,9 @@ model_answers/kimi-k3/<dataset>/temporal/
 `BENCHMARK=sparse` to read `sparse_outputs/events/questions.json` for the same
 dataset list and write results under `sparse/`. Set `LIST=boreas-2024-12-04-14-44` to
 run just one dataset. `QUESTIONS`, `QUESTION_RELATIVE_PATH`, `CONFIG`,
-`MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` are also
-overridable. The script checks full frame coverage before grading each result
-and continues to the next dataset if a run fails.
+`MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE` (default: 10), and `SEED` are
+also overridable. The script checks full frame coverage before grading each
+result and continues to the next dataset if a run fails.
 
 ## Ask Questions from a Video
 
