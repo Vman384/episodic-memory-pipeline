@@ -596,7 +596,7 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 **Purpose:** PBS batch script that runs Kimi K3 QA and grading for the Boreas
 sequence IDs in its `LISTS` array. The default array contains the 17 Boreas
 entries from the Temporal section of `DATASET_PROGRESS.md`; non-Boreas entries
-such as `forest_dataset` are excluded. Each QA run samples up to 256 frames,
+such as `forest_dataset` are excluded. Each QA run samples up to 650 frames,
 resizes each to a maximum 512-pixel side, and asks all questions together. The
 job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour walltime, and
 `scratch/pg06+gdata/pg06` storage.
@@ -608,7 +608,7 @@ job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour walltime, and
    questions default to `<list>/temporal_outputs/narratives/questions.json`;
    sparse questions default to `<list>/sparse_outputs/events/questions.json`.
     The API configuration is `configs/qa_kimi_k3.json`, with a default frame
-    budget of `256` and image side limit of `512`. It sends sampled frames and
+    budget of `650` and image side limit of `512`. It sends sampled frames and
     questions together in one OpenCode Go Chat Completions request.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
    answer file, and `--output` `graded_results.json` in the same output folder.
@@ -627,7 +627,8 @@ model_answers/kimi-k3/<dataset>/temporal/
 the job to one dataset; edit the `LISTS` array to change the multi-dataset set.
 `BENCHMARK`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`,
 `CONFIG`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can also
-be overridden through the environment. Before grading, the script checks that
+be overridden through the environment. `API_BATCH_SIZE` only applies to
+Responses API configurations. Before grading, the script checks that
 the API accepted every sampled frame. A failed dataset is recorded and the
 script continues with the next one, then exits nonzero if any dataset failed.
 Submit from the repository root with `qsub run_all_eval.sh`.
@@ -690,14 +691,15 @@ elapsed video time, resizes each to a longest side of at most 512 pixels while
 preserving aspect ratio, and sends them through `pipeline/AIParser.py`. It can
 sample from an MP4 or from an existing `--frames-dir` of timestamp-named images.
 `--frame-budget` (alias `--max-frames`) controls the maximum; `0` explicitly
-uses all available frames. Responses API frame mode sends sampled images in
+uses all available frames. `api_protocol` selects `responses` (the default) or
+`chat_completions`. Responses API frame mode sends sampled images in
 stored-conversation batches, then asks the full question list in one final
 request. Chat Completions frame mode sends all sampled images and questions in
 one request; `api_batch_size` is not used in this mode. `--max-image-size` and
 `--api-batch-size` also adjust frame mode.
 Sampling metadata records the selected frame names/indices and timestamps,
-frame budget, and image-size limit. API usage metadata includes token counts for
-the image batches and final question request.
+frame budget, and image-size limit. Responses API usage metadata includes token
+counts for the image batches and final question request.
 Native-video mode passes the MP4 through the selected model's video stack.
 The local Qwen3-VL adapter uses `qwen-vl-utils` with vLLM. The Gemini adapter
 uses the Gemini Files API, waits for provider-side processing, and requires

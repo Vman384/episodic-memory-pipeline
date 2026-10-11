@@ -203,7 +203,7 @@ the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
 from `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`.
-Each sequence uses up to 256 frames resized to a maximum side of 512 pixels.
+Each sequence uses up to 650 frames resized to a maximum side of 512 pixels.
 Kimi K3 receives all sampled frames and questions in one Chat Completions
 request. Results are saved under the directory from which the job was submitted:
 
@@ -270,8 +270,8 @@ model config, or override it with `--input-mode frames` or
 `--input-mode native_video`. Native video input currently supports local
 Qwen3-VL through vLLM/`qwen-vl-utils` and Gemini through its Files API. Use
 `--seed` to make question ordering reproducible. If an API context limit is
-reached while adding batches, the runner stops and records the number of frames
-accepted before asking the questions.
+reached while adding Responses API batches, the runner stops and records the
+number of frames accepted before asking the questions.
 
 The output JSON records `input_mode`, input metadata, question order, parsed
 answer indices, and the raw model response. The model-facing questionnaire
