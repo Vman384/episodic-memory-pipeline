@@ -1,0 +1,307 @@
+\documentclass[journal]{IEEEtran}
+\usepackage{booktabs} % For professional looking tables (\toprule, \midrule, \bottomrule)
+\usepackage{multirow} % For spanning cells across multiple rows
+\usepackage{pifont}   % For checkmarks and crosses
+\usepackage{xcolor}   % For coloring the checkmarks and crosses
+\usepackage{graphicx} % For \resizebox command
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\usepackage{graphicx}
+\usepackage{rotating} % For sidewaysfigure environment
+\begin{document}
+
+\title{Episodic Memory for Robots in the Wild: Benchmarking and Evaluation Across Unstructured
+Environments
+}
+\title{Episodic Memory for Robots in the Wild: Benchmarking and Evaluation Across Unstructured
+Environments}
+\author{Vedansh~Malhan, \IEEEmembership{Student, Monash University}, William~Ngo, \IEEEmembership{Student, Monash University}
+\thanks{Special thanks to Kavi Katuwandeniya and Dana Kulic for their support in the research. This work was supported in part by Monash University Engineering Department}
+\thanks{The next few paragraphs should contain 
+the authors' current affiliations, including current address and e-mail. For 
+example, F. A. Author is with the National Institute of Standards and 
+Technology, Boulder, CO 80305 USA (e-mail: author@boulder.nist.gov). }
+\thanks{V. M. Author is with 
+the Software Engineering Department, Monansh University, Clayton Melbourne, Vic 
+3169 Australia (e-mail: vedanshmalhan03@gmail.com).}}
+
+
+
+
+% The paper headers
+\markboth{Episodic Memory for Robots in the Wild: Benchmarking and Evaluation Across Unstructured
+Environments
+}%
+{\MakeLowercase{\textit{et al.}}: Episodic Memory for Robots in the Wild: Benchmarking and Evaluation Across Unstructured
+Environments
+}
+
+% make the title area
+\maketitle
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+\begin{abstract}
+% 1. Background/Context
+Vision-Language Models (VLMs) are seeing increased adoption in modern systems such as autonomous vehicles and embodied agents. These systems require a continuous, long-term understanding of past events, known as episodic memory, to maintain task context and prevent operational failures. 
+% 2. Project Topic/Problem
+Despite its critical importance, current benchmarks evaluating episodic memory in VLMs remain limited. Existing datasets typically feature short-duration clips (seconds to minutes) in event-dense environments, characterised by high-frequency occurrences that result in high Signal-to-Noise Ratio (SNR) scenarios. Consequently, there is a significant lack of benchmarks addressing low-SNR, event-sparse environments such as forests, rural roads, and tunnels which demand fine-grained episodic discrimination and long-range temporal retrieval over extended sequences.
+% 3. Methodology
+To address this gap, we propose a benchmarking framework for evaluating episodic memory in modern VLMs in low-SNR environments, utilising extended duration videos ranging from 6 minutes to 1 hours. The framework includes a pipeline for generating natural language query-based question-answer pairs using modern Large Language Models (LLMs) and VLMs, followed by human verification. The benchmark targets three key evaluation categories: sparse-event localisation, temporal ordering, and object counting.
+% 4. Anticipated Results
+This benchmark is anticipated to provide an evaluation framework capable of exposing the limitations of current multi-modal architectures. Preliminary projections suggest that modern VLMs will face significant challenges, with expected maximum recall ($R@1$) scores of $70\%$ for sparse event localisation~\cite{temporalbench}, $80\%$ for temporal reasoning~ \cite{FineBench2026} \cite{temporalbench} \cite{ego4d}, and $50\%$ for object counting~\cite{GEOBench} \cite{CountingToFour2026}.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Enter key words or phrases in alphabetical 
+order, separated by commas. For a list of suggested keywords, send a blank 
+e-mail to keywords@ieee.org or visit \underline
+{http://www.ieee.org/organizations/pubs/ani\_prod/keywrd98.txt}
+\end{IEEEkeywords}
+
+
+% ---------------------------------------------------------
+% INTRODUCTION (MANDATORY)
+% ---------------------------------------------------------
+% To meet the pass standard, your introduction MUST include:
+% 1. An initial literature review or state of the field.
+% 2. The relevance of the project in the context of the previous research.
+% 3. The project aims/objectives.
+% 4. A research question or problem statement.
+\section{Introduction}
+\label{sec:introduction}
+
+\IEEEPARstart{R}{ecent} advancements in Vision-Language Models (VLMs) have facilitated their integration into complex, real-world applications, particularly within the autonomous vehicle and robotics industries \cite{kodiak2023}. For these systems to operate reliably, the capacity to retain and retrieve specific past experiences over extended periods is crucial. This is known as episodic memory, originating from cognitive psychology \cite{tulving1972episodic}, episodic memory is defined as the ability to encode, store, and consciously recall specific past events anchored in their precise spatial and temporal contexts.  For instance, in autonomous navigation, the inability to recall past road conditions in a GNSS-denied environment poses critical safety risks and compromises localisation capabilities. Similarly, episodic memory in robotics enables long-term continuity, enhanced social interaction, and advanced cognitive planning by allowing agents to store and retrieve specific temporal experiences, rather than relying solely on generalised semantic memory. 
+
+Although recent research has benchmarked the temporal and memory capabilities of VLMs, existing datasets, such as Ego4D \cite{ego4d}, predominantly focus on short-duration video clips averaging approximately eight minutes. Furthermore, these datasets are heavily skewed toward event-dense settings characterised by a high Signal-to-Noise Ratio (SNR). In the context of video analysis, SNR refers to the density of meaningful, distinct events (the ``signal'') relative to continuous, repetitive, or uninformative background frames (the ``noise''). Consequently, current benchmarks primarily capture general daily activities in object-rich environments like private homes and offices, where visual stimuli and new events occur almost continuously.
+
+Consequently, a significant gap exists regarding the evaluation of VLMs in low SNR, lengthy-context, and event-sparse environments. Scenarios such as navigating through forests, rural roads, and tunnels present a unique challenge. The absence of distinctive landmarks deprives VLMs of visual anchors; as a result, the context window becomes saturated with highly similar tokens. This homogeneity severely challenges frame-level recall and temporal anchoring. Fine-grained episodic discrimination over extended sequences remains largely untested in current VLM literature.
+
+To address this critical gap, this study is guided by the following research question: \textit{\textbf{Can modern Vision-Language Models accurately recall, distinguish, and reason with episodic memories in an event-sparse environment?}}
+
+The primary objective of this project is to develop a comprehensive and reliable benchmark to assess the episodic memory of VLMs within the aforementioned domains. To achieve this, an automated pipeline is proposed to generate question-answer pairs based on long-form video inputs, which are subsequently validated via human annotation. The benchmark evaluates models across three main categories: 
+\begin{itemize} 
+\item \textbf{Sparse Event Localisation:} Verifying the occurrence of rare, outlier events over extended durations (e.g., identifying a wildlife crossing during a long drive). 
+\item \textbf{Temporal Order:} Assessing the model's capacity to recall the chronological sequence of past events. 
+\item \textbf{Object Counting:} Testing the model's ability to track and uniquely count distinct objects over time. 
+\end{itemize}
+
+By exposing vulnerabilities in current architectures, this benchmark aims to push the boundaries of long-term temporal context retention in modern multi-modal models.
+
+\begin{table*}[t]
+\centering
+{%
+\begin{tabular}{lrrrrrrcccc}
+\toprule
+\textbf{Benchmarks} & \textbf{\#Videos} & \textbf{\#Clips} & \textbf{Len.(s)} & \textbf{\#QA Pairs} & \textbf{Anno.} \\
+\midrule
+% --- Early Benchmarks ---
+MSRVTT-QA \cite{msrvtt} & 2,990 & 2,990 & 15.2 & 72,821 & A  & \xmark & \cmark & \xmark \\
+TGIF-QA \cite{tgif} & 9,575 & 9,575 & 3.0 & 8,506 & A\&M &  & \xmark & \cmark & \xmark \\
+ActivityNet-QA \cite{activitynetqa} & 800 & 800 & 111.4 & 8,000 & M  & \xmark & \xmark & \xmark \\
+\midrule
+% --- Recent Benchmarks ---
+MVBench \cite{mvbench} & 3,641 & 3,641 & 16.0 & 4,000 & A  & \xmark & \cmark & \xmark \\
+EgoSchema \cite{egoschema} & 5,063 & 5,063 & 180.0 & 5,063 & A\&M  & \xmark & \xmark & \xmark \\
+\midrule
+% --- Video-MME ---
+Video-MME-S & 300 & 300 & 80.7 & 900 & \multirow{4}{*}{M}   & \cmark & \cmark & \cmark \\
+Video-MME-M & 300 & 300 & 515.9 & 900 & \cmark & \cmark & \cmark \\
+Video-MME-L & 300 & 300 & 2466.7 & 900  & \cmark & \cmark & \cmark \\
+Video-MME \cite{videomme} & 900 & 900 & 1017.9 & 2,700 & \cmark & \cmark & \cmark \\
+\midrule
+% --- OUR BENCHMARK ---
+\textbf{FYP2026S1-3073} & \textbf{17} & \textbf{17} & \textbf{1800} & \textbf{TBD} & \textbf{A\&M} & \textbf{\cmark} & \textbf{\xmark} & \textbf{\xmark} \\
+\bottomrule
+\end{tabular}%
+}
+\vspace{1ex}
+\caption{This comparison table shows several key aspects that other benchmarks have tested against ours: the total number of videos \textbf{(\#Videos)}, the average length of video input \textbf{(Len.(s)}, the total number of clips \textbf{(\#Clips)}, the total number of Question-Answer pairs available for evaluation \textbf{(\#QA Pairs)}, method of Annotation (M for manual and A for automated) \textbf{(\# Anno.)}}
+\label{tab:benchmark_comparison}
+\end{table*}
+
+\vspace{1mm}
+
+% ---------------------------------------------------------
+% RELATED WORK
+% ---------------------------------------------------------
+\section{Related Work}
+\IEEEPARstart{T}{he} capabilities of Vision Language Models (VLMs) and their temporal reasoning abilities have seen a massive growth in recent years through the development of transformers. However, literature predominantly focuses on short-duration, high-density event scenarios, leaving a critical gap in long-term, low-SNR episodic memory evaluation.
+
+Early video question answering benchmarks such as such as \textbf{TGIF} \cite{tgif}, \textbf{Movie-QA} \cite{movieqa}, and \textbf{ActivityNet-QA} \cite{activitynetqa} laid the groundwork for temporal reasoning in  VLM models. Subsequent efforts expanded into instructional and narrated content, with datasets like \textbf{HowTo100M} \cite{howto100m} and \textbf{CrossTask} \cite{crosstask} evaluating the alignment of spoken language with visual steps. However, these datasets primarily consist of brief clips, typically ranging from a few seconds to five minutes, which are insufficient for testing long-term memory retention. However, these datasets primarily consists of very short clips, often ranging around 10 seconds to 5 minutes. 
+
+More recently, the focus in benchmarks have shifted more towards comprehensive and long-context video evaluations. Benchmarks such as \textbf{Video-MME} \cite{videomme}, \textbf{LongVideoBench} \cite{longvideobench}, and \textbf{EgoSchema} \cite{egoschema} provide extensive multi-modal evaluations across longer durations. While these benchmarks test temporal contexts, they are fundamentally built upon high-SNR environments (e.g., movies, vlogs, and television shows) where distinct visual and audio cues occur with high frequency. Furthermore, these datasets are primarily sourced from third-person media, limiting their applicability to autonomous vehicles and robotics, which inherently rely on egocentric viewpoints to perform real-world tasks.
+
+In the context of egocentric vision and embodied AI's, which are more relevant to robotics. The current frontier benchmarks includes \textbf{Ego4D} \cite{ego4d}, incorporating test for egocentric video understanding using body mounted cameras from volunteers. In simulated environments, benchmarks such as \textbf{Embodied Question Answering} \cite{embodiedqa}, \textbf{House3D} \cite{house3d}, and \textbf{Enter the Mind Palace} \cite{mindpalace} all evaluate spatial and episodic memory for embodied agents. While these benchmarks are highly influential, these datasets generally remain focused on human activities that are high SNR and bounded simulations. Similarly, in the autonomous driving domain, \textbf{NuScenes QA} \cite{nuscenesqa} and \textbf{The blind Spot of Adaptation} \cite {blindspot} benchmarks episodic memory in autonomous vehicles, but strictly focuses on dense, high SNR urban traffic, rather than feature sparse environments.
+
+Despite these new benchmarks in various domains of advancements, a critical gap remains. None of these benchmarks evaluate long term temporal context in unbounded, low SNR and egocentric environments, which is the primary focus of this benchmark.
+
+
+
+\section{Methodology}
+\label{app:methodology}
+We present a benchmark for assessing the episodic memory of Vision-Language Models (VLMs) in long, egocentric dashcam recordings. Each recording is a forward-facing vehicle camera sequence filmed at 10 FPS, for a total length of around 15 minutes to an hour long, captured in one of three environments: forests and rural roads. These environments have low event density and few stable visual landmarks. A model answering questions about such a recording cannot rely on a single frame and must recall what occurred across a long time span. The benchmark targets three categories:
+
+\begin{enumerate}
+    \item \textbf{Sparse event localisation}, which tests whether a model can verify rare, outlier events without hallucinating them.
+    \item \textbf{Temporal order}, which tests whether a model recalls the sequence of events rather than inferring it from priors.
+    \item \textbf{Counting}, which tests whether a model can track the number of distinct objects it has observed across the whole recording.
+\end{enumerate}
+
+At the time of writing, the sparse-event and temporal-order categories are implemented. Counting category had run into limitation which we will later discuss.
+
+\subsection{Data Source and Preparation}
+
+Source frames are taken from the Boreas dataset \textbf{[TBD: citation]} and a forest sequence (K-01) \textbf{[TBD: citation or source]}. Each frame is a timestamped image whose filename encodes its capture time in epoch microseconds, for example \texttt{1733343593917869.png}. Elapsed time is computed from these filenames rather than estimated from the content of the video.
+
+Frames are partitioned into sections with a sliding window. Within a section, \texttt{frames\_per\_section} frames are sampled at stride \texttt{step}. The next section begins \texttt{skip} frames after the last sampled frame of the previous section. For the sparse configuration, we use \texttt{frames\_per\_section}\,$=$\,7, \texttt{step}\,$=$\,8, and \texttt{skip}\,$=$\,2. For the temporal configuration, we use \texttt{frames\_per\_section}\,$=$\,5, \texttt{step}\,$=$\,10, and \texttt{skip}\,$=$\,10. Each section's start and end times in seconds are recorded in a \texttt{sections.json} manifest. Sampled frames are re-encoded as JPEG at quality 80 without resizing, so that the original resolution is preserved. This is done to remain within budget and model context limit contraints.
+
+\subsection{Ground-Truth Construction}
+
+Ground truth is built in four stages. Each stage is run separately, and a human reviewer checks the output before the next stage.
+
+\subsubsection{Candidate Extraction}
+
+A VLM is given each section's frames together with a task-specific prompt and returns structured JSON. In the sparse task, the prompt asks for rare or noteworthy events and instructs the model to ignore normal driving. In the temporal task, the prompt asks for a section summary and a chronological list of timestamped events. Each extracted event is assigned \texttt{start\_seconds} and \texttt{end\_seconds} from its section's manifest entry. The model is not asked to produce timestamps.
+
+\subsubsection{Deterministic Ordering and LLM-Assisted Merging}
+
+Detections are sorted in Python by the timestamp embedded in their frame filename. The sorted list is then output into a JSON \texttt{all\_results} this is then passed to an LLM in windows of \texttt{review\_window} (sparse) or \texttt{merge\_window} (temporal) items. In the sparse task, the LLM merges duplicate observations of the same event across section boundaries and removes spurious detections, each with a recorded reason. In the temporal task, the LLM only merges continuing or duplicate observations. The prompts forbid reordering and forbid inventing events. Seconds are reattached from the original records after merging, so merged records retain their original time references. The output is stored as a merged list (\texttt{events.json} or \texttt{timeline.json}).
+
+\subsubsection{Human Verification}
+
+A reviewer checks each merged list (\texttt{events.json} or \texttt{timeline.json}) against the referenced frames and edits or removes items as needed. Only verified items may proceed to question generation. For the temporal task, a prose storyline is also produced to support this review.
+
+\subsubsection{Question Generation}
+
+The LLM generates questions only from the verified list. Each question includes its type, the event IDs and frame evidence on which it is based, its answer options, and the indices of the correct options.
+
+\subsection{Question Design}
+
+\textbf{Sparse event localisation.} Three question types are generated:
+
+\begin{itemize}
+    \item \emph{Deceptive:} asks whether a plausible but invented event occurred. The answer is always no. Each invented event is used only once, so that no question depends on a reused event, to prevent AI models from using past question information to answer the current questions.
+    \item \emph{Existence:} asks whether a verified event occurred during the drive. The answer is yes.
+    \item \emph{Noteworthy:} presents four candidate events. Exactly one is a verified event and three are invented. The answer is the verified event.
+\end{itemize}
+
+Every invented event is recorded in a separate \texttt{false\_events} array with its \texttt{question\_id} and a rationale, so that a reviewer can confirm it never occurred.
+
+\textbf{Temporal order.} Three question types are generated:
+
+\begin{itemize}
+    \item \emph{Pairwise order:} asks which of two events occurred first.
+    \item \emph{Sequence order:} asks the model to order three to five events. Grading is order-sensitive.
+    \item \emph{Before/after:} asks which event immediately preceded or followed a given event.
+\end{itemize}
+The complete, integrated architecture of our benchmarking framework is illustrated in Fig.~\ref{fig:unified_pipeline}. This unified layout demonstrates the shared multi-threaded video pre-processing workflow, which seamlessly splits long-form data before parallelising downstream evaluations into our three distinct task-specific domains (Sparse Event, Temporal, and Object Counting).
+
+\subsection{Selection of Evaluation Categories}
+The overall design of the benchmark is based on the cognitive requirements of autonomous agents operating in real world, low SNR environments. Through analysis of existing benchmarks in similar domains, we have identified three critical categories in our assessment of episodic memory that aligns with autonomous vehicles and embodied agents.
+
+\begin{itemize}
+    \item \textbf{Sparse Event Localisation:} In repetitive environments (e.g., continuous highway driving), the ability to detect rare anomalies is vital for safety and context awareness.
+    \item \textbf{Temporal Ordering:} Long-term planning requires an understanding of the chronological sequence of events separated by extended durations, testing the model's ability to maintain a timeline.
+    \item \textbf{Object Counting:} Tracking and uniquely identifying objects over time tests the limits of visual-primitive numeracy and object permanence across long horizons.
+\end{itemize}
+
+
+% figure* allows the wide diagram to span across both columns cleanly
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=0.95\textwidth]{Simplied pipeline architecture.png} 
+    \caption{Comprehensive workflow of the automated benchmarking pipeline, mapping out the shared frontend multi-VLM ensemble stage and subsequent specialised tracking pathways across automated repeat cycles.}
+    \label{fig:unified_pipeline}
+\end{figure*}
+% To meet the pass standard, this section MUST include:
+% 1. Appropriate methods that are proposed and justified.
+% To construct a robust benchmark for low-SNR, long-duration episodic memory, we propose a semi-automated, scalable pipeline \textbf{(Fig.~\ref{fig:unified_pipeline})}. The methodology leverages a hybrid architecture of Vision-Language Models (VLMs) and Large Language Models (LLMs) to generate candidate Question-Answer (QA) pairs, followed by human verification to validate the questions generated by these models. %
+
+% \subsection{Data Processing and Infrastructure}
+% The foundation of the benchmark relies on processing extended video sequences, ranging from 6 minutes to approximately 1 hours in duration. To render this computationally feasible for modern transformers, the continuous video streams are segmented into discrete, multi-second clips.
+
+% \subsection{Task-Specific QA Generation}
+% Once the video is chunked and distributed, we apply specific prompting strategies to generate QA pairs tailored to our benchmark's core categories. See \textbf{(Fig.~\ref{fig:unified_pipeline})}.
+
+% \subsubsection{Sparse event localisation}
+% In low-SNR environments, the majority of the video consists of repetitive, visually similar frames (e.g., continuous highway driving or dense forests). To evaluate sparse event localisation, we feed the segmented chunks into the VLMs and prompt them to identify visual anomalies or rare occurrences (e.g., a deer crossing the road, an unusual road sign, or a sudden weather change). The VLMs return which video clip of the entire video and descriptions of these flagged anomalies. This automated filtering drastically reduces the required search space for a human annotator, isolating the rare "signal" from the "noise." Once clips are isolated a human annotator will review the question and answer generated to ensure the event is considered rare. To generate questions that have an incorrect answer we will prompt the LLM to generate questions and environments for a non existent event (e.g, did you saw a deer walking past the road throughout the drive?).
+
+% \subsubsection{Temporal Ordering}
+% Evaluating long-term temporal dependencies requires the model to understand the chronological sequence of events separated by long stretches of video footage. To generate ground-truth data for this task, we employ a video-to-text translation approach. First, the VLM is tasked with generating dense scene descriptions for each video chunk. These descriptions are then written to an output file with a timestamp, basically a written timeline of the entire continuous drive. 
+
+% The output with the timestamp to highlight which event occurred first, this is subsequently fed into a high-capacity LLM. Because LLMs excel at text-based reasoning, the model can easily parse this timeline to synthesise complex temporal questions (e.g., \textit{"Did the vehicle pass the red bridge before or after the heavy rainfall?"}). This method ensures that the generated questions are temporally accurate and logically sound before being presented to the VLM during the actual benchmarking phase.
+
+% \subsubsection{Counting}
+% Counting the number of times we have seen an object poses a challenge of ensuring the object is unique we have decided to store instances where the VLM signals there was an object detected. For each VLM we use every time they see a similar object (e.g, a blue car) the clip will be stored in a folder corresponding for that VLM and object. Once the VLM signals that an object it has previously seen before is detected again we will pass in all previous clips of that object one by one and have the VLMs compare if they are the same object or not, if it is unique we will increment the count.
+
+% Once all the VLMs have conducted their counts for the objects detected we will use a predefined question and answer template to construct the question and answer pairs with the answer being a distribution of the different VLMs answers for all the runs.
+
+% \subsection{Human Verification and Curation}
+% While LLMs and VLMs are highly capable of generating candidate QA pairs, they are prone to hallucinations, especially in visually ambiguous, low-SNR environments. To ensure the integrity and reliability of the benchmark, the final stage of our methodology involves manual human annotation. Human reviewers are provided with the VLM-flagged timestamps, the generated questions, and the corresponding video clips. The human annotators will then verify the existence of such anomaly, the accuracy of the temporal sequences, and the overall quality of the QA. Only verified questions are then accepted into the final benchmark dataset.
+
+% The annotators conduct a verification step to confirm the existence of the anomaly, the accuracy of the temporal sequence, and the overall quality of the QA pair. Only verified and unambiguous questions are accepted into the final benchmark dataset.
+
+% \subsection{Risks and Mitigations}
+% Processing thousands of video segments introduces significant computational and I/O bottlenecks. Sequential API calls to closed-source models incur substantial latency and prohibitive financial costs. To mitigate this, a parallelised, multi-threaded architecture is implemented to handle concurrent video processing. Furthermore, High-Performance Computing (HPC) clusters are utilised to deploy local, open-source VLMs. This approach ensures high throughput while maintaining cost-efficiency.
+
+\section{Initial and Anticipated Results}
+% To meet the pass standard, this section MUST include:
+% 1. Initial and/or anticipated results are presented.
+
+This benchmark is designed such that models are expected to score as low as possible, thereby revealing gaps in current implementations. We target $60\%$ of evaluated models achieving a maximum $R@1$ score (the first output from the model being the correct one for a given query) below the thresholds specified in Table~\ref{tab:max_r1_results}. Our projected performance ceilings are empirically grounded in recent diagnostic evaluations of frontier VLM architectures. Specifically, the $50\%$ ceiling for object counting reflects the structural tokenisation limitations highlighted in recent probing frameworks~\cite{CountingToFour2026,GEOBench}, which demonstrate that general-purpose VLMs natively struggle with visual-primitive numeracy. 
+Similarly, our $70\%$ cap on sparse event localisation aligns with severe performance degradation observed in long-horizon egocentric benchmarks~\cite{wang2026egomemreason, FineBench2026,temporalbench}, where long-context token saturation consistently limits fine-grained temporal anchoring.
+
+
+
+% \vspace{5cm}
+
+\appendices\appendices
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\linewidth]{counting.drawio (1).png} 
+%     \caption{Detailed logic loop of the multi-pass object counting pipeline system.}
+%     \label{fig:counting_pipeline}
+% \end{figure}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\linewidth]{temporal.png} 
+%     \caption{Detailed sequential logic of the temporal-ordering verification framework.}
+%     \label{fig:temporal_pipeline}
+% \end{figure}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\linewidth]{sparse event.png} 
+%     \caption{Detailed exception-handling logic for rare-event identification and post-run constraint testing.}
+%     \label{fig:sparse_event_pipeline}
+% \end{figure}
+
+
+% use section* for acknowledgment
+% \section*{References}
+
+
+% The authors would like to thank...
+
+
+% Can use something like this to put references on a page
+% by themselves when using endfloat and the captionsoff option.
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{bibtex/bib/References}
+
+
+
+\end{document}

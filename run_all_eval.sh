@@ -51,10 +51,12 @@ from pathlib import Path
 config = json.loads(Path(sys.argv[1]).read_text())
 print(config.get("model", ""))
 print(config.get("backend", "local").lower())
+print(config.get("api_protocol", "responses").lower())
 PY
 )
 MODEL_NAME="${CONFIG_SETTINGS[0]:-}"
 BACKEND="${CONFIG_SETTINGS[1]:-}"
+API_PROTOCOL="${CONFIG_SETTINGS[2]:-responses}"
 if [[ -z "$MODEL_NAME" ]]; then
   echo "Model is missing from config: $CONFIG" >&2
   exit 1
@@ -117,7 +119,12 @@ echo "Model: $MODEL_NAME"
 echo "Benchmark: $BENCHMARK"
 echo "Datasets: ${#LISTS[@]} Boreas sequences"
 echo "Frame budget: $MAX_FRAMES; max image side: $MAX_IMAGE_SIZE px"
-echo "Responses API batch size (if used): $API_BATCH_SIZE"
+echo "API protocol: $API_PROTOCOL"
+if [[ "$API_PROTOCOL" == "responses" ]]; then
+  echo "Responses API batch size: $API_BATCH_SIZE"
+else
+  echo "Chat Completions sends all sampled frames in one request"
+fi
 
 FAILED_LISTS=()
 for LIST in "${LISTS[@]}"; do

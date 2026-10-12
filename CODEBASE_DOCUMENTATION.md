@@ -609,9 +609,10 @@ job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour walltime, and
    questions default to `<list>/temporal_outputs/narratives/questions.json`;
    sparse questions default to `<list>/sparse_outputs/events/questions.json`.
     The API configuration is `configs/qa_kimi_k3.json`, with a default frame
-    budget of `650`, image side limit of `512`, and Responses API batch size of
-    `10`. It sends sampled frames in stored-conversation batches, then asks the
-    questions in the same OpenCode Go conversation.
+    budget of `650`, image side limit of `512`, and Chat Completions protocol.
+    It sends all sampled frames and questions in one request; `API_BATCH_SIZE`
+    applies only to Responses API configurations. The script prints the selected
+    protocol and its applicable frame handling.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
    answer file, and `--output` `graded_results.json` in the same output folder.
 
@@ -1127,7 +1128,7 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 | `answer_eval.json` | — | Model settings for `run_model_answers.py` (not a pipeline config; no `task` or paths) |
 | `qa_gpt6_luna.json` | — | QA runner config for GPT-6 Luna using frame input |
-| `qa_kimi_k3.json` | — | Default `run_all_eval.sh` config for OpenCode Go Kimi K3 using Responses API with 10-frame batches and frame input |
+| `qa_kimi_k3.json` | — | Default `run_all_eval.sh` config for OpenCode Go Kimi K3 using Chat Completions with frame input |
 | `qa_gemini_video.json` | — | QA runner config for Gemini using native MP4 input |
 | `qa_qwen3.json` | — | Local Qwen3-VL native-video QA config for Gadi |
 

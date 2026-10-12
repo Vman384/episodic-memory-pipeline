@@ -214,9 +214,10 @@ the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
 from `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`.
 Each sequence uses up to 650 frames resized to a maximum side of 512 pixels.
-Kimi K3 receives the sampled frames in Responses API batches of 10, then gets
-the questions in the same stored conversation. Results are saved under the
-directory from which the job was submitted:
+Kimi K3 receives all sampled frames and the questions together in one Chat
+Completions request. `API_BATCH_SIZE` only applies to Responses API configs and
+does not split this request. Results are saved under the directory from which
+the job was submitted:
 
 ```text
 model_answers/kimi-k3/<dataset>/temporal/
