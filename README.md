@@ -256,8 +256,10 @@ CONFIGS="configs/qa_grok_4_7.json" qsub run_all_eval.sh
 ```
 
 Results for each model are stored under its own `model_answers/<model>/` folder.
-The script rejects API-reported errors and checks effective frame coverage
-before grading each result; it continues to the next dataset if a run fails.
+Before calling a model, the script skips that model/dataset when non-empty answer,
+graded-results, and final-mark files already exist, with the final mark newer than
+the other two. It rejects API-reported errors and checks effective frame coverage
+before grading; failed or incomplete runs continue to the next dataset.
 
 ## Ask Questions from a Video
 

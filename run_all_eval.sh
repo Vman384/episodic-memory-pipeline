@@ -113,8 +113,34 @@ if [[ -n "${LIST:-}" ]]; then
   LISTS=("$LIST")
 fi
 
-# Check every input before starting any paid API calls.
+is_evaluation_complete() {
+  local model_folder="$1"
+  local dataset_name="$2"
+  local output_dir="$PBS_O_WORKDIR/model_answers/$model_folder/$dataset_name/$BENCHMARK"
+  local answers="$output_dir/question_answer.json"
+  local graded_results="$output_dir/graded_results.json"
+  local final_mark="$output_dir/final_mark.txt"
+
+  # final_mark is written after grading; require it to be newer than both inputs.
+  [[ -s "$answers" && -s "$graded_results" && -s "$final_mark" \
+    && "$final_mark" -nt "$answers" && "$final_mark" -nt "$graded_results" ]]
+}
+
+# Check inputs only for datasets that still need at least one model run.
 for LIST in "${LISTS[@]}"; do
+  DATASET_NAME="${LIST#boreas-}"
+  NEEDS_INPUTS=0
+  for MODEL_FOLDER in "${MODEL_FOLDERS[@]}"; do
+    if ! is_evaluation_complete "$MODEL_FOLDER" "$DATASET_NAME"; then
+      NEEDS_INPUTS=1
+      break
+    fi
+  done
+  if ((NEEDS_INPUTS == 0)); then
+    echo "All configured models already evaluated for $LIST; skipping input checks"
+    continue
+  fi
+
   CAMERA_DIR="$BASE/boreas_dataset/$LIST/camera"
   QUESTIONS="$QUESTIONS_OVERRIDE"
   if [[ -z "$QUESTIONS" ]]; then
@@ -174,6 +200,11 @@ for INDEX in "${!CONFIG_LIST[@]}"; do
     ANSWERS="$OUTPUT_DIR/question_answer.json"
     GRADED_RESULTS="$OUTPUT_DIR/graded_results.json"
     FINAL_MARK="$OUTPUT_DIR/final_mark.txt"
+
+    if is_evaluation_complete "$MODEL_FOLDER" "$DATASET_NAME"; then
+      echo "Skipping $MODEL_NAME for $LIST; completed answers already exist"
+      continue
+    fi
 
     echo "=============================================="
     echo "Running $MODEL_NAME $BENCHMARK evaluation for: $LIST"

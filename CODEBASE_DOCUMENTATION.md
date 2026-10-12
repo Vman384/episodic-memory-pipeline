@@ -645,9 +645,12 @@ overridden through the environment. `CONFIGS` is a space-separated list of
 config paths (default: the Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision
 Exp configs); each listed model runs on every selected dataset in turn, and
 failed runs are recorded as `<model>/<list>`. `API_BATCH_SIZE` only applies to
-Responses API configurations. Before grading, the script rejects API-reported
-errors and checks that the API accepted every effective sampled frame. A failed dataset is recorded and the
-script continues with the next one, then exits nonzero if any dataset failed.
+Responses API configurations. A model/dataset is skipped when non-empty answer,
+graded-results, and final-mark files already exist, with the final mark newer
+than the other artifacts. Before grading new results, the script rejects
+API-reported errors and checks that the API accepted every effective sampled
+frame. A failed dataset is recorded and the script continues with the next one,
+then exits nonzero if any dataset failed.
 Submit from the repository root with `qsub run_all_eval.sh`. The
 `submit_remaining_opencode_eval.sh` helper submits the same job with the
 remaining OpenCode Go QA configs, excluding GPT-6 Luna and Kimi K3.
