@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N kimi-k3_temporal
+#PBS -N grok-4.7_temporal
 #PBS -P pg06
 #PBS -q copyq
 #PBS -l ncpus=1
@@ -18,7 +18,7 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 BASE="/g/data/pg06/FYP2026S1_3473"
 BENCHMARK="${BENCHMARK:-temporal}"
-CONFIGS="${CONFIGS:-configs/qa_kimi_k3.json configs/qa_qwen3_8_max.json configs/qa_deepseek_v4_flash_vision_exp.json qa_gemini_video.json}"
+CONFIGS="${CONFIGS:-configs/qa_grok_4_7.json configs/qa_qwen3_8_max.json configs/qa_deepseek_v4_flash_vision_exp.json}"
 MAX_FRAMES="${MAX_FRAMES:-512}"
 MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
 API_BATCH_SIZE="${API_BATCH_SIZE:-10}"

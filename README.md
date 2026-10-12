@@ -127,18 +127,18 @@ python main.py --mode counting
 | `run_model_answers.py` | Legacy image-answer runner; use `QA/` for the bounded, shared-question evaluation path |
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
 | `run_all_eval.sh` | PBS job that runs `QA/` and grading for Boreas sequences listed in `DATASET_PROGRESS.md` on the `copyq` queue |
+| `submit_remaining_opencode_eval.sh` | Submits `run_all_eval.sh` for OpenCode Go QA models, excluding completed GPT-6 Luna and Kimi K3 |
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
 | `count_questions.sh` | Counts questions across sparse and temporal output files on Gadi |
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
 | `tests/test_anthropic_api.py` | Unit tests for Anthropic Messages request formatting and QA frame dispatch |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by legacy `run_model_answers.py` |
-| `configs/qa_kimi_k3.json` | OpenCode Go Kimi K3 frame-input config using Chat Completions; default for `run_all_eval.sh` |
+| `configs/qa_kimi_k3.json` | OpenCode Go Kimi K3 frame-input config using Chat Completions |
 | `configs/qa_gpt6_luna.json` | OpenCode Go GPT-6 Luna frame-input config using the Responses API |
-| `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API |
+| `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API; default for `run_all_eval.sh` |
 | `configs/qa_qwen3_8_max.json` | OpenCode Go Qwen3.8 Max frame-input config using Anthropic Messages |
 | `configs/qa_deepseek_v4_flash_vision_exp.json` | OpenCode Go DeepSeek V4 Flash Vision Exp frame-input config using Chat Completions |
-| `configs/qa_deepseek_v4_pro.json` | OpenCode Go DeepSeek V4 Pro frame-input config using Chat Completions |
 | `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
 | `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
 
@@ -214,22 +214,28 @@ To submit the QA and grading job on Gadi, run from the repository root:
 qsub run_all_eval.sh
 ```
 
-By default it runs GPT-6 Luna, Kimi K3, Qwen3.8 Max, and DeepSeek V4 Pro through OpenCode Go (the `CONFIGS` default) on the 17 Boreas sequence IDs in
-the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
+To submit the remaining OpenCode Go models while excluding the completed
+GPT-6 Luna and Kimi K3 runs, use the helper script:
+
+```bash
+./submit_remaining_opencode_eval.sh
+```
+
+By default it runs Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp
+through OpenCode Go (the `CONFIGS` default) on the 10 active Boreas sequence IDs
+in the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
 from `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`.
-Each sequence uses up to 128 frames by default, resized to a maximum side of
-512 pixels. `MAX_FRAMES` can override the frame budget if the API accepts a
-larger request.
-Kimi K3 receives all sampled frames and the questions together in one Chat
-Completions request. After three retries on a 5xx error, it retries with 50 fewer
-uniformly sampled frames, down to 50; the answers metadata records that change.
-`API_BATCH_SIZE` only applies to Responses API configs and does not split this
-request. Results are saved under the directory from which the job was submitted:
+Each sequence uses up to 512 frames by default, resized to a maximum side of
+512 pixels. `MAX_FRAMES` can override the frame budget. Grok 4.7 uses the
+Responses API and sends sampled frames in batches of 10 before sending the
+questions in the same stored conversation. Qwen3.8 Max and DeepSeek V4 Flash
+Vision Exp each send all sampled frames with the questions in one request.
+Results are saved under the directory from which the job was submitted:
 
 ```text
-model_answers/kimi-k3/<dataset>/temporal/
+model_answers/grok-4.7/<dataset>/temporal/
     question_answer.json
     graded_results.json
     final_mark.txt
@@ -246,7 +252,7 @@ config paths. Each model runs on every selected dataset, one model after
 another:
 
 ```bash
-CONFIGS="configs/qa_gpt6_luna.json configs/qa_deepseek_v4_pro.json" qsub run_all_eval.sh
+CONFIGS="configs/qa_grok_4_7.json" qsub run_all_eval.sh
 ```
 
 Results for each model are stored under its own `model_answers/<model>/` folder.
@@ -282,8 +288,9 @@ python -m QA.run_questionnaire \
 ```
 
 `configs/qa_gpt6_luna.json` remains the default for a direct
-`QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to
-`configs/qa_kimi_k3.json`, using OpenCode Go and `OPENCODE_API_KEY`. Frame mode
+`QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to the Grok 4.7,
+Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp OpenCode Go configs, using
+`OPENCODE_API_KEY`. Frame mode
 deterministically samples up to 128 images from
 the MP4 or camera folder, uniformly across elapsed video time, and resizes each
 to a longest side of at most 512 pixels while preserving aspect ratio. Use

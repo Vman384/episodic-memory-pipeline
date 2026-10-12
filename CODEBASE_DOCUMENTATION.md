@@ -41,7 +41,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
-11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` runs Kimi K3 through OpenCode Go on the Boreas sequences listed in the selected `DATASET_PROGRESS.md` section and stores each answer, detailed grading, and final mark under `model_answers/` in the submission directory.
+11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner to sample a bounded, deterministic set of frames once per drive, answer all questions together, and write an answers JSON; then grades it against the question file. `run_model_answers.py` remains as a legacy alternative. `run_all_eval.sh` defaults to Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp through OpenCode Go on the selected Boreas sequences, storing each answer, detailed grading, and final mark under `model_answers/` in the submission directory.
 
 12. **Video Questionnaire Runner** (`QA/`) — Loads sparse or temporal `questions.json`, removes answer and evidence metadata from the model prompt, randomizes question order, then uses configured frame-sequence or native MP4 input. Frame mode defaults to 128 frames resized to a maximum 512-pixel side.
 
@@ -67,6 +67,7 @@ episodic-memory-pipeline/
 ├── run_model_answers.py
 ├── grade_answers.py
 ├── run_all_eval.sh
+├── submit_remaining_opencode_eval.sh
 ├── run_model_eval.sh
 ├── count_questions.sh
 ├── QA/
@@ -599,13 +600,14 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 
 ### `run_all_eval.sh`
 
-**Purpose:** PBS batch script that runs Kimi K3 QA and grading for the Boreas
-sequence IDs in its `LISTS` array. The default array contains the 17 Boreas
-entries from the Temporal section of `DATASET_PROGRESS.md`; non-Boreas entries
-such as `forest_dataset` are excluded. Each QA run samples up to 128 frames by
-default, resizes each to a maximum 512-pixel side, and asks all questions
-together. The job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour
-walltime, and `scratch/pg06+gdata/pg06` storage.
+**Purpose:** PBS batch script that runs Grok 4.7, Qwen3.8 Max, and DeepSeek V4
+Flash Vision Exp QA and grading for the Boreas sequence IDs in its `LISTS`
+array. The default array has 10 active Boreas entries from the Temporal section
+of `DATASET_PROGRESS.md`; non-Boreas entries such as `forest_dataset` are
+excluded. Each QA run samples up to 512 frames by default, resizes each to a
+maximum 512-pixel side, and asks all questions together. The job uses the
+`copyq` queue, one CPU, 8 GB of memory, a 3-hour walltime, and
+`scratch/pg06+gdata/pg06` storage.
 
 **Entry point:** For each selected sequence it runs two commands:
 
@@ -613,13 +615,15 @@ walltime, and `scratch/pg06+gdata/pg06` storage.
    and question file, then calls `QA.run_questionnaire` once per dataset. Temporal
    questions default to `<list>/temporal_outputs/narratives/questions.json`;
    sparse questions default to `<list>/sparse_outputs/events/questions.json`.
-    The API configuration is `configs/qa_kimi_k3.json`, with a default frame
-    budget of `128`, image side limit of `512`, and Chat Completions protocol.
-    It sends all sampled frames and questions in one request. After three retries
-    on a 5xx error, it retries with 50 fewer uniformly sampled frames, down to a
-    50-frame floor; metadata records the effective budget. `API_BATCH_SIZE`
-    applies only to Responses API configurations. The script prints the selected
-    protocol and its applicable frame handling.
+    By default, `CONFIGS` contains `configs/qa_grok_4_7.json`,
+    `configs/qa_qwen3_8_max.json`, and
+    `configs/qa_deepseek_v4_flash_vision_exp.json`. Grok 4.7 uses the Responses
+    API and sends sampled frames in batches of 10 before sending questions in the
+    same stored conversation. Qwen3.8 Max uses Anthropic Messages, while
+    DeepSeek V4 Flash Vision Exp uses Chat Completions; both send all sampled
+    frames and questions in one request. The default frame budget and image side
+    limit are `512`. The script prints the selected protocol and its applicable
+    frame handling.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
    answer file, and `--output` `graded_results.json` in the same output folder.
 
@@ -627,7 +631,7 @@ The default output path, relative to the directory from which the job was
 submitted, is:
 
 ```text
-model_answers/kimi-k3/<dataset>/temporal/
+model_answers/grok-4.7/<dataset>/temporal/
     question_answer.json
     graded_results.json
     final_mark.txt
@@ -638,12 +642,31 @@ the job to one dataset; edit the `LISTS` array to change the multi-dataset set.
 `BENCHMARK`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`,
 `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can also be
 overridden through the environment. `CONFIGS` is a space-separated list of
-config paths (default: the GPT-6 Luna, Kimi K3, Qwen3.8 Max, and DeepSeek V4 Pro configs); each listed model runs on every
-selected dataset in turn, and failed runs are recorded as `<model>/<list>`. `API_BATCH_SIZE` only applies to
+config paths (default: the Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision
+Exp configs); each listed model runs on every selected dataset in turn, and
+failed runs are recorded as `<model>/<list>`. `API_BATCH_SIZE` only applies to
 Responses API configurations. Before grading, the script checks that
 the API accepted every sampled frame. A failed dataset is recorded and the
 script continues with the next one, then exits nonzero if any dataset failed.
-Submit from the repository root with `qsub run_all_eval.sh`.
+Submit from the repository root with `qsub run_all_eval.sh`. The
+`submit_remaining_opencode_eval.sh` helper submits the same job with the
+remaining OpenCode Go QA configs, excluding GPT-6 Luna and Kimi K3.
+
+---
+
+### `submit_remaining_opencode_eval.sh`
+
+**Purpose:** Submission helper for the remaining OpenCode Go frame-QA models.
+It sets `CONFIGS` to Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp,
+then submits `run_all_eval.sh` with `qsub`. It excludes GPT-6 Luna and Kimi K3,
+which have already been evaluated.
+
+**Usage:** Run from any directory with the repository's submission environment
+available:
+
+```bash
+./submit_remaining_opencode_eval.sh
+```
 
 ---
 
@@ -1145,11 +1168,10 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 | `answer_eval.json` | — | Model settings for `run_model_answers.py` (not a pipeline config; no `task` or paths) |
 | `qa_gpt6_luna.json` | — | OpenCode Go GPT-6 Luna QA config using the Responses API with frame input |
-| `qa_kimi_k3.json` | — | Default `run_all_eval.sh` OpenCode Go Kimi K3 QA config using Chat Completions with frame input |
-| `qa_grok_4_7.json` | — | OpenCode Go Grok 4.7 QA config using the Responses API with frame input |
+| `qa_kimi_k3.json` | — | OpenCode Go Kimi K3 QA config using Chat Completions with frame input |
+| `qa_grok_4_7.json` | — | Default `run_all_eval.sh` OpenCode Go Grok 4.7 QA config using the Responses API with frame input |
 | `qa_qwen3_8_max.json` | — | OpenCode Go Qwen3.8 Max QA config using Anthropic Messages with frame input |
 | `qa_deepseek_v4_flash_vision_exp.json` | — | OpenCode Go DeepSeek V4 Flash Vision Exp QA config using Chat Completions with frame input |
-| `qa_deepseek_v4_pro.json` | — | OpenCode Go DeepSeek V4 Pro QA config using Chat Completions with frame input |
 | `qa_gemini_video.json` | — | QA runner config for Gemini using native MP4 input |
 | `qa_qwen3.json` | — | Local Qwen3-VL native-video QA config for Gadi |
 
