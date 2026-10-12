@@ -1,0 +1,279 @@
+{
+    "score": {
+        "correct": 6,
+        "total": 13,
+        "accuracy": 0.4615
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle passing the open chain-link gate and its stop sign, or the vehicle passing the parked van on the right?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "The vehicle passed the parked van on the right."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle passed the open chain-link gate and its stop sign."
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "pairwise_order",
+            "question": "Which happened first: a pedestrian walking across the foreground crosswalk from left to right with a green bag, or a white pickup traveling from left to right across the foreground?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A pedestrian carrying a green bag walked across the foreground crosswalk from left to right."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A pedestrian carrying a green bag walked across the foreground crosswalk from left to right."
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle passing the bus shelter on the right, or the vehicle passing the gray sedan parked on the right?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "The vehicle passed the bus shelter on the right."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle passed the bus shelter on the right."
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle passing the parked gray sedan on the left, or a pedestrian becoming visible on the snowy left roadside?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "The vehicle passed the parked gray sedan on the left."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle passed the parked gray sedan on the left."
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle emerging from beneath the bridge, or an orange car passing in the opposing lanes?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "The vehicle emerged from beneath the bridge."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle emerged from beneath the bridge."
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": false,
+            "selected_indices": [
+                2,
+                3,
+                1,
+                0
+            ],
+            "selected_answers": [
+                "The vehicle followed the snow-covered road around a left-hand bend.",
+                "The vehicle passed the cone and parked cars while drawing alongside the building.",
+                "The vehicle passed the parked van on the right.",
+                "The vehicle passed the open chain-link gate and its stop sign."
+            ],
+            "correct_indices": [
+                2,
+                3,
+                0,
+                1
+            ],
+            "correct_answers": [
+                "The vehicle followed the snow-covered road around a left-hand bend.",
+                "The vehicle passed the cone and parked cars while drawing alongside the building.",
+                "The vehicle passed the open chain-link gate and its stop sign.",
+                "The vehicle passed the parked van on the right."
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": false,
+            "selected_indices": [
+                3,
+                2,
+                1,
+                0
+            ],
+            "selected_answers": [
+                "A light-colored sedan crossed from right to left while the vehicle waited.",
+                "A dark SUV crossed from left to right in front of the waiting vehicle.",
+                "A pedestrian carrying a green bag walked across the foreground crosswalk from left to right.",
+                "The vehicle began rolling forward across the snowy crosswalk and into the intersection."
+            ],
+            "correct_indices": [
+                3,
+                1,
+                2,
+                0
+            ],
+            "correct_answers": [
+                "A light-colored sedan crossed from right to left while the vehicle waited.",
+                "A pedestrian carrying a green bag walked across the foreground crosswalk from left to right.",
+                "A dark SUV crossed from left to right in front of the waiting vehicle.",
+                "The vehicle began rolling forward across the snowy crosswalk and into the intersection."
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": false,
+            "selected_indices": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "selected_answers": [
+                "The vehicle turned right at the intersection and proceeded along the residential street.",
+                "The vehicle passed the roadside speed-hump warning sign.",
+                "The vehicle passed the parked silver hatchback on the left.",
+                "The vehicle approached a person shoveling snow beside the left side of the road."
+            ],
+            "correct_indices": [
+                3,
+                1,
+                0,
+                2
+            ],
+            "correct_answers": [
+                "The vehicle approached a person shoveling snow beside the left side of the road.",
+                "The vehicle passed the roadside speed-hump warning sign.",
+                "The vehicle turned right at the intersection and proceeded along the residential street.",
+                "The vehicle passed the parked silver hatchback on the left."
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "before_after",
+            "question": "What happened immediately before the vehicle passed the open chain-link gate and its stop sign?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "The vehicle passed the parked minivan on the right while approaching a stop sign."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle passed the parked minivan on the right while approaching a stop sign."
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle passed the bus shelter on the right?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "The vehicle passed the gray sedan parked on the right."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "An oncoming car approached in the opposite lane and passed the vehicle."
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "before_after",
+            "question": "What happened immediately before the vehicle emerged from beneath the bridge?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "The vehicle approached the advertising-covered bridge and began passing beneath it."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle approached the advertising-covered bridge and began passing beneath it."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle passed the parked gray sedan on the left?",
+            "correct": false,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A pedestrian became visible on the snowy left roadside."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "An oncoming dark car approached and passed the vehicle on the left."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle turned right from the intersection onto the snow-covered road?",
+            "correct": false,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "The vehicle passed the roadside sign and approached the building and parking area."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "An oncoming car approached and passed the vehicle."
+            ]
+        }
+    ]
+}

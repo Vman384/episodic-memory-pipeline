@@ -1,0 +1,243 @@
+{
+    "score": {
+        "correct": 6,
+        "total": 11,
+        "accuracy": 0.5455
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "pairwise_order",
+            "question": "Which happened first: a yellow bus passing in the opposing lanes beyond the median, or a gray SUV traveling across the intersection from right to left?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A yellow bus passed in the opposing lanes beyond the median."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A yellow bus passed in the opposing lanes beyond the median."
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "pairwise_order",
+            "question": "Which happened first: a white sedan gradually pulling ahead in the left lane, or an orange SUV passing in the opposing lanes?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A white sedan gradually pulled ahead in the left lane."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A white sedan gradually pulled ahead in the left lane."
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "pairwise_order",
+            "question": "Which happened first: the school bus approaching along the road ahead while the dashcam vehicle remained stopped, or the traffic signals facing the camera changing from red to green?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "The school bus approached along the road ahead while the dashcam vehicle remained stopped."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The school bus approached along the road ahead while the dashcam vehicle remained stopped."
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "pairwise_order",
+            "question": "Which happened first: a dark van advancing from the right into the intersection, or a dark sedan traveling across the foreground from right to left?",
+            "correct": false,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A dark sedan traveled across the foreground from right to left."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A dark van advanced from the right into the intersection."
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "pairwise_order",
+            "question": "Which happened first: a silver car passing on the opposite carriageway, or a dark car advancing alongside in the left lane inside the tunnel?",
+            "correct": false,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A dark car advanced alongside in the left lane inside the tunnel."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A silver car passed on the opposite carriageway."
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": true,
+            "selected_indices": [
+                2,
+                3,
+                0,
+                1
+            ],
+            "selected_answers": [
+                "The vehicle advanced past the traffic-signal warning sign on the right shoulder.",
+                "An orange SUV passed in the opposing lanes to the left.",
+                "A white sedan traveled alongside in the left lane and gradually pulled ahead.",
+                "A yellow bus passed in the opposing lanes beyond the median."
+            ],
+            "correct_indices": [
+                2,
+                3,
+                0,
+                1
+            ],
+            "correct_answers": [
+                "The vehicle advanced past the traffic-signal warning sign on the right shoulder.",
+                "An orange SUV passed in the opposing lanes to the left.",
+                "A white sedan traveled alongside in the left lane and gradually pulled ahead.",
+                "A yellow bus passed in the opposing lanes beyond the median."
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": true,
+            "selected_indices": [
+                3,
+                1,
+                2,
+                0
+            ],
+            "selected_answers": [
+                "A silver minivan traveled across the intersection from left to right and left the frame.",
+                "A gray sedan crossed the intersection from right to left in front of the stationary camera vehicle.",
+                "The traffic signals facing the camera changed from red to green.",
+                "The school bus moved across the intersection toward the right."
+            ],
+            "correct_indices": [
+                3,
+                1,
+                2,
+                0
+            ],
+            "correct_answers": [
+                "A silver minivan traveled across the intersection from left to right and left the frame.",
+                "A gray sedan crossed the intersection from right to left in front of the stationary camera vehicle.",
+                "The traffic signals facing the camera changed from red to green.",
+                "The school bus moved across the intersection toward the right."
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": false,
+            "selected_indices": [
+                2,
+                1,
+                0,
+                3
+            ],
+            "selected_answers": [
+                "A white crossover moved from left to right, with a red sedan following.",
+                "A dark SUV traveled from the center-right across the intersection toward the left.",
+                "A dark van advanced from the right into the intersection and proceeded leftward.",
+                "A dark sedan traveled across the foreground from right to left."
+            ],
+            "correct_indices": [
+                1,
+                2,
+                0,
+                3
+            ],
+            "correct_answers": [
+                "A dark SUV traveled from the center-right across the intersection toward the left.",
+                "A white crossover moved from left to right, with a red sedan following.",
+                "A dark van advanced from the right into the intersection and proceeded leftward.",
+                "A dark sedan traveled across the foreground from right to left."
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "before_after",
+            "question": "What happened immediately before the vehicle advanced past the traffic-signal warning sign on the right shoulder?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A flatbed truck crossed the intersection from left to right and moved out of view."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A flatbed truck crossed the intersection from left to right and moved out of view."
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "before_after",
+            "question": "What happened immediately after the dark sedan traveled across the foreground from right to left and progressively left the frame?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A yellow school bus approached along the road ahead while the dashcam vehicle remained stopped."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The traffic signals facing the camera changed from red to green."
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "before_after",
+            "question": "What happened immediately after the silver minivan traveled across the intersection from left to right and left the frame?",
+            "correct": false,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A gray sedan crossed the intersection from right to left in front of the stationary camera vehicle."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A dark SUV traveled across the intersection from left to right."
+            ]
+        }
+    ]
+}
