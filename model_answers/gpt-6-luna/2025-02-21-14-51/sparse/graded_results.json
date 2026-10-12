@@ -1,0 +1,279 @@
+{
+    "score": {
+        "correct": 12,
+        "total": 15,
+        "accuracy": 0.8
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Was a small airplane visible high above the snowy residential street?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Did a box truck sit angled across much of the road near a junction?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Was a dark bird perched on a traffic-signal arm above an intersection?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Did the vehicle pass a roadside sign reading \u201cAUTHORIZED PARKING ONLY\u201d beside a University of Toronto directory?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "existence",
+            "question": "Was a large rear panel on a UPS truck swung outward while the truck was on the road?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a moose step onto the snowy road from the trees?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Did a fallen tree block one lane of the road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Did a deer cross in front of the vehicle near the roadside?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "deceptive",
+            "question": "Was a road crew using a snowplow to clear the lane ahead?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "deceptive",
+            "question": "Did a cyclist ride along the snowy shoulder?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A dark bird perched on the horizontal arm of a traffic signal."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A dark bird perched on the horizontal arm of a traffic signal."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A large, open manhole or pothole was visible in the right half of the travel lane."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A large, open manhole or pothole was visible in the right half of the travel lane."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A person in a bright yellow jacket stood beside the snowbank along a right-side fence."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A person in a bright yellow jacket stood beside the snowbank along a right-side fence."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A small airplane was visible high in the clear sky above the road."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A small airplane was visible high in the clear sky above the road."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A vehicle on the left was almost entirely enclosed beneath a light-colored protective cover."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A vehicle on the left was almost entirely enclosed beneath a light-colored protective cover."
+            ]
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+==============================================
+Running sparse questions stage for: boreas-2025-02-21-14-51
+==============================================
+
+======================================================================================
+                  Resource Usage on 2026-10-11 22:27:38:
+   Job Id:             180991756.gadi-pbs
+   Project:            pg06
+   Exit Status:        1
+   Service Units:      0.01
+   NCPUs Requested:    1                   CPU Time Used: 00:00:03        
+   Memory Requested:   8.0GB                 Memory Used: 67.37MB         
+   Walltime Requested: 06:45:00            Walltime Used: 00:00:06        
+   JobFS Requested:    100.0MB                JobFS Used: 0B              
+======================================================================================

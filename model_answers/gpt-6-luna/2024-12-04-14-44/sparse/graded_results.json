@@ -1,0 +1,279 @@
+{
+    "score": {
+        "correct": 14,
+        "total": 15,
+        "accuracy": 0.9333
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did a black SUV enter from the left and drive parallel to the camera vehicle in the adjacent lane?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Did a black car overtake the camera vehicle while it was driving through a tunnel?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Did the vehicle emerge from a dark tunnel into daylight, with trees along the highway and a yellow school bus visible on the left?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Did a yellow school bus approach an intersection from the cross street?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "existence",
+            "question": "Was a worker in a high-visibility vest standing on the right sidewalk holding a stop sign near a utility box and yellow dumpster?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a delivery van pull onto the road from a forest-side turnout?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Did a motorcycle overtake the camera vehicle inside the tunnel?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Did a deer cross the highway just after the vehicle exited the tunnel?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "deceptive",
+            "question": "Did a red pickup truck approach the intersection from the cross street?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "deceptive",
+            "question": "Did a road worker in a reflective vest carry a traffic cone across the roadway?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "A black SUV entered from the left and drove parallel to the camera vehicle in the adjacent lane."
+            ],
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "A black SUV entered from the left and drove parallel to the camera vehicle in the adjacent lane."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A yellow school bus appeared in the distance, approaching the intersection from the cross street."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A yellow school bus appeared in the distance, approaching the intersection from the cross street."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "noteworthy",
+            "question": "Which event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "The vehicle emerged from a dark tunnel into daylight, revealing a tree-lined highway and a yellow school bus on the left."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "The vehicle emerged from a dark tunnel into daylight, revealing a tree-lined highway and a yellow school bus on the left."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "noteworthy",
+            "question": "Which event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A worker in a high-visibility vest stood on the right sidewalk holding a stop sign near a utility box and yellow dumpster."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A worker in a high-visibility vest stood on the right sidewalk holding a stop sign near a utility box and yellow dumpster."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "noteworthy",
+            "question": "Which event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "A black car entered from the left and overtook the camera vehicle in the tunnel."
+            ],
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "A black car entered from the left and overtook the camera vehicle in the tunnel."
+            ]
+        }
+    ]
+}

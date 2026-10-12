@@ -1,0 +1,12 @@
+
+======================================================================================
+                  Resource Usage on 2026-10-11 21:40:38:
+   Job Id:             180989674.gadi-pbs
+   Project:            pg06
+   Exit Status:        1
+   Service Units:      0.00
+   NCPUs Requested:    1                   CPU Time Used: 00:00:00        
+   Memory Requested:   8.0GB                 Memory Used: 73.8MB          
+   Walltime Requested: 03:00:00            Walltime Used: 00:00:02        
+   JobFS Requested:    100.0MB                JobFS Used: 0B              
+======================================================================================
