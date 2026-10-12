@@ -121,11 +121,21 @@ echo "Benchmark: $BENCHMARK"
 echo "Datasets: ${#LISTS[@]} Boreas sequences"
 echo "Frame budget: $MAX_FRAMES; max image side: $MAX_IMAGE_SIZE px"
 echo "API protocol: $API_PROTOCOL"
-if [[ "$API_PROTOCOL" == "responses" ]]; then
-  echo "Responses API batch size: $API_BATCH_SIZE"
-else
-  echo "Chat Completions sends all sampled frames in one request"
-fi
+case "$API_PROTOCOL" in
+  responses)
+    echo "Responses API batch size: $API_BATCH_SIZE"
+    ;;
+  chat_completions)
+    echo "Chat Completions sends all sampled frames in one request"
+    ;;
+  anthropic_messages)
+    echo "Anthropic Messages sends all sampled frames in one request"
+    ;;
+  *)
+    echo "Unsupported API protocol in config: $API_PROTOCOL" >&2
+    exit 1
+    ;;
+esac
 
 FAILED_LISTS=()
 for LIST in "${LISTS[@]}"; do

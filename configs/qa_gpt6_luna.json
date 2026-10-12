@@ -1,6 +1,7 @@
 {
     "model": "gpt-6-luna",
     "backend": "api",
+    "api_protocol": "responses",
     "input_mode": "frames",
     "api_base_url": "https://opencode.ai/zen/go/v1",
     "api_key_env": "OPENCODE_API_KEY",
