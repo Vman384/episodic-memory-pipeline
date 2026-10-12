@@ -13,7 +13,7 @@ The top-level runner accepts four benchmark modes. `sparse` and `temporal` are c
 | `spatial` | Not implemented |
 | `counting` | Not implemented |
 
-Both connected branches support local vLLM and OpenAI-compatible API inference. The supplied sparse-event configuration uses local vLLM with `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` and four GPUs; the supplied temporal configuration uses local vLLM with `Qwen/Qwen2.5-VL-72B-Instruct` and also requires four GPUs. Set `backend` and `model` in a configuration to switch that run to the OpenAI-compatible API.
+Both connected branches support local vLLM and API inference through OpenAI-compatible or Anthropic Messages protocols. The supplied sparse-event configuration uses local vLLM with `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` and four GPUs; the supplied temporal configuration uses local vLLM with `Qwen/Qwen2.5-VL-72B-Instruct` and also requires four GPUs. Set `backend` and `model` in a configuration to switch that run to an API model.
 
 ## Setup
 
@@ -116,7 +116,7 @@ python main.py --mode counting
 | `pipeline/ConfigLoader.py` | Shared JSON configuration loader |
 | `pipeline/frame_parser.py` | Splits timestamp-named frame images into sections |
 | `pipeline/image_preprocessor.py` | Re-encodes frames as resized JPEGs while sections are built |
-| `pipeline/AIParser.py` | Configurable local vLLM or OpenAI-compatible API wrapper |
+| `pipeline/AIParser.py` | Configurable local vLLM, OpenAI-compatible API, or Anthropic Messages wrapper |
 | `pipeline/prompts/*.txt` | Prompt files for benchmark tasks |
 | `configs/*.json` | Pipeline configuration files |
 | `download_boreas.pbs` | Downloads only `camera/` for its explicit Boreas sequence list, skipping sequences whose destination camera folder already exists |
@@ -130,10 +130,14 @@ python main.py --mode counting
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
 | `count_questions.sh` | Counts questions across sparse and temporal output files on Gadi |
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
+| `tests/test_anthropic_api.py` | Unit tests for Anthropic Messages request formatting and QA frame dispatch |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by legacy `run_model_answers.py` |
-| `configs/qa_kimi_k3.json` | Default OpenCode Go Kimi K3 frame-input configuration used by `run_all_eval.sh` |
-| `configs/qa_gpt6_luna.json` | GPT-6 Luna frame-input configuration for the QA runner |
+| `configs/qa_kimi_k3.json` | OpenCode Go Kimi K3 frame-input config using Chat Completions; default for `run_all_eval.sh` |
+| `configs/qa_gpt6_luna.json` | OpenCode Go GPT-6 Luna frame-input config using the Responses API |
+| `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API |
+| `configs/qa_qwen3_8_max.json` | OpenCode Go Qwen3.8 Max frame-input config using Anthropic Messages |
+| `configs/qa_deepseek_v4_flash_vision_exp.json` | OpenCode Go DeepSeek V4 Flash Vision Exp frame-input config using Chat Completions |
 | `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
 | `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
 
@@ -190,8 +194,8 @@ The legacy `run_model_answers.py` script is retained for compatibility. Its
 `--batch_size` mode sends every frame in batches and ignores its frame cap; use
 the QA command above for normal evaluation. Responses API frame mode adds sampled
 image batches to one stored conversation, then sends the full question list.
-Chat Completions frame mode sends all sampled images and the full question list
-in one request.
+Chat Completions and Anthropic Messages frame modes send all sampled images and
+the full question list in one request.
 
 `answers.json` contains model and input metadata, question order, an `answers`
 list with each `question_id` and selected `answer_indices`, and the raw model
@@ -218,9 +222,10 @@ Each sequence uses up to 128 frames by default, resized to a maximum side of
 512 pixels. `MAX_FRAMES` can override the frame budget if the API accepts a
 larger request.
 Kimi K3 receives all sampled frames and the questions together in one Chat
-Completions request. `API_BATCH_SIZE` only applies to Responses API configs and
-does not split this request. Results are saved under the directory from which
-the job was submitted:
+Completions request. After three retries on a 5xx error, it retries with 50 fewer
+uniformly sampled frames, down to 50; the answers metadata records that change.
+`API_BATCH_SIZE` only applies to Responses API configs and does not split this
+request. Results are saved under the directory from which the job was submitted:
 
 ```text
 model_answers/kimi-k3/<dataset>/temporal/
@@ -273,10 +278,14 @@ the MP4 or camera folder, uniformly across elapsed video time, and resizes each
 to a longest side of at most 512 pixels while preserving aspect ratio. Use
 `--frame-budget` (alias: `--max-frames`) to change the maximum number of frames;
 `--max-image-size` adjusts the resize limit. `--frame-budget 0` uses every frame.
-The model config's `api_protocol` selects the API request format. Responses API
-configs send sampled frames in stored-conversation batches and then send the
-questions. Chat Completions configs send all sampled frames with the questions
-in a single request; `api_batch_size` applies only to Responses API mode.
+The model config's `api_protocol` selects `responses`, `chat_completions`, or
+`anthropic_messages`. Responses API configs send sampled frames in
+stored-conversation batches and then send the questions. Chat Completions and
+Anthropic Messages configs send all sampled frames with the questions in one
+request; `api_batch_size` applies only to Responses API mode. Single-request
+configs can set `api_max_retries`; after exhausting that many retries on a 5xx
+error, the runner reduces the uniform frame sample by 50 and retries down to 50
+frames. Output metadata records the initial and effective frame budgets.
 `configs/qa_gemini_video.json`
 uses `GEMINI_API_KEY` and the
 Gemini Files API to upload the original MP4; the runner waits for provider-side
@@ -464,7 +473,7 @@ below and choose values based on the spatial detail needed by the benchmark:
 | `skip` | Number of frames from a section's last sampled frame to the next section's first frame. Defaults to `step` when omitted, which samples without gaps; use a larger value to leave unsampled gaps between sections. |
 | `move` | If `true`, moves frames into sections; if `false` or omitted, copies them. Keep it `false` when the original frames must be preserved. |
 | `model` | Model used for the run, such as `Qwen/Qwen2.5-VL-72B-Instruct`. Pick a vision-language model that supports image inputs and has enough context for each section. |
-| `backend` | Inference backend: `local` for vLLM or `api` for the OpenAI-compatible API. Choose `local` for an available local model and GPUs, otherwise use `api`. |
+| `backend` | Inference backend: `local` for vLLM or `api` for an OpenAI-compatible or Anthropic Messages API. Choose `local` for an available local model and GPUs, otherwise use `api`. |
 | `api_base_url` | OpenAI-compatible API endpoint, used only with `backend: "api"`. Set it to the endpoint provided by the API service. |
 | `api_key_env` | Name of the environment variable containing the API key, used only with the API backend. Choose any variable name, then export that variable before running. |
 | `temperature` | Controls response variation. Use a low value, such as `0` to `0.4`, for consistent spatial observations and comparisons. |
@@ -496,8 +505,8 @@ section coverage matters less.
 | `image_quality` | JPEG quality, from `1` to `95`, used when frames are re-encoded for sections. The supplied sparse value is `80`. Setting this alone converts frames to JPEG without resizing; if both image settings are omitted, frames are copied unchanged. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
 | `model` | Model used for extraction and later sparse stages. Pick a model that accepts the selected backend and image inputs. |
-| `backend` | `local` for vLLM or `api` for the OpenAI-compatible Responses API. The configuration selects the backend for a run; the batch scripts in `scripts/` do not override it. The backend must match the model and available infrastructure. |
-| `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
+| `backend` | `local` for vLLM or `api` for a supported API protocol. The configuration selects the backend for a run; the batch scripts in `scripts/` do not override it. The backend must match the model and available infrastructure. |
+| `api_base_url` | API base URL for the selected protocol. Configure this only when using `backend: "api"`. |
 | `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
 | `temperature` | Local vLLM sampling temperature. It is ignored by the supplied API configuration; use a low value if switching sparse extraction to local vLLM. |
 | `api_temperature` | API sampling temperature, used only with the API backend. Keep it `null` for API models that do not accept the temperature parameter, such as `gpt-5.6-luna`. |
@@ -531,8 +540,8 @@ context.
 | `image_quality` | JPEG quality, from `1` to `95`, used when frames are re-encoded for sections. The supplied value `80` converts sampled PNG frames to JPEG without resizing. |
 | `move` | Controls whether input frames are moved or copied into sections. Leave it `false` or omit it unless the source frames can be removed. |
 | `model` | Model used for extraction and later temporal stages. The supplied configuration uses `Qwen/Qwen2.5-VL-72B-Instruct` locally. |
-| `backend` | Use `local` for the supplied four-GPU vLLM configuration or `api` for a Responses API model. The backend must match the model and available infrastructure. |
-| `api_base_url` | OpenAI-compatible Responses API endpoint. Configure this only when using `backend: "api"`. |
+| `backend` | Use `local` for the supplied four-GPU vLLM configuration or `api` for a supported API model. The backend must match the model and available infrastructure. |
+| `api_base_url` | API base URL for the selected protocol. Configure this only when using `backend: "api"`. |
 | `api_key_env` | Environment variable name containing the API key. Export the matching variable before an API run, for example `OPENCODE_API_KEY`. |
 | `temperature` | Local vLLM sampling temperature. Keep it `null` to use the local `0.2` default; use a low value when deterministic extraction is preferred. |
 | `api_temperature` | API sampling temperature, used only with the API backend. Keep it `null` for models that do not accept the parameter. |
@@ -580,11 +589,14 @@ both reasoning and visible output tokens.
 The API wrapper sends a stable per-run `x-opencode-session` header and an
 identifying user agent, as required by OpenCode Go for third-party clients.
 Calls are sent sequentially, one at a time. Connection/time-out errors and
-HTTP 408, 409, 429, and 5xx errors are retried indefinitely with exponential
-backoff and jitter, capped at five minutes unless the server's `Retry-After`
-header asks for a longer delay. Each retry logs the model, endpoint, status,
-response body, and provider request ID when available. Other errors, such as an
-invalid API key or an explicit exhausted-quota response, fail immediately.
+HTTP 408, 409, 429, and 5xx errors are retried with exponential backoff and
+jitter, capped at five minutes unless the server's `Retry-After` header asks
+for a longer delay. Retries continue indefinitely unless `api_max_retries` is
+set in the model config. For single-request frame modes, exhausting retries on
+a 5xx triggers uniform frame reduction before the next request. Each retry logs
+the model, endpoint, status, response body, and provider request ID when
+available. Other errors, such as an invalid API key or an explicit
+exhausted-quota response, fail immediately.
 Gadi's PBS walltime still applies, so a job can be terminated by the scheduler
 if an outage lasts beyond its requested walltime.
 

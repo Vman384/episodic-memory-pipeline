@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from pipeline.AIParser import AIParser
+from pipeline.AIParser import AIParser, APIRequestError
 from pipeline.timeframe_converter import parse_frame_timestamp
 
 
@@ -71,6 +71,8 @@ class VideoAIParser:
 
     INPUT_MODES = {"frames", "native_video"}
     IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+    ADAPTIVE_FRAME_REDUCTION = 50
+    MIN_ADAPTIVE_FRAME_BUDGET = 50
 
     def __init__(self, config: dict, input_mode: str | None = None):
         configured_mode = input_mode or config.get("input_mode", "frames")
@@ -407,54 +409,135 @@ class VideoAIParser:
             raise ValueError("api_batch_size must be at least 1")
 
         total_frames = len(frame_paths)
-        if self.ai_parser.api_protocol == "chat_completions":
-            sampled_frames = metadata.get("frames_used", total_frames)
-            batch_metadata = {
-                **metadata,
-                "provider": "api",
-                "api_protocol": "chat_completions",
-                "api_batch_size": total_frames,
-                "frames_sampled": sampled_frames,
-                "frames_received": 0,
-                "frames_used": 0,
-                "api_batches": [],
-            }
-            try:
-                response = self.ai_parser.call_vlm_images(
-                    "These sampled frames are from the video in chronological "
-                    "order. Consider them together as one sequence.\n\n"
-                    + prompt,
-                    frame_paths,
-                    include_frame_manifest=False,
-                )
-            except RuntimeError as error:
-                print(f"Chat Completions request failed: {error}", flush=True)
-                batch_metadata["error"] = str(error)
-                batch_metadata["api_batches"].append(
+        single_request_protocols = {"chat_completions", "anthropic_messages"}
+        if self.ai_parser.api_protocol in single_request_protocols:
+            protocol_name = (
+                "Anthropic Messages"
+                if self.ai_parser.api_protocol == "anthropic_messages"
+                else "Chat Completions"
+            )
+            initially_sampled = metadata.get("frames_used", total_frames)
+            selected_indices = list(range(total_frames))
+            attempts = []
+            reductions = []
+            batch_prompt = (
+                "These sampled frames are from the video in chronological "
+                "order. Consider them together as one sequence.\n\n"
+                + prompt
+            )
+
+            while True:
+                current_frame_count = len(selected_indices)
+                current_frame_paths = [frame_paths[index] for index in selected_indices]
+                try:
+                    response = self.ai_parser.call_vlm_images(
+                        batch_prompt,
+                        current_frame_paths,
+                        include_frame_manifest=False,
+                    )
+                except RuntimeError as error:
+                    status_code = getattr(error, "status_code", None)
+                    try:
+                        status_code = int(status_code)
+                    except (TypeError, ValueError):
+                        status_code = None
+
+                    attempts.append(
+                        {
+                            "frames_from": 1,
+                            "frames_to": current_frame_count,
+                            "status": "failed",
+                            "status_code": status_code,
+                            "retry_count": getattr(error, "retry_count", 0),
+                            "error": str(error),
+                        }
+                    )
+
+                    next_frame_count = max(
+                        min(self.MIN_ADAPTIVE_FRAME_BUDGET, total_frames),
+                        current_frame_count - self.ADAPTIVE_FRAME_REDUCTION,
+                    )
+                    if (
+                        isinstance(error, APIRequestError)
+                        and error.retryable
+                        and status_code is not None
+                        and status_code >= 500
+                        and next_frame_count < current_frame_count
+                    ):
+                        local_indices = _uniform_timestamp_indices(
+                            range(current_frame_count),
+                            next_frame_count,
+                        )
+                        selected_indices = [
+                            selected_indices[index] for index in local_indices
+                        ]
+                        reductions.append(
+                            {
+                                "frames_before": current_frame_count,
+                                "frames_after": next_frame_count,
+                                "status_code": status_code,
+                                "retries": error.retry_count,
+                            }
+                        )
+                        print(
+                            f"Repeated {status_code} failures after "
+                            f"{error.retry_count} retries; retrying with "
+                            f"{next_frame_count} uniformly sampled frames",
+                            flush=True,
+                        )
+                        continue
+
+                    selected_metadata = self._selected_frame_metadata(
+                        metadata,
+                        selected_indices,
+                        total_frames,
+                        initially_sampled,
+                        reductions,
+                    )
+                    batch_metadata = {
+                        **selected_metadata,
+                        "provider": "api",
+                        "api_protocol": self.ai_parser.api_protocol,
+                        "api_batch_size": current_frame_count,
+                        "frames_sampled": current_frame_count,
+                        "frames_received": 0,
+                        "frames_used": 0,
+                        "api_batches": attempts,
+                    }
+                    batch_metadata["error"] = str(error)
+                    print(f"{protocol_name} request failed: {error}", flush=True)
+                    return "", batch_metadata
+
+                attempts.append(
                     {
                         "frames_from": 1,
-                        "frames_to": total_frames,
-                        "status": "failed",
-                        "error": str(error),
+                        "frames_to": current_frame_count,
+                        "status": "ok",
                     }
                 )
-                return "", batch_metadata
-
-            batch_metadata["frames_received"] = total_frames
-            batch_metadata["frames_used"] = total_frames
-            batch_metadata["api_batches"].append(
-                {
-                    "frames_from": 1,
-                    "frames_to": total_frames,
-                    "status": "ok",
+                selected_metadata = self._selected_frame_metadata(
+                    metadata,
+                    selected_indices,
+                    total_frames,
+                    initially_sampled,
+                    reductions,
+                )
+                batch_metadata = {
+                    **selected_metadata,
+                    "provider": "api",
+                    "api_protocol": self.ai_parser.api_protocol,
+                    "api_batch_size": current_frame_count,
+                    "frames_sampled": current_frame_count,
+                    "frames_received": current_frame_count,
+                    "frames_used": current_frame_count,
+                    "api_batches": attempts,
                 }
-            )
-            print(
-                f"Sampled frames 1-{total_frames} accepted in one Chat "
-                "Completions request",
-                flush=True,
-            )
-            return response, batch_metadata
+                print(
+                    f"Sampled frames 1-{current_frame_count} accepted in one "
+                    f"{protocol_name} request",
+                    flush=True,
+                )
+                return response, batch_metadata
 
         previous_response_id = None
         frames_received = 0
@@ -534,6 +617,33 @@ class VideoAIParser:
             return "", metadata
         metadata["api_question_usage"] = self._response_usage(response)
         return response.output_text, metadata
+
+    @staticmethod
+    def _selected_frame_metadata(
+        metadata: dict,
+        selected_indices: list[int],
+        original_frame_count: int,
+        initially_sampled: int,
+        reductions: list[dict],
+    ) -> dict:
+        selected_metadata = dict(metadata)
+        for field in (
+            "sampled_frame_indices",
+            "sampled_frame_names",
+            "sampled_timestamps_seconds",
+        ):
+            values = metadata.get(field)
+            if isinstance(values, list) and len(values) == original_frame_count:
+                selected_metadata[field] = [values[index] for index in selected_indices]
+
+        if reductions:
+            selected_metadata["frames_initially_sampled"] = initially_sampled
+            selected_metadata["requested_frame_budget"] = metadata.get(
+                "frame_budget", initially_sampled
+            )
+            selected_metadata["frame_budget"] = len(selected_indices)
+            selected_metadata["adaptive_frame_reductions"] = reductions
+        return selected_metadata
 
     def call_frames_dir(
         self,

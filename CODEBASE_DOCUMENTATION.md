@@ -25,7 +25,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 2. **Timeframe Converter** (`pipeline/timeframe_converter.py`) — Converts temporal event `start_frame` and `end_frame` values into elapsed video seconds relative to the earliest frame in the source directory.
 
-3. **AI Parser** (`pipeline/AIParser.py`) — Configurable local vLLM or OpenAI-compatible API wrapper. `call_llm` handles text prompts and `call_vlm` handles multiple images from a section directory.
+3. **AI Parser** (`pipeline/AIParser.py`) — Configurable local vLLM, OpenAI-compatible API, or Anthropic Messages API wrapper. `call_llm` handles text prompts and `call_vlm` handles multiple images from a section directory.
 
 4. **Sparse Event Pipeline** (`pipeline/SparseEventPipeline.py`) — `SparseEventPipeline` reads a JSON config file, creates `FrameParser` and `AIParser`, partitions frames, and runs staged section extraction, LLM review/filtering, and question generation.
 
@@ -52,7 +52,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 - The dedicated benchmarks for categories 2–4 (attribute perception, spatial reasoning, counting).
 - `temporal_event.pbs` runs the local vLLM temporal configuration on four GPUs.
 - A **User Interface**, **Hybrid Search Module**, and **Reporting frontend** are not implemented.
-- No test suite, CI/CD, Dockerfile, or Makefile.
+- A focused `unittest` suite covers API message formatting and QA dispatch; no broad test suite, CI/CD, Dockerfile, or Makefile.
 
 ---
 
@@ -76,6 +76,8 @@ episodic-memory-pipeline/
 │   ├── run_questionnaire.py
 │   └── prompts/answer_questions.txt
 ├── test_gateway.sh
+├── tests/
+│   └── test_anthropic_api.py
 ├── requirements.txt
 ├── test_vlm.py
 ├── vllm.pbs
@@ -108,6 +110,9 @@ episodic-memory-pipeline/
 │   ├── answer_eval.json
 │   ├── qa_gpt6_luna.json
 │   ├── qa_kimi_k3.json
+│   ├── qa_grok_4_7.json
+│   ├── qa_qwen3_8_max.json
+│   ├── qa_deepseek_v4_flash_vision_exp.json
 │   ├── qa_gemini_video.json
 │   ├── qa_qwen3.json
 │   └── .temporal_events.json
@@ -610,7 +615,9 @@ walltime, and `scratch/pg06+gdata/pg06` storage.
    sparse questions default to `<list>/sparse_outputs/events/questions.json`.
     The API configuration is `configs/qa_kimi_k3.json`, with a default frame
     budget of `128`, image side limit of `512`, and Chat Completions protocol.
-    It sends all sampled frames and questions in one request; `API_BATCH_SIZE`
+    It sends all sampled frames and questions in one request. After three retries
+    on a 5xx error, it retries with 50 fewer uniformly sampled frames, down to a
+    50-frame floor; metadata records the effective budget. `API_BATCH_SIZE`
     applies only to Responses API configurations. The script prints the selected
     protocol and its applicable frame handling.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
@@ -706,20 +713,24 @@ elapsed video time, resizes each to a longest side of at most 512 pixels while
 preserving aspect ratio, and sends them through `pipeline/AIParser.py`. It can
 sample from an MP4 or from an existing `--frames-dir` of timestamp-named images.
 `--frame-budget` (alias `--max-frames`) controls the maximum; `0` explicitly
-uses all available frames. `api_protocol` selects `responses` (the default) or
-`chat_completions`. Responses API frame mode sends sampled images in
-stored-conversation batches, then asks the full question list in one final
-request. Chat Completions frame mode sends all sampled images and questions in
-one request; `api_batch_size` is not used in this mode. `--max-image-size` and
-`--api-batch-size` also adjust frame mode.
+uses all available frames. `api_protocol` selects `responses` (the default),
+`chat_completions`, or `anthropic_messages`. Responses API frame mode sends
+sampled images in stored-conversation batches, then asks the full question list
+in one final request. Chat Completions and Anthropic Messages frame modes send
+all sampled images and questions in one request; `api_batch_size` is not used in
+those modes. Set `api_max_retries` to cap transient retries. After that limit,
+repeated 5xx errors in these single-request modes cause the runner to uniformly
+remove 50 frames and retry, down to a 50-frame floor. Metadata records the
+original and effective frame budgets and each reduction.
 Sampling metadata records the selected frame names/indices and timestamps,
 frame budget, and image-size limit. Responses API usage metadata includes token
 counts for the image batches and final question request.
 Native-video mode passes the MP4 through the selected model's video stack.
 The local Qwen3-VL adapter uses `qwen-vl-utils` with vLLM. The Gemini adapter
 uses the Gemini Files API, waits for provider-side processing, and requires
-`google-genai` plus the key named by `api_key_env`. GPT-6 Luna and Kimi K3 use
-frame mode in the supplied configs.
+`google-genai` plus the key named by `api_key_env`. GPT-6 Luna, Kimi K3, Grok
+4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp use frame mode in the
+supplied configs.
 
 `QuestionnaireParser.py` accepts the `{"questions": [...]}` structures from the
 sparse and temporal question-generation prompts. It shuffles question objects
@@ -767,9 +778,9 @@ the vLLM settings for `backend: "local"`) to test a different model.
 
 ### `pipeline/AIParser.py`
 
-**Purpose:** Provides a small interface for local vLLM or OpenAI-compatible API text and multi-image generation.
+**Purpose:** Provides a small interface for local vLLM, OpenAI-compatible API, or Anthropic Messages text and multi-image generation.
 
-**Key Dependencies:** `vllm` for local mode, `openai` for API mode, `Pillow`, and `pathlib.Path`.
+**Key Dependencies:** `vllm` for local mode, `openai` or `anthropic` for API mode, `Pillow`, and `pathlib.Path`.
 
 **Class: `AIParser`**
 
@@ -781,26 +792,29 @@ The relevant configuration keys are:
 
 | Key | Description |
 |-----|-------------|
-| `backend` | `local` for vLLM or `api` for the OpenAI-compatible Responses API |
+| `backend` | `local` for vLLM or `api` for the configured API protocol |
+| `api_protocol` | `responses`, `chat_completions`, or `anthropic_messages`; defaults to `responses` |
 | `model` | Local model path/name or API model identifier |
 | `temperature` | Local vLLM sampling temperature; falls back to `0.2` when `null` |
-| `api_temperature` | Responses API sampling temperature; omitted from the request when `null` or unset |
-| `reasoning_effort` | Optional Responses API reasoning effort, such as `low` or `none` |
+| `api_temperature` | API sampling temperature; omitted from the request when `null` or unset |
+| `reasoning_effort` | Optional reasoning effort for Responses or Chat Completions APIs, such as `low` or `none` |
+| `api_max_retries` | Optional retry limit for transient API errors; unset retries indefinitely |
 | `max_tokens` | Maximum generated output tokens |
 | `enforce_eager` | vLLM CUDA graph setting used in local mode |
 | `dtype` | vLLM model data type used in local mode |
 | `max_model_len` | vLLM maximum model context length |
 | `gpu_memory_utilization` | vLLM GPU memory fraction |
 | `tensor_parallel_size` | Number of GPUs used by vLLM |
-| `api_base_url` | OpenAI-compatible API base URL or full `/responses` endpoint |
+| `api_base_url` | API base URL; Anthropic Messages mode strips a trailing `/v1` before the SDK appends `/v1/messages` |
 | `api_key_env` | Environment variable containing the API key |
 
 In API mode, `AIParser` sends an identifying user agent, an OpenCode client
 header, and one stable `x-opencode-session` ID for the process. Calls are
 sequential. Connection/time-out errors and HTTP 408, 409, 429, and 5xx responses
-are retried indefinitely with exponential backoff and jitter, capped at five
-minutes unless the server's `Retry-After` header requests a longer delay.
-Each retry logs the provider response body and request ID when available.
+are retried with exponential backoff and jitter, capped at five minutes unless
+the server's `Retry-After` header requests a longer delay. Retries continue
+indefinitely unless `api_max_retries` is set. Each retry logs the provider
+response body and request ID when available.
 Non-transient errors, such as invalid credentials or an explicit
 exhausted-quota response, fail immediately. PBS walltime remains a hard limit on
 Gadi jobs.
@@ -813,7 +827,7 @@ Gadi jobs.
 | `call_vlm(prompt, folder_path)` → `str` | Loads all supported image frames from `folder_path`, sorts them by parsed frame timestamp, and passes them to `call_vlm_images`. |
 | `call_vlm_images(prompt, image_paths, include_frame_manifest=True)` → `str` | Takes an ordered list of frame image paths, optionally includes an in-memory ordered filename manifest, sends the images together to the selected backend, and returns generated text. The video questionnaire disables the manifest because its answer format does not include frame filenames. |
 | `call_api_conversation(input_data, previous_response_id=None, max_tokens=None)` → response | API backend only. Sends one request with `store: true` and `truncation: "disabled"`, linked to `previous_response_id` when given, and returns the full Responses API object (`id`, `output_text`, `usage.input_tokens`). Used by QA frame ingestion and the legacy `run_model_answers.py` batch mode. |
-| `build_api_message(text, image_paths)` → `list[dict]` | Builds one API user message with a text part followed by base64-encoded JPEG image bytes. Shared by `call_vlm_images` and API conversation frame batches. |
+| `build_api_message(text, image_paths)` → `list[dict]` | Builds one API user message with text and base64-encoded JPEG images in the format required by the selected protocol. Shared by `call_vlm_images` and Responses API conversation frame batches. |
 
 Configuration loading belongs to the pipeline classes, which read the JSON file and pass the complete dictionary into the `AIParser` constructor. In API mode, the API key is read from the environment variable named by `api_key_env`; it is not stored in configuration files.
 
@@ -833,9 +847,9 @@ Both pipelines delete the section frame images as each section is processed and
 remove the `section_*_output` folders once `all_results.json` has been written,
 leaving the aggregate as the only extraction artifact.
 
- Implemented for local vLLM and OpenAI-compatible API back
-calls support an optional per-call `max_tokens` override for longer storyline
-and question-generation responses.
+Implemented for local vLLM, OpenAI-compatible, and Anthropic Messages API
+backends. API calls support an optional per-call `max_tokens` override for
+longer storyline and question-generation responses.
 
 ---
 
@@ -958,10 +972,11 @@ reviewer can confirm it never occurred.
 | `step` | Stride between sampled frames inside one section | `1` |
 | `skip` | Frames from a section's last sampled frame to the next section's first frame; defaults to `step` | (optional) |
 | `model` | Local vLLM model name/path or API model identifier | (required) |
-| `backend` | `local` for vLLM or `api` for the Responses API | `local` |
+| `backend` | `local` for vLLM or `api` for the selected API protocol | `local` |
+| `api_protocol` | `responses`, `chat_completions`, or `anthropic_messages` | `responses` |
 | `temperature` | Local vLLM sampling temperature; `null` falls back to `0.2` | (optional) |
-| `api_temperature` | Responses API sampling temperature; omitted from API requests when `null` or unset | (optional) |
-| `reasoning_effort` | Responses API reasoning effort, such as `low` or `none` | (optional) |
+| `api_temperature` | API sampling temperature; omitted from API requests when `null` or unset | (optional) |
+| `reasoning_effort` | Optional reasoning effort for Responses or Chat Completions APIs | (optional) |
 | `max_tokens` | Default maximum generated output tokens. Used by VLM calls and LLM calls without an override | `100` |
 | `review_window` | Maximum sorted detections supplied to one sparse review call | `50` |
 | `merge_window` | Maximum sorted events supplied to one temporal merge call | `50` |
@@ -1127,8 +1142,11 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `sparse_events.json` | 1 | Sparse event localisation (uses `prompts/sparse_event_prompt.txt`, `sparse_event_filter.txt`, and `sparse_event_question_gen.txt`) |
 | `temporal_events.json` | 2 | Temporal extraction, timeline, storyline, and question stages |
 | `answer_eval.json` | — | Model settings for `run_model_answers.py` (not a pipeline config; no `task` or paths) |
-| `qa_gpt6_luna.json` | — | QA runner config for GPT-6 Luna using frame input |
-| `qa_kimi_k3.json` | — | Default `run_all_eval.sh` config for OpenCode Go Kimi K3 using Chat Completions with frame input |
+| `qa_gpt6_luna.json` | — | OpenCode Go GPT-6 Luna QA config using the Responses API with frame input |
+| `qa_kimi_k3.json` | — | Default `run_all_eval.sh` OpenCode Go Kimi K3 QA config using Chat Completions with frame input |
+| `qa_grok_4_7.json` | — | OpenCode Go Grok 4.7 QA config using the Responses API with frame input |
+| `qa_qwen3_8_max.json` | — | OpenCode Go Qwen3.8 Max QA config using Anthropic Messages with frame input |
+| `qa_deepseek_v4_flash_vision_exp.json` | — | OpenCode Go DeepSeek V4 Flash Vision Exp QA config using Chat Completions with frame input |
 | `qa_gemini_video.json` | — | QA runner config for Gemini using native MP4 input |
 | `qa_qwen3.json` | — | Local Qwen3-VL native-video QA config for Gadi |
 
@@ -1166,7 +1184,7 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
    `questions.json` (including the listed `false_events`) should be reviewed
    before benchmark use.
 
-5. **No test suite** — No unit tests, integration tests, or test framework configuration exists.
+5. **Focused tests only** — `tests/test_anthropic_api.py` checks API request formatting and frame-mode dispatch; broad integration coverage is not implemented.
 
 6. **No CI/CD or containerization** — No Dockerfile, Makefile, GitHub Actions, or other automation.
 
@@ -1182,7 +1200,7 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 | Frame parser (`frame_parser.py`) | Complete |
 | Image preprocessor (`image_preprocessor.py`) | Complete |
 | Timeframe converter (`timeframe_converter.py`) | Implemented standalone utility |
-| AI parser (`pipeline/AIParser.py`) | Implemented local vLLM and OpenAI-compatible API wrapper |
+| AI parser (`pipeline/AIParser.py`) | Implemented local vLLM, OpenAI-compatible, and Anthropic Messages API wrappers |
 | Sparse event pipeline (`pipeline/SparseEventPipeline.py`) | Extract, review, and question stages implemented |
 | Temporal pipeline (`pipeline/TemporalPipeline.py`) | Extract, timeline, storyline, and question stages implemented |
 | Temporal VLM prompt (`prompts/temporal_vlm.txt`) | Complete |

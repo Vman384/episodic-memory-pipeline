@@ -13,9 +13,25 @@ except ImportError:
     from timeframe_converter import parse_frame_timestamp
 
 
+class APIRequestError(RuntimeError):
+    """API failure with status and retry information for QA recovery logic."""
+
+    def __init__(
+        self,
+        message: str,
+        status_code: int | str | None,
+        retryable: bool,
+        retry_count: int,
+    ):
+        super().__init__(message)
+        self.status_code = status_code
+        self.retryable = retryable
+        self.retry_count = retry_count
+
+
 class AIParser:
     """
-    Interface for local vLLM and OpenAI-compatible API inference.
+    Interface for local vLLM, OpenAI-compatible APIs, and Anthropic Messages APIs.
     """
 
     API_RETRY_INITIAL_DELAY_SECONDS = 2
@@ -37,6 +53,7 @@ class AIParser:
         self.local_temperature = 0.2 if temperature is None else temperature
         self.api_temperature = config.get("api_temperature")
         self.api_protocol = str(config.get("api_protocol", "responses")).lower()
+        self.api_max_retries = config.get("api_max_retries")
         self.max_tokens = max_tokens
         self.reasoning_effort = config.get("reasoning_effort")
         self.image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
@@ -44,10 +61,18 @@ class AIParser:
         if backend == "api" and self.api_protocol not in {
             "responses",
             "chat_completions",
+            "anthropic_messages",
         }:
             raise ValueError(
-                "api_protocol must be 'responses' or 'chat_completions'"
+                "api_protocol must be 'responses', 'chat_completions', "
+                "or 'anthropic_messages'"
             )
+        if backend == "api" and self.api_max_retries is not None and (
+            isinstance(self.api_max_retries, bool)
+            or not isinstance(self.api_max_retries, int)
+            or self.api_max_retries < 0
+        ):
+            raise ValueError("api_max_retries must be a non-negative integer")
 
         if backend == "local":
             # Set offline mode before importing libraries that may resolve models.
@@ -83,7 +108,6 @@ class AIParser:
 
         elif backend == "api":
             from dotenv import load_dotenv
-            from openai import APIConnectionError, OpenAI
 
             load_dotenv()
             api_key = os.getenv(config.get("api_key_env"))
@@ -99,15 +123,31 @@ class AIParser:
             # OpenCode Go uses this stable per-run ID for routing and prompt
             # caching. Generic clients without it can be rejected or throttled.
             self.api_session_id = f"ses_{uuid.uuid4().hex}"
+            default_headers = {"x-opencode-session": self.api_session_id}
+            if self.api_protocol == "anthropic_messages":
+                from anthropic import APIConnectionError, Anthropic
+
+                # The Anthropic SDK appends /v1/messages itself, while the
+                # OpenAI SDK expects its base URL to already include /v1.
+                anthropic_base_url = api_base_url.rstrip("/").removesuffix("/v1")
+                self.client = Anthropic(
+                    api_key=api_key,
+                    base_url=anthropic_base_url,
+                    default_headers=default_headers,
+                    max_retries=0,
+                )
+            else:
+                from openai import APIConnectionError, OpenAI
+
+                self.client = OpenAI(
+                    api_key=api_key,
+                    base_url=api_base_url,
+                    default_headers=default_headers,
+                    # Transient failures are retried in _call_api with backoff,
+                    # without the SDK's separate fixed retry limit.
+                    max_retries=0,
+                )
             self.api_connection_error = APIConnectionError
-            self.client = OpenAI(
-                api_key=api_key,
-                base_url=api_base_url,
-                default_headers={"x-opencode-session": self.api_session_id},
-                # Transient failures are retried in _call_api with backoff,
-                # without the SDK's separate fixed retry limit.
-                max_retries=0,
-            )
             self.api_base_url = api_base_url
 
     @staticmethod
@@ -116,9 +156,15 @@ class AIParser:
         return outputs[0].outputs[0].text
 
     def _get_api_text(self, response) -> str:
-        """Return generated text from the configured OpenAI-compatible API."""
+        """Return generated text from the configured API protocol."""
         if self.api_protocol == "chat_completions":
             return response.choices[0].message.content or ""
+        if self.api_protocol == "anthropic_messages":
+            return "".join(
+                block.text
+                for block in response.content
+                if getattr(block, "type", None) == "text"
+            )
         return response.output_text
 
     @staticmethod
@@ -249,6 +295,25 @@ class AIParser:
                 request["reasoning_effort"] = self.reasoning_effort
             return request
 
+        if self.api_protocol == "anthropic_messages":
+            if conversation or previous_response_id:
+                raise ValueError(
+                    "Stored conversations are only supported by the Responses API"
+                )
+            messages = (
+                input_data
+                if isinstance(input_data, list)
+                else [{"role": "user", "content": input_data}]
+            )
+            request = {
+                "model": self.model_name,
+                "messages": messages,
+                "max_tokens": max_tokens if max_tokens is not None else self.max_tokens,
+            }
+            if self.api_temperature is not None:
+                request["temperature"] = self.api_temperature
+            return request
+
         request = {
             "model": self.model_name,
             "input": input_data,
@@ -277,10 +342,30 @@ class AIParser:
             try:
                 if self.api_protocol == "chat_completions":
                     return self.client.chat.completions.create(**request)
+                if self.api_protocol == "anthropic_messages":
+                    return self.client.messages.create(**request)
                 return self.client.responses.create(**request)
             except Exception as error:
+                status_code, _ = self._api_status_and_headers(error)
                 if not self._is_retryable_api_error(error):
-                    raise RuntimeError(self._format_api_error(error)) from error
+                    raise APIRequestError(
+                        self._format_api_error(error),
+                        status_code=status_code,
+                        retryable=False,
+                        retry_count=retry_number,
+                    ) from error
+
+                if (
+                    self.api_max_retries is not None
+                    and retry_number >= self.api_max_retries
+                ):
+                    raise APIRequestError(
+                        f"{self._format_api_error(error)}; retry limit reached "
+                        f"after {retry_number} retries",
+                        status_code=status_code,
+                        retryable=True,
+                        retry_count=retry_number,
+                    ) from error
 
                 retry_number += 1
                 delay = self._api_retry_delay(error, retry_number)
@@ -337,24 +422,35 @@ class AIParser:
                 converted_image.close()
             encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-            image_content.append(
-                {
-                    "type": (
-                        "image_url"
-                        if self.api_protocol == "chat_completions"
-                        else "input_image"
-                    ),
-                    "image_url": (
-                        {"url": f"data:image/jpeg;base64,{encoded_image}"}
-                        if self.api_protocol == "chat_completions"
-                        else f"data:image/jpeg;base64,{encoded_image}"
-                    ),
-                }
-            )
+            if self.api_protocol == "chat_completions":
+                image_content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
+                    }
+                )
+            elif self.api_protocol == "anthropic_messages":
+                image_content.append(
+                    {
+                        "type": "image",
+                        "source": {
+                            "type": "base64",
+                            "media_type": "image/jpeg",
+                            "data": encoded_image,
+                        },
+                    }
+                )
+            else:
+                image_content.append(
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:image/jpeg;base64,{encoded_image}",
+                    }
+                )
 
         text_content = (
             {"type": "text", "text": text}
-            if self.api_protocol == "chat_completions"
+            if self.api_protocol in {"chat_completions", "anthropic_messages"}
             else {"type": "input_text", "text": text}
         )
         return [
