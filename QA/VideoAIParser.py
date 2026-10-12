@@ -453,9 +453,8 @@ class VideoAIParser:
                         }
                     )
 
-                    next_frame_count = max(
-                        min(self.MIN_ADAPTIVE_FRAME_BUDGET, total_frames),
-                        current_frame_count - self.ADAPTIVE_FRAME_REDUCTION,
+                    next_frame_count = self._next_adaptive_frame_count(
+                        current_frame_count
                     )
                     if (
                         isinstance(error, APIRequestError)
@@ -464,13 +463,10 @@ class VideoAIParser:
                         and status_code >= 500
                         and next_frame_count < current_frame_count
                     ):
-                        local_indices = _uniform_timestamp_indices(
-                            range(current_frame_count),
+                        selected_indices = self._uniform_frame_subset(
+                            selected_indices,
                             next_frame_count,
                         )
-                        selected_indices = [
-                            selected_indices[index] for index in local_indices
-                        ]
                         reductions.append(
                             {
                                 "frames_before": current_frame_count,
@@ -539,84 +535,160 @@ class VideoAIParser:
                 )
                 return response, batch_metadata
 
-        previous_response_id = None
-        frames_received = 0
-        batches = []
-        batch_count = (total_frames + api_batch_size - 1) // api_batch_size
+        initially_sampled = metadata.get("frames_used", total_frames)
+        selected_indices = list(range(total_frames))
+        reductions = []
 
-        for batch_number, start in enumerate(
-            range(0, total_frames, api_batch_size),
-            start=1,
-        ):
-            batch = frame_paths[start : start + api_batch_size]
-            first_frame = start + 1
-            last_frame = start + len(batch)
-            batch_prompt = (
-                f"Frame batch {batch_number} of {batch_count}: frames "
-                f"{first_frame}-{last_frame} of {total_frames}, in chronological "
-                "order from the drive. Remember these visual details for the "
-                "questions after all batches. Reply with OK only."
-            )
-            try:
-                response = self.ai_parser.call_api_conversation(
-                    self.ai_parser.build_api_message(batch_prompt, batch),
-                    previous_response_id=previous_response_id,
+        while True:
+            current_frame_count = len(selected_indices)
+            current_frame_paths = [frame_paths[index] for index in selected_indices]
+            previous_response_id = None
+            frames_received = 0
+            batches = []
+            batch_count = (current_frame_count + api_batch_size - 1) // api_batch_size
+            restart_with_fewer_frames = False
+
+            for batch_number, start in enumerate(
+                range(0, current_frame_count, api_batch_size),
+                start=1,
+            ):
+                batch = current_frame_paths[start : start + api_batch_size]
+                first_frame = start + 1
+                last_frame = start + len(batch)
+                batch_prompt = (
+                    f"Frame batch {batch_number} of {batch_count}: frames "
+                    f"{first_frame}-{last_frame} of {current_frame_count}, in "
+                    "chronological order from the drive. Remember these visual "
+                    "details for the questions after all batches. Reply with OK only."
                 )
-            except RuntimeError as error:
-                print(
-                    f"Stopped before sampled frame {first_frame}: {error}",
-                    flush=True,
-                )
+                try:
+                    response = self.ai_parser.call_api_conversation(
+                        self.ai_parser.build_api_message(batch_prompt, batch),
+                        previous_response_id=previous_response_id,
+                    )
+                except RuntimeError as error:
+                    if self._is_response_store_size_error(error):
+                        next_frame_count = self._next_adaptive_frame_count(
+                            current_frame_count,
+                            frames_received=max(
+                                0,
+                                frames_received - self.ADAPTIVE_FRAME_REDUCTION,
+                            ),
+                        )
+                        if next_frame_count < current_frame_count:
+                            selected_indices = self._uniform_frame_subset(
+                                selected_indices,
+                                next_frame_count,
+                            )
+                            reductions.append(
+                                {
+                                    "frames_before": current_frame_count,
+                                    "frames_after": next_frame_count,
+                                    "status_code": 400,
+                                    "phase": "frame_batch",
+                                    "failed_before_frame": first_frame,
+                                    "frames_accepted_before_failure": frames_received,
+                                }
+                            )
+                            print(
+                                "Responses API response was too large to store; "
+                                f"restarting with {next_frame_count} uniformly "
+                                "sampled frames",
+                                flush=True,
+                            )
+                            restart_with_fewer_frames = True
+                            break
+
+                    print(
+                        f"Stopped before sampled frame {first_frame}: {error}",
+                        flush=True,
+                    )
+                    batches.append(
+                        {
+                            "frames_from": first_frame,
+                            "frames_to": last_frame,
+                            "status": "failed",
+                            "error": str(error),
+                        }
+                    )
+                    break
+
+                previous_response_id = response.id
+                frames_received = last_frame
                 batches.append(
                     {
                         "frames_from": first_frame,
                         "frames_to": last_frame,
-                        "status": "failed",
-                        "error": str(error),
+                        "status": "ok",
+                        **self._response_usage(response),
                     }
                 )
-                break
+                print(
+                    f"Sampled frames {first_frame}-{last_frame} accepted "
+                    f"({batch_number}/{batch_count})",
+                    flush=True,
+                )
 
-            previous_response_id = response.id
-            frames_received = last_frame
-            batches.append(
-                {
-                    "frames_from": first_frame,
-                    "frames_to": last_frame,
-                    "status": "ok",
-                    **self._response_usage(response),
-                }
-            )
-            print(
-                f"Sampled frames {first_frame}-{last_frame} accepted "
-                f"({batch_number}/{batch_count})",
-                flush=True,
-            )
+            if restart_with_fewer_frames:
+                continue
 
-        sampled_frames = metadata.get("frames_used", total_frames)
-        metadata = {
-            **metadata,
-            "provider": "api",
-            "api_batch_size": api_batch_size,
-            "frames_sampled": sampled_frames,
-            "frames_received": frames_received,
-            "frames_used": frames_received,
-            "api_batches": batches,
-        }
-        if previous_response_id is None:
-            metadata["error"] = "No frame batches were accepted by the API"
-            return "", metadata
-
-        try:
-            response = self.ai_parser.call_api_conversation(
-                prompt,
-                previous_response_id=previous_response_id,
+            selected_metadata = self._selected_frame_metadata(
+                metadata,
+                selected_indices,
+                total_frames,
+                initially_sampled,
+                reductions,
             )
-        except RuntimeError as error:
-            metadata["question_error"] = str(error)
-            return "", metadata
-        metadata["api_question_usage"] = self._response_usage(response)
-        return response.output_text, metadata
+            result_metadata = {
+                **selected_metadata,
+                "provider": "api",
+                "api_protocol": "responses",
+                "api_batch_size": api_batch_size,
+                "frames_sampled": current_frame_count,
+                "frames_received": frames_received,
+                "frames_used": frames_received,
+                "api_batches": batches,
+            }
+            if previous_response_id is None:
+                result_metadata["error"] = "No frame batches were accepted by the API"
+                return "", result_metadata
+
+            try:
+                response = self.ai_parser.call_api_conversation(
+                    prompt,
+                    previous_response_id=previous_response_id,
+                )
+            except RuntimeError as error:
+                if self._is_response_store_size_error(error):
+                    next_frame_count = self._next_adaptive_frame_count(
+                        current_frame_count,
+                        frames_received=frames_received,
+                    )
+                    if next_frame_count < current_frame_count:
+                        selected_indices = self._uniform_frame_subset(
+                            selected_indices,
+                            next_frame_count,
+                        )
+                        reductions.append(
+                            {
+                                "frames_before": current_frame_count,
+                                "frames_after": next_frame_count,
+                                "status_code": 400,
+                                "phase": "question_request",
+                                "frames_accepted_before_failure": frames_received,
+                            }
+                        )
+                        print(
+                            "Responses API question response was too large to store; "
+                            f"restarting with {next_frame_count} uniformly sampled "
+                            "frames",
+                            flush=True,
+                        )
+                        continue
+                result_metadata["question_error"] = str(error)
+                return "", result_metadata
+            result_metadata["api_question_usage"] = self._response_usage(response)
+            return response.output_text, result_metadata
 
     @staticmethod
     def _selected_frame_metadata(
@@ -644,6 +716,40 @@ class VideoAIParser:
             selected_metadata["frame_budget"] = len(selected_indices)
             selected_metadata["adaptive_frame_reductions"] = reductions
         return selected_metadata
+
+    @staticmethod
+    def _uniform_frame_subset(
+        selected_indices: list[int],
+        target_count: int,
+    ) -> list[int]:
+        local_indices = _uniform_timestamp_indices(range(len(selected_indices)), target_count)
+        return [selected_indices[index] for index in local_indices]
+
+    @staticmethod
+    def _next_adaptive_frame_count(
+        current_frame_count: int,
+        frames_received: int = 0,
+    ) -> int:
+        target_count = current_frame_count - VideoAIParser.ADAPTIVE_FRAME_REDUCTION
+        if frames_received > 0:
+            target_count = min(target_count, frames_received)
+        return max(
+            min(VideoAIParser.MIN_ADAPTIVE_FRAME_BUDGET, current_frame_count),
+            target_count,
+        )
+
+    @staticmethod
+    def _is_response_store_size_error(error: Exception) -> bool:
+        if not isinstance(error, APIRequestError):
+            return False
+        try:
+            status_code = int(error.status_code)
+        except (TypeError, ValueError):
+            return False
+        return (
+            status_code == 400
+            and "response is too large to store" in str(error).lower()
+        )
 
     def call_frames_dir(
         self,

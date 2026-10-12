@@ -203,6 +203,9 @@ from pathlib import Path
 
 result = json.loads(Path(sys.argv[1]).read_text())
 metadata = result.get("input_metadata", {})
+error = metadata.get("error") or metadata.get("question_error")
+if error:
+    raise SystemExit(f"QA recorded an API error; refusing to grade: {error}")
 sampled = metadata.get("frames_sampled", metadata.get("frames_used"))
 received = metadata.get("frames_received", metadata.get("frames_used"))
 if sampled is None or received is None:
@@ -213,7 +216,7 @@ if received != sampled:
     )
 PY
     then
-      echo "Incomplete frame coverage for $MODEL_NAME on $LIST; keeping answers and continuing" >&2
+      echo "QA error or incomplete frame coverage for $MODEL_NAME on $LIST; keeping answers and continuing" >&2
       FAILED_LISTS+=("$MODEL_NAME/$LIST")
       continue
     fi

@@ -78,7 +78,7 @@ episodic-memory-pipeline/
 │   └── prompts/answer_questions.txt
 ├── test_gateway.sh
 ├── tests/
-│   └── test_anthropic_api.py
+│   └── test_responses_store_recovery.py
 ├── requirements.txt
 ├── test_vlm.py
 ├── vllm.pbs
@@ -645,8 +645,8 @@ overridden through the environment. `CONFIGS` is a space-separated list of
 config paths (default: the Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision
 Exp configs); each listed model runs on every selected dataset in turn, and
 failed runs are recorded as `<model>/<list>`. `API_BATCH_SIZE` only applies to
-Responses API configurations. Before grading, the script checks that
-the API accepted every sampled frame. A failed dataset is recorded and the
+Responses API configurations. Before grading, the script rejects API-reported
+errors and checks that the API accepted every effective sampled frame. A failed dataset is recorded and the
 script continues with the next one, then exits nonzero if any dataset failed.
 Submit from the repository root with `qsub run_all_eval.sh`. The
 `submit_remaining_opencode_eval.sh` helper submits the same job with the
@@ -745,8 +745,10 @@ in one final request. Chat Completions and Anthropic Messages frame modes send
 all sampled images and questions in one request; `api_batch_size` is not used in
 those modes. Set `api_max_retries` to cap transient retries. After that limit,
 repeated 5xx errors in these single-request modes cause the runner to uniformly
-remove 50 frames and retry, down to a 50-frame floor. Metadata records the
-original and effective frame budgets and each reduction.
+remove 50 frames and retry, down to a 50-frame floor. Responses API mode also
+restarts with a smaller uniform sample when OpenCode returns
+`Response is too large to store`. Metadata records the original and effective
+frame budgets and each reduction.
 Sampling metadata records the selected frame names/indices and timestamps,
 frame budget, and image-size limit. Responses API usage metadata includes token
 counts for the image batches and final question request.
@@ -1209,7 +1211,7 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
    `questions.json` (including the listed `false_events`) should be reviewed
    before benchmark use.
 
-5. **Focused tests only** — `tests/test_anthropic_api.py` checks API request formatting and frame-mode dispatch; broad integration coverage is not implemented.
+5. **Focused tests only** — `tests/test_responses_store_recovery.py` verifies adaptive frame reduction when Responses API storage limits are reached; broad integration coverage is not implemented.
 
 6. **No CI/CD or containerization** — No Dockerfile, Makefile, GitHub Actions, or other automation.
 

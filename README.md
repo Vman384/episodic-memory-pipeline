@@ -131,7 +131,7 @@ python main.py --mode counting
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
 | `count_questions.sh` | Counts questions across sparse and temporal output files on Gadi |
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
-| `tests/test_anthropic_api.py` | Unit tests for Anthropic Messages request formatting and QA frame dispatch |
+| `tests/test_responses_store_recovery.py` | Tests recovery from Responses API stored-response size limits |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by legacy `run_model_answers.py` |
 | `configs/qa_kimi_k3.json` | OpenCode Go Kimi K3 frame-input config using Chat Completions |
@@ -256,8 +256,8 @@ CONFIGS="configs/qa_grok_4_7.json" qsub run_all_eval.sh
 ```
 
 Results for each model are stored under its own `model_answers/<model>/` folder.
-The script checks full frame coverage before grading each result and continues
-to the next dataset if a run fails.
+The script rejects API-reported errors and checks effective frame coverage
+before grading each result; it continues to the next dataset if a run fails.
 
 ## Ask Questions from a Video
 
@@ -303,7 +303,9 @@ Anthropic Messages configs send all sampled frames with the questions in one
 request; `api_batch_size` applies only to Responses API mode. Single-request
 configs can set `api_max_retries`; after exhausting that many retries on a 5xx
 error, the runner reduces the uniform frame sample by 50 and retries down to 50
-frames. Output metadata records the initial and effective frame budgets.
+frames. Responses API runs also restart with a smaller uniform sample if OpenCode
+returns `Response is too large to store`. Output metadata records the initial
+and effective frame budgets and reductions.
 `configs/qa_gemini_video.json`
 uses `GEMINI_API_KEY` and the
 Gemini Files API to upload the original MP4; the runner waits for provider-side
@@ -611,10 +613,12 @@ HTTP 408, 409, 429, and 5xx errors are retried with exponential backoff and
 jitter, capped at five minutes unless the server's `Retry-After` header asks
 for a longer delay. Retries continue indefinitely unless `api_max_retries` is
 set in the model config. For single-request frame modes, exhausting retries on
-a 5xx triggers uniform frame reduction before the next request. Each retry logs
-the model, endpoint, status, response body, and provider request ID when
-available. Other errors, such as an invalid API key or an explicit
-exhausted-quota response, fail immediately.
+a 5xx triggers uniform frame reduction before the next request. For Responses
+API frame mode, the specific `Response is too large to store` error restarts
+frame ingestion with a smaller uniform sample. Each retry logs the model,
+endpoint, status, response body, and provider request ID when available. Other
+errors, such as an invalid API key or an explicit exhausted-quota response, fail
+immediately.
 Gadi's PBS walltime still applies, so a job can be terminated by the scheduler
 if an outage lasts beyond its requested walltime.
 
