@@ -18,7 +18,7 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 BASE="/g/data/pg06/FYP2026S1_3473"
 BENCHMARK="${BENCHMARK:-temporal}"
-CONFIG="${CONFIG:-configs/qa_kimi_k3.json}"
+CONFIGS="${CONFIGS:-configs/qa_kimi_k3.json configs/qa_qwen3_8_max.json configs/qa_deepseek_v4_flash_vision_exp.json qa_gemini_video.json}"
 MAX_FRAMES="${MAX_FRAMES:-512}"
 MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
 API_BATCH_SIZE="${API_BATCH_SIZE:-10}"
@@ -39,11 +39,23 @@ case "$BENCHMARK" in
 esac
 QUESTION_RELATIVE_PATH="${QUESTION_RELATIVE_PATH:-$DEFAULT_QUESTION_RELATIVE_PATH}"
 
-if [[ ! -f "$CONFIG" ]]; then
-  echo "Model config not found: $CONFIG" >&2
+# CONFIGS is a space-separated list of API model configs, e.g.
+# CONFIGS="configs/qa_gpt6_luna.json configs/qa_grok_4_7.json"
+read -r -a CONFIG_LIST <<< "$CONFIGS"
+if ((${#CONFIG_LIST[@]} == 0)); then
+  echo "CONFIGS must list at least one model config" >&2
   exit 1
 fi
-mapfile -t CONFIG_SETTINGS < <(python3 - "$CONFIG" <<'PY'
+
+MODEL_NAMES=()
+MODEL_FOLDERS=()
+API_PROTOCOLS=()
+for CONFIG in "${CONFIG_LIST[@]}"; do
+  if [[ ! -f "$CONFIG" ]]; then
+    echo "Model config not found: $CONFIG" >&2
+    exit 1
+  fi
+  mapfile -t CONFIG_SETTINGS < <(python3 - "$CONFIG" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -53,19 +65,22 @@ print(config.get("model", ""))
 print(config.get("backend", "local").lower())
 print(config.get("api_protocol", "responses").lower())
 PY
-)
-MODEL_NAME="${CONFIG_SETTINGS[0]:-}"
-BACKEND="${CONFIG_SETTINGS[1]:-}"
-API_PROTOCOL="${CONFIG_SETTINGS[2]:-responses}"
-if [[ -z "$MODEL_NAME" ]]; then
-  echo "Model is missing from config: $CONFIG" >&2
-  exit 1
-fi
-if [[ "$BACKEND" != "api" ]]; then
-  echo "run_all_eval.sh requires an API model configuration" >&2
-  exit 1
-fi
-MODEL_FOLDER="${MODEL_NAME//\//-}"
+  )
+  MODEL_NAME="${CONFIG_SETTINGS[0]:-}"
+  BACKEND="${CONFIG_SETTINGS[1]:-}"
+  API_PROTOCOL="${CONFIG_SETTINGS[2]:-responses}"
+  if [[ -z "$MODEL_NAME" ]]; then
+    echo "Model is missing from config: $CONFIG" >&2
+    exit 1
+  fi
+  if [[ "$BACKEND" != "api" ]]; then
+    echo "run_all_eval.sh requires API model configurations: $CONFIG" >&2
+    exit 1
+  fi
+  MODEL_NAMES+=("$MODEL_NAME")
+  MODEL_FOLDERS+=("${MODEL_NAME//\//-}")
+  API_PROTOCOLS+=("$API_PROTOCOL")
+done
 
 if [[ -z "${OPENCODE_API_KEY:-}" && ! -f .env ]]; then
   echo "Set OPENCODE_API_KEY or provide it through the repository .env file" >&2
@@ -116,63 +131,72 @@ for LIST in "${LISTS[@]}"; do
   fi
 done
 
-echo "Model: $MODEL_NAME"
+echo "Models: ${MODEL_NAMES[*]}"
 echo "Benchmark: $BENCHMARK"
 echo "Datasets: ${#LISTS[@]} Boreas sequences"
 echo "Frame budget: $MAX_FRAMES; max image side: $MAX_IMAGE_SIZE px"
-echo "API protocol: $API_PROTOCOL"
-case "$API_PROTOCOL" in
-  responses)
-    echo "Responses API batch size: $API_BATCH_SIZE"
-    ;;
-  chat_completions)
-    echo "Chat Completions sends all sampled frames in one request"
-    ;;
-  anthropic_messages)
-    echo "Anthropic Messages sends all sampled frames in one request"
-    ;;
-  *)
-    echo "Unsupported API protocol in config: $API_PROTOCOL" >&2
-    exit 1
-    ;;
-esac
 
 FAILED_LISTS=()
-for LIST in "${LISTS[@]}"; do
-  CAMERA_DIR="$BASE/boreas_dataset/$LIST/camera"
-  QUESTIONS="$QUESTIONS_OVERRIDE"
-  if [[ -z "$QUESTIONS" ]]; then
-    QUESTIONS="$BASE/$LIST/$QUESTION_RELATIVE_PATH"
-  fi
+for INDEX in "${!CONFIG_LIST[@]}"; do
+  CONFIG="${CONFIG_LIST[$INDEX]}"
+  MODEL_NAME="${MODEL_NAMES[$INDEX]}"
+  MODEL_FOLDER="${MODEL_FOLDERS[$INDEX]}"
+  API_PROTOCOL="${API_PROTOCOLS[$INDEX]}"
 
-  DATASET_NAME="${LIST#boreas-}"
-  OUTPUT_DIR="$PBS_O_WORKDIR/model_answers/$MODEL_FOLDER/$DATASET_NAME/$BENCHMARK"
-  ANSWERS="$OUTPUT_DIR/question_answer.json"
-  GRADED_RESULTS="$OUTPUT_DIR/graded_results.json"
-  FINAL_MARK="$OUTPUT_DIR/final_mark.txt"
+  echo "----------------------------------------------"
+  echo "Model: $MODEL_NAME ($CONFIG)"
+  echo "API protocol: $API_PROTOCOL"
+  case "$API_PROTOCOL" in
+    responses)
+      echo "Responses API batch size: $API_BATCH_SIZE"
+      ;;
+    chat_completions)
+      echo "Chat Completions sends all sampled frames in one request"
+      ;;
+    anthropic_messages)
+      echo "Anthropic Messages sends all sampled frames in one request"
+      ;;
+    *)
+      echo "Unsupported API protocol in config: $API_PROTOCOL" >&2
+      exit 1
+      ;;
+  esac
 
-  echo "=============================================="
-  echo "Running $MODEL_NAME $BENCHMARK evaluation for: $LIST"
-  echo "Questions: $QUESTIONS"
-  echo "Output: $OUTPUT_DIR"
-  echo "=============================================="
+  for LIST in "${LISTS[@]}"; do
+    CAMERA_DIR="$BASE/boreas_dataset/$LIST/camera"
+    QUESTIONS="$QUESTIONS_OVERRIDE"
+    if [[ -z "$QUESTIONS" ]]; then
+      QUESTIONS="$BASE/$LIST/$QUESTION_RELATIVE_PATH"
+    fi
 
-  if ! python3 -m QA.run_questionnaire \
-    --frames-dir "$CAMERA_DIR" \
-    --questions "$QUESTIONS" \
-    --config "$CONFIG" \
-    --input-mode frames \
-    --frame-budget "$MAX_FRAMES" \
-    --max-image-size "$MAX_IMAGE_SIZE" \
-    --api-batch-size "$API_BATCH_SIZE" \
-    --seed "$SEED" \
-    --output "$ANSWERS"; then
-    echo "QA failed for $LIST; continuing with the next dataset" >&2
-    FAILED_LISTS+=("$LIST")
-    continue
-  fi
+    DATASET_NAME="${LIST#boreas-}"
+    OUTPUT_DIR="$PBS_O_WORKDIR/model_answers/$MODEL_FOLDER/$DATASET_NAME/$BENCHMARK"
+    ANSWERS="$OUTPUT_DIR/question_answer.json"
+    GRADED_RESULTS="$OUTPUT_DIR/graded_results.json"
+    FINAL_MARK="$OUTPUT_DIR/final_mark.txt"
 
-  if ! python3 - "$ANSWERS" <<'PY'
+    echo "=============================================="
+    echo "Running $MODEL_NAME $BENCHMARK evaluation for: $LIST"
+    echo "Questions: $QUESTIONS"
+    echo "Output: $OUTPUT_DIR"
+    echo "=============================================="
+
+    if ! python3 -m QA.run_questionnaire \
+      --frames-dir "$CAMERA_DIR" \
+      --questions "$QUESTIONS" \
+      --config "$CONFIG" \
+      --input-mode frames \
+      --frame-budget "$MAX_FRAMES" \
+      --max-image-size "$MAX_IMAGE_SIZE" \
+      --api-batch-size "$API_BATCH_SIZE" \
+      --seed "$SEED" \
+      --output "$ANSWERS"; then
+      echo "QA failed for $MODEL_NAME on $LIST; continuing with the next dataset" >&2
+      FAILED_LISTS+=("$MODEL_NAME/$LIST")
+      continue
+    fi
+
+    if ! python3 - "$ANSWERS" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -188,22 +212,22 @@ if received != sampled:
         f"Only {received}/{sampled} sampled frames were accepted; refusing to grade"
     )
 PY
-  then
-    echo "Incomplete frame coverage for $LIST; keeping answers and continuing" >&2
-    FAILED_LISTS+=("$LIST")
-    continue
-  fi
+    then
+      echo "Incomplete frame coverage for $MODEL_NAME on $LIST; keeping answers and continuing" >&2
+      FAILED_LISTS+=("$MODEL_NAME/$LIST")
+      continue
+    fi
 
-  if ! python3 grade_answers.py \
-    --questions "$QUESTIONS" \
-    --answers "$ANSWERS" \
-    --output "$GRADED_RESULTS"; then
-    echo "Grading failed for $LIST; continuing with the next dataset" >&2
-    FAILED_LISTS+=("$LIST")
-    continue
-  fi
+    if ! python3 grade_answers.py \
+      --questions "$QUESTIONS" \
+      --answers "$ANSWERS" \
+      --output "$GRADED_RESULTS"; then
+      echo "Grading failed for $MODEL_NAME on $LIST; continuing with the next dataset" >&2
+      FAILED_LISTS+=("$MODEL_NAME/$LIST")
+      continue
+    fi
 
-  python3 - "$GRADED_RESULTS" "$FINAL_MARK" <<'PY'
+    python3 - "$GRADED_RESULTS" "$FINAL_MARK" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -217,6 +241,7 @@ mark = (
 Path(sys.argv[2]).write_text(mark + "\n")
 print(f"Final mark: {mark}")
 PY
+  done
 done
 
 if ((${#FAILED_LISTS[@]} > 0)); then

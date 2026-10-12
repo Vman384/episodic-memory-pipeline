@@ -138,6 +138,7 @@ python main.py --mode counting
 | `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API |
 | `configs/qa_qwen3_8_max.json` | OpenCode Go Qwen3.8 Max frame-input config using Anthropic Messages |
 | `configs/qa_deepseek_v4_flash_vision_exp.json` | OpenCode Go DeepSeek V4 Flash Vision Exp frame-input config using Chat Completions |
+| `configs/qa_deepseek_v4_pro.json` | OpenCode Go DeepSeek V4 Pro frame-input config using Chat Completions |
 | `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
 | `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
 
@@ -213,7 +214,7 @@ To submit the QA and grading job on Gadi, run from the repository root:
 qsub run_all_eval.sh
 ```
 
-By default it runs Kimi K3 through OpenCode Go on the 17 Boreas sequence IDs in
+By default it runs GPT-6 Luna, Kimi K3, Qwen3.8 Max, and DeepSeek V4 Pro through OpenCode Go (the `CONFIGS` default) on the 17 Boreas sequence IDs in
 the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
@@ -237,10 +238,20 @@ model_answers/kimi-k3/<dataset>/temporal/
 `final_mark.txt` contains a score such as `10/20 (50.00%)`. Set
 `BENCHMARK=sparse` to read `sparse_outputs/events/questions.json` for the same
 dataset list and write results under `sparse/`. Set `LIST=boreas-2024-12-04-14-44` to
-run just one dataset. `QUESTIONS`, `QUESTION_RELATIVE_PATH`, `CONFIG`,
-`MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE` (default: 10), and `SEED` are
-also overridable. The script checks full frame coverage before grading each
-result and continues to the next dataset if a run fails.
+run just one dataset. `QUESTIONS`, `QUESTION_RELATIVE_PATH`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
+`API_BATCH_SIZE` (default: 10), and `SEED` are also overridable.
+
+To run several models in one job, set `CONFIGS` to a space-separated list of
+config paths. Each model runs on every selected dataset, one model after
+another:
+
+```bash
+CONFIGS="configs/qa_gpt6_luna.json configs/qa_deepseek_v4_pro.json" qsub run_all_eval.sh
+```
+
+Results for each model are stored under its own `model_answers/<model>/` folder.
+The script checks full frame coverage before grading each result and continues
+to the next dataset if a run fails.
 
 ## Ask Questions from a Video
 

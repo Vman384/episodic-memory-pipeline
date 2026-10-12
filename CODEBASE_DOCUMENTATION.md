@@ -636,8 +636,10 @@ model_answers/kimi-k3/<dataset>/temporal/
 `final_mark.txt` contains the score as `correct/total (percent)`. `LIST` limits
 the job to one dataset; edit the `LISTS` array to change the multi-dataset set.
 `BENCHMARK`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`,
-`CONFIG`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can also
-be overridden through the environment. `API_BATCH_SIZE` only applies to
+`MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can also be
+overridden through the environment. `CONFIGS` is a space-separated list of
+config paths (default: the GPT-6 Luna, Kimi K3, Qwen3.8 Max, and DeepSeek V4 Pro configs); each listed model runs on every
+selected dataset in turn, and failed runs are recorded as `<model>/<list>`. `API_BATCH_SIZE` only applies to
 Responses API configurations. Before grading, the script checks that
 the API accepted every sampled frame. A failed dataset is recorded and the
 script continues with the next one, then exits nonzero if any dataset failed.
@@ -1147,6 +1149,7 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `qa_grok_4_7.json` | — | OpenCode Go Grok 4.7 QA config using the Responses API with frame input |
 | `qa_qwen3_8_max.json` | — | OpenCode Go Qwen3.8 Max QA config using Anthropic Messages with frame input |
 | `qa_deepseek_v4_flash_vision_exp.json` | — | OpenCode Go DeepSeek V4 Flash Vision Exp QA config using Chat Completions with frame input |
+| `qa_deepseek_v4_pro.json` | — | OpenCode Go DeepSeek V4 Pro QA config using Chat Completions with frame input |
 | `qa_gemini_video.json` | — | QA runner config for Gemini using native MP4 input |
 | `qa_qwen3.json` | — | Local Qwen3-VL native-video QA config for Gadi |
 
