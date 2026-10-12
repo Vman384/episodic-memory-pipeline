@@ -73,14 +73,15 @@ if [[ -z "${OPENCODE_API_KEY:-}" && ! -f .env ]]; then
 fi
 
 # Boreas sequences from the Temporal section of DATASET_PROGRESS.md.
+
 LISTS=(
-  "boreas-2025-07-18-14-55"
-  "boreas-2024-12-03-13-13"
-  "boreas-2024-12-03-13-34"
-  "boreas-2024-12-04-11-45"
-  "boreas-2024-12-04-11-56"
-  "boreas-2025-07-18-15-12"
-  "boreas-2024-12-04-14-44"
+#  "boreas-2025-07-18-14-55"
+#  "boreas-2024-12-03-13-13"
+#  "boreas-2024-12-03-13-34"
+#  "boreas-2024-12-04-11-45"
+#  "boreas-2024-12-04-11-56"
+#  "boreas-2025-07-18-15-12"
+#  "boreas-2024-12-04-14-44"
   "boreas-2025-02-15-16-58"
   "boreas-2025-07-18-11-53"
   "boreas-2024-12-04-14-34"
