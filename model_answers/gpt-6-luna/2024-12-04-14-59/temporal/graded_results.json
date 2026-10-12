@@ -1,0 +1,303 @@
+{
+    "score": {
+        "correct": 9,
+        "total": 13,
+        "accuracy": 0.6923
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "pairwise_order",
+            "question": "Which happened first: a gray SUV passing the dashcam vehicle on the left, or a light-colored crossover passing on the left and continuing toward the underpass?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A gray SUV passed the dashcam vehicle on the left and moved ahead."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A gray SUV passed the dashcam vehicle on the left and moved ahead."
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "pairwise_order",
+            "question": "Which happened first: a dark sedan passing along the left side of the camera vehicle, or a white pickup passing on the left and moving ahead toward the underpass?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A white pickup passed on the left and moved ahead toward the underpass."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A dark sedan passed along the left side of the camera vehicle."
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "pairwise_order",
+            "question": "Which happened first: a white SUV passing in the left lane, or a dark SUV coming up from behind in the left lane and passing?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A white SUV passed in the left lane and drew ahead toward the underpass."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A white SUV passed in the left lane and drew ahead toward the underpass."
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "pairwise_order",
+            "question": "Which happened first: a white sedan entering from the left and advancing across the near side of the intersection, or a dark SUV moving across the intersection from right to left and exiting?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A white sedan entered from the left and advanced across the near side of the intersection."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A white sedan entered from the left and advanced across the near side of the intersection."
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "pairwise_order",
+            "question": "Which happened first: a silver SUV crossing the intersection from right to left, or a dark gray sedan crossing from right to left in front of the stopped dashcam vehicle?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A silver SUV crossed the intersection from right to left and exited."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A silver SUV crossed the intersection from right to left and exited."
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "sequence_order",
+            "question": "Put these events in the order they occurred:",
+            "correct": false,
+            "selected_indices": [
+                1,
+                0,
+                2,
+                3
+            ],
+            "selected_answers": [
+                "An oncoming white car passed out of view to the left.",
+                "A white SUV passed in the left lane and drew ahead toward the underpass.",
+                "A dark pickup passed in the left lane and continued toward the underpass.",
+                "A dark SUV came up from behind in the left lane, passed, and proceeded toward the underpass."
+            ],
+            "correct_indices": [
+                0,
+                2,
+                3,
+                1
+            ],
+            "correct_answers": [
+                "A white SUV passed in the left lane and drew ahead toward the underpass.",
+                "A dark pickup passed in the left lane and continued toward the underpass.",
+                "A dark SUV came up from behind in the left lane, passed, and proceeded toward the underpass.",
+                "An oncoming white car passed out of view to the left."
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "sequence_order",
+            "question": "Put these events in the order they occurred:",
+            "correct": false,
+            "selected_indices": [
+                0,
+                3,
+                2,
+                1
+            ],
+            "selected_answers": [
+                "The vehicle continued along the highway and drew closer to the tunnel entrance, following the pickup.",
+                "Several oncoming vehicles passed in the separated lanes as the dashcam vehicle approached the tunnel.",
+                "The vehicle proceeded toward the tunnel entrance and entered the brightly lit tunnel behind traffic.",
+                "The vehicle continued along the gently left-curving road as the Pine Street sign gave way to the Thorold exit sign."
+            ],
+            "correct_indices": [
+                1,
+                0,
+                3,
+                2
+            ],
+            "correct_answers": [
+                "The vehicle continued along the gently left-curving road as the Pine Street sign gave way to the Thorold exit sign.",
+                "The vehicle continued along the highway and drew closer to the tunnel entrance, following the pickup.",
+                "Several oncoming vehicles passed in the separated lanes as the dashcam vehicle approached the tunnel.",
+                "The vehicle proceeded toward the tunnel entrance and entered the brightly lit tunnel behind traffic."
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "sequence_order",
+            "question": "Put these events in the order they occurred:",
+            "correct": true,
+            "selected_indices": [
+                1,
+                0,
+                2,
+                3
+            ],
+            "selected_answers": [
+                "A pedestrian walked across the intersection area as the vehicle continued approaching.",
+                "A pedestrian continued walking from right to left across the intersection and reached the left side of the frame.",
+                "A silver sedan crossed the intersection from right to left and exited the frame.",
+                "A dark bus started entering the frame from the left as the dashcam vehicle remained stopped."
+            ],
+            "correct_indices": [
+                1,
+                0,
+                2,
+                3
+            ],
+            "correct_answers": [
+                "A pedestrian walked across the intersection area as the vehicle continued approaching.",
+                "A pedestrian continued walking from right to left across the intersection and reached the left side of the frame.",
+                "A silver sedan crossed the intersection from right to left and exited the frame.",
+                "A dark bus started entering the frame from the left as the dashcam vehicle remained stopped."
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "sequence_order",
+            "question": "Put these events in the order they occurred:",
+            "correct": true,
+            "selected_indices": [
+                1,
+                2,
+                0,
+                3
+            ],
+            "selected_answers": [
+                "A white sedan entered from the left and advanced across the near side of the intersection.",
+                "A dark SUV on the right moved farther left into the intersection.",
+                "A dark SUV moved across the intersection from right to left and exited.",
+                "A white sedan followed from the right, crossing leftward through the intersection."
+            ],
+            "correct_indices": [
+                1,
+                2,
+                0,
+                3
+            ],
+            "correct_answers": [
+                "A white sedan entered from the left and advanced across the near side of the intersection.",
+                "A dark SUV on the right moved farther left into the intersection.",
+                "A dark SUV moved across the intersection from right to left and exited.",
+                "A white sedan followed from the right, crossing leftward through the intersection."
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "sequence_order",
+            "question": "Put these events in the order they occurred:",
+            "correct": false,
+            "selected_indices": [
+                1,
+                2,
+                3,
+                0
+            ],
+            "selected_answers": [
+                "A dark gray sedan crossed from right to left in front of the stopped dashcam vehicle.",
+                "A silver SUV crossed the intersection from right to left and exited, then a dark sedan entered from the right.",
+                "A black pickup crossed from the right side of the intersection toward the left and remained partly visible at the left edge.",
+                "A black pickup traveled across the camera vehicle's path from right to left and left the frame."
+            ],
+            "correct_indices": [
+                2,
+                1,
+                3,
+                0
+            ],
+            "correct_answers": [
+                "A silver SUV crossed the intersection from right to left and exited, then a dark sedan entered from the right.",
+                "A dark gray sedan crossed from right to left in front of the stopped dashcam vehicle.",
+                "A black pickup crossed from the right side of the intersection toward the left and remained partly visible at the left edge.",
+                "A black pickup traveled across the camera vehicle's path from right to left and left the frame."
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "before_after",
+            "question": "What happened immediately after the red minivan traveled from right to left across the intersection?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "The dashcam vehicle began turning right onto the residential road."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The dashcam vehicle began turning right onto the residential road."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "before_after",
+            "question": "What happened immediately before the dashcam vehicle began turning right onto the residential road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A red minivan traveled from right to left across the intersection in front of the dashcam vehicle."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A red minivan traveled from right to left across the intersection in front of the dashcam vehicle."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "before_after",
+            "question": "What happened immediately after the pedestrian walked across the intersection area as the vehicle continued approaching?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A pedestrian continued walking from right to left across the intersection and reached the left side of the frame."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A pedestrian continued walking from right to left across the intersection and reached the left side of the frame."
+            ]
+        }
+    ]
+}
