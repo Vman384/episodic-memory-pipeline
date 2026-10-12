@@ -597,10 +597,10 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 **Purpose:** PBS batch script that runs Kimi K3 QA and grading for the Boreas
 sequence IDs in its `LISTS` array. The default array contains the 17 Boreas
 entries from the Temporal section of `DATASET_PROGRESS.md`; non-Boreas entries
-such as `forest_dataset` are excluded. Each QA run samples up to 650 frames,
-resizes each to a maximum 512-pixel side, and asks all questions together. The
-job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour walltime, and
-`scratch/pg06+gdata/pg06` storage.
+such as `forest_dataset` are excluded. Each QA run samples up to 128 frames by
+default, resizes each to a maximum 512-pixel side, and asks all questions
+together. The job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour
+walltime, and `scratch/pg06+gdata/pg06` storage.
 
 **Entry point:** For each selected sequence it runs two commands:
 
@@ -609,7 +609,7 @@ job uses the `copyq` queue, one CPU, 8 GB of memory, a 12-hour walltime, and
    questions default to `<list>/temporal_outputs/narratives/questions.json`;
    sparse questions default to `<list>/sparse_outputs/events/questions.json`.
     The API configuration is `configs/qa_kimi_k3.json`, with a default frame
-    budget of `650`, image side limit of `512`, and Chat Completions protocol.
+    budget of `128`, image side limit of `512`, and Chat Completions protocol.
     It sends all sampled frames and questions in one request; `API_BATCH_SIZE`
     applies only to Responses API configurations. The script prints the selected
     protocol and its applicable frame handling.

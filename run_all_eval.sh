@@ -19,7 +19,7 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 BASE="/g/data/pg06/FYP2026S1_3473"
 BENCHMARK="${BENCHMARK:-temporal}"
 CONFIG="${CONFIG:-configs/qa_kimi_k3.json}"
-MAX_FRAMES="${MAX_FRAMES:-650}"
+MAX_FRAMES="${MAX_FRAMES:-512}"
 MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
 API_BATCH_SIZE="${API_BATCH_SIZE:-10}"
 SEED="${SEED:-42}"

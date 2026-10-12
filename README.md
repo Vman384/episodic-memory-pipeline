@@ -173,7 +173,8 @@ and `grade_answers.py` to score them. Run both from the repository root.
    uniformly across elapsed video time. `--max-image-size` defaults to 512 and
    limits the longest side while preserving aspect ratio. `--frame-budget 0`
    explicitly uses all available frames. `--api-batch-size` controls images per
-   API request, not the total frame budget. The model is configured in
+   request only in Responses API mode; Chat Completions sends all sampled frames
+   in one request. The model is configured in
    `configs/qa_gpt6_luna.json`; set `OPENCODE_API_KEY` for its API backend.
 
 2. Grade the answers:
@@ -213,7 +214,9 @@ the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
 from `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`.
-Each sequence uses up to 650 frames resized to a maximum side of 512 pixels.
+Each sequence uses up to 128 frames by default, resized to a maximum side of
+512 pixels. `MAX_FRAMES` can override the frame budget if the API accepts a
+larger request.
 Kimi K3 receives all sampled frames and the questions together in one Chat
 Completions request. `API_BATCH_SIZE` only applies to Responses API configs and
 does not split this request. Results are saved under the directory from which
