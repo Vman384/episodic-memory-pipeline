@@ -196,8 +196,9 @@ The legacy `run_model_answers.py` script is retained for compatibility. Its
 `--batch_size` mode sends every frame in batches and ignores its frame cap; use
 the QA command above for normal evaluation. Responses API frame mode adds sampled
 image batches to one stored conversation, then sends the full question list.
-Chat Completions and Anthropic Messages frame modes send all sampled images and
-the full question list in one request.
+Chat Completions and Anthropic Messages frame modes initially send all sampled
+images and the full question list in one request. If that request fails, they
+retry with 50 fewer uniformly sampled frames, down to one frame.
 
 `answers.json` contains model and input metadata, question order, an `answers`
 list with each `question_id` and selected `answer_indices`, and the raw model
@@ -624,13 +625,14 @@ Calls are sent sequentially, one at a time. Connection/time-out errors and
 HTTP 408, 409, 429, and 5xx errors are retried with exponential backoff and
 jitter, capped at five minutes unless the server's `Retry-After` header asks
 for a longer delay. Retries continue indefinitely unless `api_max_retries` is
-set in the model config. For single-request frame modes, exhausting retries on
-a 5xx triggers uniform frame reduction before the next request. For Responses
+set in the model config. For single-request frame modes, each failed request
+triggers uniform frame reduction by 50 frames, down to one frame. For Responses
 API frame mode, the specific `Response is too large to store` error restarts
 frame ingestion with a smaller uniform sample. Each retry logs the model,
 endpoint, status, response body, and provider request ID when available. Other
-errors, such as an invalid API key or an explicit exhausted-quota response, fail
-immediately.
+errors, such as an invalid API key or an explicit exhausted-quota response, are
+not retried by the API client; single-request frame modes still reduce the frame
+count after each such failed request.
 Gadi's PBS walltime still applies, so a job can be terminated by the scheduler
 if an outage lasts beyond its requested walltime.
 

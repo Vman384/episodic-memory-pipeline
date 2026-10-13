@@ -750,12 +750,12 @@ sample from an MP4 or from an existing `--frames-dir` of timestamp-named images.
 uses all available frames. `api_protocol` selects `responses` (the default),
 `chat_completions`, or `anthropic_messages`. Responses API frame mode sends
 sampled images in stored-conversation batches, then asks the full question list
-in one final request. Chat Completions and Anthropic Messages frame modes send
-all sampled images and questions in one request; `api_batch_size` is not used in
-those modes. Set `api_max_retries` to cap transient retries. After that limit,
-repeated 5xx errors in these single-request modes cause the runner to uniformly
-remove 50 frames and retry, down to a 50-frame floor. Responses API mode also
-restarts with a smaller uniform sample when OpenCode returns
+in one final request. Chat Completions and Anthropic Messages frame modes
+initially send all sampled images and questions in one request;
+`api_batch_size` is not used in those modes. Set `api_max_retries` to cap
+transient retries. After a failed single-request call, the runner uniformly
+removes 50 frames and retries, down to a one-frame floor. Responses API mode
+also restarts with a smaller uniform sample when OpenCode returns
 `Response is too large to store`. Metadata records the original and effective
 frame budgets and each reduction.
 Sampling metadata records the selected frame names/indices and timestamps,

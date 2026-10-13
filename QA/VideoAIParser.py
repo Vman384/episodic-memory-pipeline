@@ -454,13 +454,11 @@ class VideoAIParser:
                     )
 
                     next_frame_count = self._next_adaptive_frame_count(
-                        current_frame_count
+                        current_frame_count,
+                        minimum_frame_count=1,
                     )
                     if (
                         isinstance(error, APIRequestError)
-                        and error.retryable
-                        and status_code is not None
-                        and status_code >= 500
                         and next_frame_count < current_frame_count
                     ):
                         selected_indices = self._uniform_frame_subset(
@@ -476,8 +474,9 @@ class VideoAIParser:
                             }
                         )
                         print(
-                            f"Repeated {status_code} failures after "
-                            f"{error.retry_count} retries; retrying with "
+                            f"{protocol_name} request failed with "
+                            f"{current_frame_count} sampled frames "
+                            f"(status={status_code}): {error}; retrying with "
                             f"{next_frame_count} uniformly sampled frames",
                             flush=True,
                         )
@@ -729,12 +728,23 @@ class VideoAIParser:
     def _next_adaptive_frame_count(
         current_frame_count: int,
         frames_received: int = 0,
+        minimum_frame_count: int | None = None,
     ) -> int:
         target_count = current_frame_count - VideoAIParser.ADAPTIVE_FRAME_REDUCTION
         if frames_received > 0:
             target_count = min(target_count, frames_received)
+        if minimum_frame_count is None:
+            minimum_frame_count = min(
+                VideoAIParser.MIN_ADAPTIVE_FRAME_BUDGET,
+                current_frame_count,
+            )
+        else:
+            minimum_frame_count = max(
+                1,
+                min(minimum_frame_count, current_frame_count),
+            )
         return max(
-            min(VideoAIParser.MIN_ADAPTIVE_FRAME_BUDGET, current_frame_count),
+            minimum_frame_count,
             target_count,
         )
 
