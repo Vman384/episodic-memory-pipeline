@@ -1,0 +1,16 @@
+\begin{table*}[t]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Duration group} & \textbf{\# Videos} & \textbf{Mean duration (min)} & \textbf{Sparse-event QA} & \textbf{Temporal-order QA} & \textbf{Total QA} \\
+\midrule
+Short ($t \leq 10$ min) & 5 & 4.74 & 60 & 65 & 125 \\
+Medium ($10 < t \leq 15$ min) & 4 & 13.03 & 51 & 50 & 101 \\
+Long ($t > 15$ min) & 8 & 19.16 & 113 & 105 & 218 \\
+\midrule
+All & 17 & 13.47 & 224 & 220 & 444 \\
+\bottomrule
+\end{tabular}
+\caption{Duration-stratified composition of 17 video sequences. Drive durations are computed from the earliest and latest timestamped camera frames. Duration bins are $t \leq 10$ min, $10 < t \leq 15$ min, and $t > 15$ min.}
+\label{tab:duration_composition}
+\end{table*}

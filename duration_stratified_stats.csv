@@ -1,0 +1,5 @@
+duration_group,number_of_videos,mean_duration_minutes,sparse_event_questions,temporal_order_questions,total_questions
+Short (<= 10 min),5,4.74,60,65,125
+Medium (> 10 and <= 15 min),4,13.03,51,50,101
+Long (> 15 min),8,19.16,113,105,218
+All,17,13.47,224,220,444
