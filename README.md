@@ -43,6 +43,22 @@ JIT-compiles its FP8 kernels with NVCC and requires version 12.3 or newer,
 while the `cuda/12.2.2` module provides 12.2.2; disabling it lets vLLM use its
 CUTLASS FP8 kernels instead.
 
+## Plot Boreas Video Lengths
+
+Run `plot_boreas_video_lengths.py` to query each
+`boreas-*/video.mp4` under `/g/data/pg06/FYP2026S1_3473/boreas_dataset/` with
+`ffprobe`, multiply each duration by three, and save a frequency histogram:
+
+```bash
+python3 plot_boreas_video_lengths.py
+```
+
+The histogram uses 8 equal-width bins across the observed scaled-duration range
+and is saved as `boreas_video_length_frequency.png` in the current directory.
+`ffprobe` is installed with ffmpeg, and matplotlib is included in
+`requirements.txt`. Use `--dataset-root`, `--bins` (6–10, default 8), and
+`--output` to change the input directory, bin count, and plot path.
+
 ## Count Generated Questions
 
 Submit `qsub count_questions.sh` to count all entries in `questions.json` files
@@ -131,6 +147,7 @@ python main.py --mode counting
 | `submit_remaining_opencode_eval.sh` | Submits `run_all_eval.sh` for OpenCode Go QA models, excluding completed GPT-6 Luna and Kimi K3 |
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
 | `count_questions.sh` | Counts questions across sparse and temporal output files on Gadi |
+| `plot_boreas_video_lengths.py` | Reads Boreas MP4 durations with ffprobe, scales each by three, and saves a frequency histogram |
 | `QA/` | Video questionnaire runner: strips answer metadata, shuffles questions, and selects frame or native-video input from model configuration |
 | `tests/test_responses_store_recovery.py` | Tests recovery from Responses API stored-response size limits |
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |

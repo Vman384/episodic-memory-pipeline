@@ -57,10 +57,10 @@ def parse_args() -> argparse.Namespace:
         help=f"Boreas dataset directory (default: {DEFAULT_DATASET_ROOT})",
     )
     parser.add_argument(
-        "--bin-minutes",
-        type=float,
-        default=10,
-        help="Histogram bin width in scaled minutes (default: 10)",
+        "--bins",
+        type=int,
+        default=8,
+        help="Number of histogram bins (6-10; default: 8)",
     )
     parser.add_argument(
         "--output",
@@ -69,8 +69,8 @@ def parse_args() -> argparse.Namespace:
         help="Path for the output plot (default: boreas_video_length_frequency.png)",
     )
     args = parser.parse_args()
-    if args.bin_minutes <= 0:
-        parser.error("--bin-minutes must be greater than zero")
+    if not 6 <= args.bins <= 10:
+        parser.error("--bins must be between 6 and 10")
     return args
 
 
@@ -117,11 +117,11 @@ def main() -> int:
         return 1
 
     scaled_lengths_minutes = [duration / 60 for _, duration in video_lengths]
-    bin_count = math.ceil(max(scaled_lengths_minutes) / args.bin_minutes)
-    bin_edges = [index * args.bin_minutes for index in range(bin_count + 1)]
 
     figure, axis = plt.subplots()
-    axis.hist(scaled_lengths_minutes, bins=bin_edges, edgecolor="black")
+    _, bin_edges, _ = axis.hist(
+        scaled_lengths_minutes, bins=args.bins, edgecolor="black"
+    )
     axis.set_title("Frequency of Boreas Video Lengths (Duration × 3)")
     axis.set_xlabel("Video length × 3 (minutes)")
     axis.set_ylabel("Number of videos")

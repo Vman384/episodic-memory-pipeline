@@ -71,6 +71,7 @@ episodic-memory-pipeline/
 ├── submit_remaining_opencode_eval.sh
 ├── run_model_eval.sh
 ├── count_questions.sh
+├── plot_boreas_video_lengths.py
 ├── QA/
 │   ├── __init__.py
 │   ├── QuestionnaireParser.py
@@ -225,6 +226,7 @@ intentionally separate so a human can review and correct `events.json` or
 - `python-dotenv` — Load environment variables from a `.env` file.
 - `tqdm` — Progress bar library.
 - `Pillow` — Image manipulation library.
+- `matplotlib` — Plotting library used by `plot_boreas_video_lengths.py`.
 
 ---
 
@@ -688,6 +690,28 @@ available:
 project's Gadi storage. It checks each dataset's
 `sparse_outputs/events/questions.json` and
 `temporal_outputs/narratives/questions.json`, then prints the combined count.
+
+---
+
+### `plot_boreas_video_lengths.py`
+
+**Purpose:** Queries the duration of each `boreas-*/video.mp4` under
+`/g/data/pg06/FYP2026S1_3473/boreas_dataset/` using `ffprobe` (included with
+ffmpeg), multiplies each duration by three, and saves a histogram of the scaled
+video lengths. Missing or unreadable videos are skipped with a message.
+
+**Usage:** Run from the repository root:
+
+```bash
+python3 plot_boreas_video_lengths.py
+python3 plot_boreas_video_lengths.py --bins 8 --output plots/video_lengths.png
+```
+
+The plot uses 8 equal-width bins across the observed scaled-duration range;
+`--bins` accepts values from 6 to 10. The default plot is saved as
+`boreas_video_length_frequency.png` in the current directory. `--dataset-root`
+changes the input directory. `ffprobe` must be available on `PATH`, and
+matplotlib is required to generate the plot.
 
 ---
 
