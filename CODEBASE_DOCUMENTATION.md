@@ -619,10 +619,10 @@ maximum 512-pixel side, and asks all questions together. The job uses the
     `configs/qa_qwen3_8_max.json`, and
     `configs/qa_deepseek_v4_flash_vision_exp.json`. Grok 4.7 uses the Responses
     API and sends sampled frames in batches of 10 before sending questions in the
-    same stored conversation. Qwen3.8 Max uses Anthropic Messages, while
-    DeepSeek V4 Flash Vision Exp uses Chat Completions; both send all sampled
-    frames and questions in one request. The default frame budget and image side
-    limit are `512`. The script prints the selected protocol and its applicable
+    same stored conversation. Qwen3.8 Max and DeepSeek V4 Flash Vision Exp use
+    Chat Completions; both send all sampled frames and questions in one request.
+    The default frame budget and image-side limit are `512`. The script prints
+    the selected protocol and its applicable
     frame handling.
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
    answer file, and `--output` `graded_results.json` in the same output folder.
@@ -1175,7 +1175,7 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `qa_gpt6_luna.json` | — | OpenCode Go GPT-6 Luna QA config using the Responses API with frame input |
 | `qa_kimi_k3.json` | — | OpenCode Go Kimi K3 QA config using Chat Completions with frame input |
 | `qa_grok_4_7.json` | — | Default `run_all_eval.sh` OpenCode Go Grok 4.7 QA config using the Responses API with frame input |
-| `qa_qwen3_8_max.json` | — | OpenCode Go Qwen3.8 Max QA config using Anthropic Messages with frame input |
+| `qa_qwen3_8_max.json` | — | OpenCode Go Qwen3.8 Max QA config using Chat Completions with frame input |
 | `qa_deepseek_v4_flash_vision_exp.json` | — | OpenCode Go DeepSeek V4 Flash Vision Exp QA config using Chat Completions with frame input |
 | `qa_gemini_video.json` | — | QA runner config for Gemini using native MP4 input |
 | `qa_qwen3.json` | — | Local Qwen3-VL native-video QA config for Gadi |

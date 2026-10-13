@@ -137,7 +137,7 @@ python main.py --mode counting
 | `configs/qa_kimi_k3.json` | OpenCode Go Kimi K3 frame-input config using Chat Completions |
 | `configs/qa_gpt6_luna.json` | OpenCode Go GPT-6 Luna frame-input config using the Responses API |
 | `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API; default for `run_all_eval.sh` |
-| `configs/qa_qwen3_8_max.json` | OpenCode Go Qwen3.8 Max frame-input config using Anthropic Messages |
+| `configs/qa_qwen3_8_max.json` | OpenCode Go Qwen3.8 Max frame-input config using Chat Completions |
 | `configs/qa_deepseek_v4_flash_vision_exp.json` | OpenCode Go DeepSeek V4 Flash Vision Exp frame-input config using Chat Completions |
 | `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
 | `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
