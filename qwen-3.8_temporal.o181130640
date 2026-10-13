@@ -1,0 +1,296 @@
+All configured models already evaluated for boreas-2025-07-18-14-55; skipping input checks
+Models: qwen3.8-max
+Benchmark: temporal
+Datasets: 17 Boreas sequences
+Frame budget: 512; max image side: 512 px
+----------------------------------------------
+Model: qwen3.8-max (configs/qa_qwen3_8_max.json)
+API protocol: chat_completions
+Chat Completions sends all sampled frames in one request
+Skipping qwen3.8-max for boreas-2025-07-18-14-55; completed answers already exist
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2024-12-03-13-13
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2024-12-03-13-13/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-03-13-13/temporal
+==============================================
+Asking 15 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-03-13-13/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-03-13-13/temporal/question_answer.json
+Score: 0/15 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-03-13-13/temporal/graded_results.json
+Final mark: 0/15 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2024-12-03-13-34
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2024-12-03-13-34/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-03-13-34/temporal
+==============================================
+Asking 15 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-03-13-34/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-03-13-34/temporal/question_answer.json
+Score: 0/15 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-03-13-34/temporal/graded_results.json
+Final mark: 0/15 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2024-12-04-11-45
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2024-12-04-11-45/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-11-45/temporal
+==============================================
+Asking 11 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-11-45/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-11-45/temporal/question_answer.json
+Score: 0/11 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-11-45/temporal/graded_results.json
+Final mark: 0/11 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2024-12-04-11-56
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2024-12-04-11-56/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-11-56/temporal
+==============================================
+Asking 11 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-11-56/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-11-56/temporal/question_answer.json
+Score: 0/11 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-11-56/temporal/graded_results.json
+Final mark: 0/11 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2025-07-18-15-12
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2025-07-18-15-12/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-15-12/temporal
+==============================================
+Asking 12 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-07-18-15-12/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-15-12/temporal/question_answer.json
+Score: 0/12 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-15-12/temporal/graded_results.json
+Final mark: 0/12 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2024-12-04-14-44
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2024-12-04-14-44/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-44/temporal
+==============================================
+Asking 11 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-14-44/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-44/temporal/question_answer.json
+Score: 0/11 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-44/temporal/graded_results.json
+Final mark: 0/11 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2025-02-15-16-58
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2025-02-15-16-58/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-15-16-58/temporal
+==============================================
+Asking 15 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-02-15-16-58/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-15-16-58/temporal/question_answer.json
+Score: 0/15 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-15-16-58/temporal/graded_results.json
+Final mark: 0/15 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2025-07-18-11-53
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2025-07-18-11-53/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-11-53/temporal
+==============================================
+Asking 12 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-07-18-11-53/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-11-53/temporal/question_answer.json
+Score: 0/12 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-11-53/temporal/graded_results.json
+Final mark: 0/12 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2024-12-04-14-34
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2024-12-04-14-34/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-34/temporal
+==============================================
+Asking 15 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-14-34/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Chat Completions request failed with 212 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_parameter_error] <400> InternalError.Algo.InvalidParameter: Download multimodal file timed out"}; retrying with 162 uniformly sampled frames
+Sampled frames 1-162 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-34/temporal/question_answer.json
+Score: 0/15 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-34/temporal/graded_results.json
+Final mark: 0/15 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2024-12-04-14-38
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2024-12-04-14-38/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-38/temporal
+==============================================
+Asking 15 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-14-38/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-38/temporal/question_answer.json
+Score: 0/15 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-38/temporal/graded_results.json
+Final mark: 0/15 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2025-02-21-14-51
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2025-02-21-14-51/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-21-14-51/temporal
+==============================================
+Asking 13 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-02-21-14-51/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-21-14-51/temporal/question_answer.json
+Score: 0/13 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-21-14-51/temporal/graded_results.json
+Final mark: 0/13 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2025-02-15-17-19
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2025-02-15-17-19/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-15-17-19/temporal
+==============================================
+Asking 13 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-02-15-17-19/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-15-17-19/temporal/question_answer.json
+Score: 0/13 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-15-17-19/temporal/graded_results.json
+Final mark: 0/13 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2024-12-04-14-59
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2024-12-04-14-59/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-59/temporal
+==============================================
+Asking 13 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2024-12-04-14-59/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-59/temporal/question_answer.json
+Score: 0/13 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2024-12-04-14-59/temporal/graded_results.json
+Final mark: 0/13 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2025-07-18-10-33
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2025-07-18-10-33/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-10-33/temporal
+==============================================
+Asking 11 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-07-18-10-33/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-10-33/temporal/question_answer.json
+Score: 0/11 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-07-18-10-33/temporal/graded_results.json
+Final mark: 0/11 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2025-02-22-12-26
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2025-02-22-12-26/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-22-12-26/temporal
+==============================================
+Asking 15 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-02-22-12-26/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-22-12-26/temporal/question_answer.json
+Score: 0/15 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-02-22-12-26/temporal/graded_results.json
+Final mark: 0/15 (0.00%)
+==============================================
+Running qwen3.8-max temporal evaluation for: boreas-2025-08-13-10-36
+Questions: /g/data/pg06/FYP2026S1_3473/boreas-2025-08-13-10-36/temporal_outputs/narratives/questions.json
+Output: /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-08-13-10-36/temporal
+==============================================
+Asking 11 questions using up to 512 sampled frames from /g/data/pg06/FYP2026S1_3473/boreas_dataset/boreas-2025-08-13-10-36/camera
+Chat Completions request failed with 512 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 462 uniformly sampled frames
+Chat Completions request failed with 462 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 412 uniformly sampled frames
+Chat Completions request failed with 412 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 362 uniformly sampled frames
+Chat Completions request failed with 362 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 312 uniformly sampled frames
+Chat Completions request failed with 312 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 262 uniformly sampled frames
+Chat Completions request failed with 262 sampled frames (status=400): API request failed for model qwen3.8-max at https://opencode.ai/zen/go/v1 (status=400): {"param": null, "type": "invalid_request_error", "message": "Upstream request failed: [invalid_request_error] Exceeded limit on max data-uri per request: 250"}; retrying with 212 uniformly sampled frames
+Sampled frames 1-212 accepted in one Chat Completions request
+Answers written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-08-13-10-36/temporal/question_answer.json
+Score: 0/11 (0.00%)
+Graded results written to /home/565/wn8778/episodic-memory-pipeline/model_answers/qwen3.8-max/2025-08-13-10-36/temporal/graded_results.json
+Final mark: 0/11 (0.00%)
+All temporal Boreas evaluations completed successfully.
+
+======================================================================================
+                  Resource Usage on 2026-10-13 18:29:58:
+   Job Id:             181130640.gadi-pbs
+   Project:            pg06
+   Exit Status:        0
+   Service Units:      4.43
+   NCPUs Requested:    1                   CPU Time Used: 00:24:23        
+   Memory Requested:   8.0GB                 Memory Used: 2.85GB          
+   Walltime Requested: 03:00:00            Walltime Used: 01:06:25        
+   JobFS Requested:    100.0MB                JobFS Used: 0B              
+======================================================================================

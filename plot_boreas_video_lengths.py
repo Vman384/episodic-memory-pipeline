@@ -122,8 +122,8 @@ def main() -> int:
     _, bin_edges, _ = axis.hist(
         scaled_lengths_minutes, bins=args.bins, edgecolor="black"
     )
-    axis.set_title("Frequency of Boreas Video Lengths (Duration × 3)")
-    axis.set_xlabel("Video length × 3 (minutes)")
+    axis.set_title("Frequency of Boreas Video Lengths (minutes)")
+    axis.set_xlabel("Video length (minutes)")
     axis.set_ylabel("Number of videos")
     axis.set_xticks(bin_edges)
     axis.grid(axis="y", alpha=0.3)
