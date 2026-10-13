@@ -67,6 +67,7 @@ episodic-memory-pipeline/
 ├── run_model_answers.py
 ├── grade_answers.py
 ├── run_all_eval.sh
+├── average_model_mark.py
 ├── submit_remaining_opencode_eval.sh
 ├── run_model_eval.sh
 ├── count_questions.sh
@@ -651,6 +652,11 @@ than the other artifacts. Before grading new results, the script rejects
 API-reported errors and checks that the API accepted every effective sampled
 frame. A failed dataset is recorded and the script continues with the next one,
 then exits nonzero if any dataset failed.
+
+`average_model_mark.py <model> [--benchmark temporal]` averages the exact
+correct/total percentages in a model's `final_mark.txt` files, weighting each
+dataset equally. It skips datasets without a final mark and reports how many
+marks were included. Use `--benchmark sparse` for sparse-event results.
 Submit from the repository root with `qsub run_all_eval.sh`. The
 `submit_remaining_opencode_eval.sh` helper submits the same job with the
 remaining OpenCode Go QA configs, excluding GPT-6 Luna and Kimi K3.

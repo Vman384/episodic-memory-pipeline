@@ -127,6 +127,7 @@ python main.py --mode counting
 | `run_model_answers.py` | Legacy image-answer runner; use `QA/` for the bounded, shared-question evaluation path |
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
 | `run_all_eval.sh` | PBS job that runs `QA/` and grading for Boreas sequences listed in `DATASET_PROGRESS.md` on the `copyq` queue |
+| `average_model_mark.py` | Prints the arithmetic mean of a model's completed dataset marks |
 | `submit_remaining_opencode_eval.sh` | Submits `run_all_eval.sh` for OpenCode Go QA models, excluding completed GPT-6 Luna and Kimi K3 |
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
 | `count_questions.sh` | Counts questions across sparse and temporal output files on Gadi |
@@ -260,6 +261,15 @@ Before calling a model, the script skips that model/dataset when non-empty answe
 graded-results, and final-mark files already exist, with the final mark newer than
 the other two. It rejects API-reported errors and checks effective frame coverage
 before grading; failed or incomplete runs continue to the next dataset.
+
+To average a model's percentages across datasets with completed marks, run:
+
+```bash
+python3 average_model_mark.py deepseek-v4-flash-vision-exp --benchmark temporal
+```
+
+Each dataset is weighted equally. The benchmark defaults to `temporal`; use
+`--benchmark sparse` to average sparse-event marks instead.
 
 ## Ask Questions from a Video
 
