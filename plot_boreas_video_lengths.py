@@ -33,8 +33,9 @@ def get_video_duration_seconds(video_path: Path) -> float:
             str(video_path),
         ],
         check=True,
-        capture_output=True,
-        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
     )
     duration = float(result.stdout.strip())
     if not math.isfinite(duration) or duration <= 0:
