@@ -1,0 +1,279 @@
+{
+    "score": {
+        "correct": 15,
+        "total": 15,
+        "accuracy": 1.0
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did a large snow-covered arched structure with a circular mechanical unit stand beside the narrow lane?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Was a freestanding Do Not Enter sign beside a blue shed in the snowy yard?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Did the vehicle pass a large parabolic dish and wire-frame antenna mounted on a tower behind a low industrial building?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Was an oncoming red snowplow with a wide angled blade passing on the snow-covered road?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "existence",
+            "question": "Did a dark car sit diagonally across the residential road, with its front pointing toward the right roadside?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a deer step out from the wooded roadside onto the snowy lane?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Did a fallen tree branch partially block the snowy access road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Did a maintenance worker in a reflective vest cross the industrial yard in front of the vehicle?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "deceptive",
+            "question": "Was a red pickup truck parked beside the chain-link gate at the snowy facility entrance?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "deceptive",
+            "question": "Did a flock of geese cross the slushy urban intersection in front of traffic?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which of these events actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "A large parabolic dish with an extended wire-frame antenna stood on a tower behind a low industrial building."
+            ],
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "A large parabolic dish with an extended wire-frame antenna stood on a tower behind a low industrial building."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which of these events actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A dark car was positioned diagonally across the road, facing toward the right roadside."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A dark car was positioned diagonally across the road, facing toward the right roadside."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "noteworthy",
+            "question": "Which of these events actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A pedestrian in a bright orange jacket crossed directly in front of the vehicle on a slushy crosswalk."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A pedestrian in a bright orange jacket crossed directly in front of the vehicle on a slushy crosswalk."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "noteworthy",
+            "question": "Which of these events actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A school bus was visible beside fluorescent school-crossing signs on a slushy residential road."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A school bus was visible beside fluorescent school-crossing signs on a slushy residential road."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "noteworthy",
+            "question": "Which of these events actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A snowplow truck with its blade lowered was working ahead near an intersection."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A snowplow truck with its blade lowered was working ahead near an intersection."
+            ]
+        }
+    ]
+}

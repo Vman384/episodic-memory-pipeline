@@ -2,7 +2,13 @@
     "model": "gemini-3.8-flash",
     "backend": "gemini",
     "input_mode": "native_video",
+    "api_protocol": "responses",
     "api_key_env": "GEMINI_API_KEY",
+    "api_base_url": "https://opencode.ai/zen/go/v1",
     "max_tokens": 4000,
-    "video_processing_timeout_seconds": 1800
+    "api_batch_size": 20,
+    "video_processing_timeout_seconds": 1800,
+    "temperature": null,
+    "api_temperature": null,
+    "reasoning_effort": "low"
 }

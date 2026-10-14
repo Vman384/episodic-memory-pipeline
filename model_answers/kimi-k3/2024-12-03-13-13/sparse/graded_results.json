@@ -1,0 +1,279 @@
+{
+    "score": {
+        "correct": 14,
+        "total": 15,
+        "accuracy": 0.9333
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did a small dark object consistent with an aircraft move across the sky?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Did the vehicle drive under a large concrete bridge, entering deep shadow?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Did a yellow school bus enter from the right and travel in the adjacent lane?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Did a large red semi-truck with a white trailer cross the intersection in front of the vehicle?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "existence",
+            "question": "Did a grey pickup truck equipped with a snowplow blade enter the lane beside the vehicle?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a deer suddenly cross the road in front of the vehicle in a wooded stretch?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Did a fallen tree partially block the vehicle's lane on the rural road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Did the vehicle pass a maintenance truck stopped inside the tunnel?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "deceptive",
+            "question": "Did a motorcyclist overtake the camera vehicle on the right shoulder?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "deceptive",
+            "question": "Did a horse trailer turn onto the rural road ahead of the vehicle?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A small dark object consistent with an aircraft moved across the sky."
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A small dark object consistent with an aircraft moved across the sky."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which unusual roadside feature actually appeared during the drive?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A large weathered dome-shaped structure with a ribbed metallic exterior appeared beside the road."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A large weathered dome-shaped structure with a ribbed metallic exterior appeared beside the road."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "noteworthy",
+            "question": "Which of these pedestrian-related events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "A person walked on the sidewalk next to a building on the right side of the road."
+            ],
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "A person walked on the sidewalk next to a building on the right side of the road."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "noteworthy",
+            "question": "Which unusual roadway transition actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "The vehicle drove under a large concrete bridge, entering deep shadow."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "The vehicle drove under a large concrete bridge, entering deep shadow."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "noteworthy",
+            "question": "Which large-vehicle event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A yellow school bus entered from the right and traveled in the adjacent lane."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A yellow school bus entered from the right and traveled in the adjacent lane."
+            ]
+        }
+    ]
+}

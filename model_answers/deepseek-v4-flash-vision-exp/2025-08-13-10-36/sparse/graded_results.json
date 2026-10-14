@@ -1,0 +1,279 @@
+{
+    "score": {
+        "correct": 12,
+        "total": 15,
+        "accuracy": 0.8
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did a green tractor pass in the opposite lane while towing a low trailer carrying box-like items and two seated people?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Did a bulky nest-like structure sit on top of a roadside utility-pole crossarm?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Was a large gray box trailer visibly tilted in a yard beside stacks of materials and industrial buildings?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Did a long pipe angle across the dirt track toward a small tank or pump assembly on supports?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "existence",
+            "question": "Was there a roadside sign reading \u201cTRUCKS PLEASE AVOID USE OF ENGINE BRAKES\u201d?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a deer step onto the road from the trees and then retreat into the forest?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Did a fallen tree partially block one lane on a forest road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Was a maintenance worker in a reflective vest directing traffic beside a rural road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "deceptive",
+            "question": "Did a logging truck carrying cut timber pass in the opposite lane?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "deceptive",
+            "question": "Was a tunnel entrance closed by a lowered red-and-white barrier?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A small person-shaped figure was visible ahead near the right edge of the road."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A small person-shaped figure was visible ahead near the right edge of the road."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": false,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "A flock of sheep stood behind a wire fence beside the road."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A large bus was stopped off the right side of the road near a side-road entrance."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A long pipe lay along the left edge of the unpaved road."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A long pipe lay along the left edge of the unpaved road."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": false,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A red barn with a silo stood immediately beside the road."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A cluster of loose, used tires was piled beside a weathered white trailer."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A long blue warehouse and a broad yard with stacked materials and equipment stood beside the gravel road."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A long blue warehouse and a broad yard with stacked materials and equipment stood beside the gravel road."
+            ]
+        }
+    ]
+}

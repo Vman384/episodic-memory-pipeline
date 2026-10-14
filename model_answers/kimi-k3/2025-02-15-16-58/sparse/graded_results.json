@@ -1,0 +1,261 @@
+{
+    "score": {
+        "correct": 14,
+        "total": 14,
+        "accuracy": 1.0
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did the digital billboard on the overpass change from the 'Make Vince Fly Again' advertisement to a blue-and-white 'Pure Fibre' advertisement?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Was a person seen walking a dog on the snow-covered sidewalk to the right of the road?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Did a person in dark clothing appear in the snowbank beside a parked white van?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Was a person wearing a red jacket and carrying a yellow bag seen walking away on the right sidewalk?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "deceptive",
+            "question": "Did a deer step onto the road from the forest and cross in front of the vehicle?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a cyclist in a reflective vest ride along the snowy shoulder?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Was a road-maintenance truck stopped beside the entrance to the tunnel?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Did a large fallen branch partly block the road in a forested stretch?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "deceptive",
+            "question": "Did a tractor pull out from a rural driveway ahead of the vehicle?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "noteworthy",
+            "question": "Which vehicle-related event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A white sedan entered from the bottom left and moved into the adjacent lane."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A white sedan entered from the bottom left and moved into the adjacent lane."
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which sign-related event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "The overpass billboard changed from the 'Make Vince Fly Again' advertisement to a blue-and-white 'Pure Fibre' advertisement."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "The overpass billboard changed from the 'Make Vince Fly Again' advertisement to a blue-and-white 'Pure Fibre' advertisement."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which sidewalk activity actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A person walked a dog on the snow-covered sidewalk to the right of the road."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A person walked a dog on the snow-covered sidewalk to the right of the road."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "noteworthy",
+            "question": "Which roadside person-related event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A person in dark clothing appeared in the snowbank beside a parked white van."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A person in dark clothing appeared in the snowbank beside a parked white van."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "noteworthy",
+            "question": "Which pedestrian event actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A person wearing a red jacket and carrying a yellow bag walked away on the right sidewalk."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A person wearing a red jacket and carrying a yellow bag walked away on the right sidewalk."
+            ]
+        }
+    ]
+}

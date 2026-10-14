@@ -1,0 +1,171 @@
+{
+    "score": {
+        "correct": 8,
+        "total": 9,
+        "accuracy": 0.8889
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did the vehicle pass a roadside marker beside four flagpoles displaying Canadian, British, U.S., and dark purple flags?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Was a white pickup ahead of the vehicle seen with an illuminated amber beacon on its roof?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Was a person visible beside the right wall near the tunnel exit?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "deceptive",
+            "question": "Did a deer step onto the snowy shoulder beside the rural road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "deceptive",
+            "question": "Did a snowplow pass the vehicle on the opposite side of the road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a fallen tree branch partly block the right lane near the tunnel entrance?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "noteworthy",
+            "question": "Which of these events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "A roadside sign assembly showed two route shields marked 58, with arrows for straight ahead and a right turn."
+            ],
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "A roadside sign assembly showed two route shields marked 58, with arrows for straight ahead and a right turn."
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "noteworthy",
+            "question": "Which of these events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A small, dark irregular patch was visible on the roadway in the driving lane inside the tunnel."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A small, dark irregular patch was visible on the roadway in the driving lane inside the tunnel."
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "noteworthy",
+            "question": "Which of these events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A pedestrian in dark clothing crossed the intersection directly ahead of the vehicle."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A pedestrian in dark clothing crossed the intersection directly ahead of the vehicle."
+            ]
+        }
+    ]
+}

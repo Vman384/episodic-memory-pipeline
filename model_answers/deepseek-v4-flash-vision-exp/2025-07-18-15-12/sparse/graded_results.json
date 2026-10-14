@@ -1,0 +1,225 @@
+{
+    "score": {
+        "correct": 11,
+        "total": 12,
+        "accuracy": 0.9167
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did a white sedan turn off the paved road onto a dusty dirt track and raise a large cloud of dust?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Did a person on an ATV drive parallel to the camera vehicle while kicking up dust?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Was a red tractor with a canopy parked on the right shoulder of a dirt road with a person in its seat?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Did a large red dump truck approach in the oncoming lane and pass the camera vehicle?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "deceptive",
+            "question": "Did a motorcyclist overtake the camera vehicle on the left side of the rural road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a deer suddenly cross the road in front of the camera vehicle?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Did a road maintenance vehicle stop in the lane ahead of the camera vehicle?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Did the camera vehicle pass through a tunnel while an oncoming car had its headlights illuminated?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "noteworthy",
+            "question": "Which of these events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "A white sedan turned onto a dusty dirt track and drove away."
+            ],
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "A white sedan turned onto a dusty dirt track and drove away."
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "noteworthy",
+            "question": "Which of these events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A person on an ATV drove parallel to the camera vehicle while raising dust."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A person on an ATV drove parallel to the camera vehicle while raising dust."
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which of these events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "A red tractor with a canopy remained parked on the right shoulder."
+            ],
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "A red tractor with a canopy remained parked on the right shoulder."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which of these events actually happened during the drive?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "A large red dump truck approached in the oncoming lane and was passed."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A large red dump truck approached in the oncoming lane and was passed."
+            ]
+        }
+    ]
+}
