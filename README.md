@@ -25,9 +25,10 @@ pip install -r requirements.txt
 
 API mode requires the environment variable named by `api_key_env` in the
 selected configuration. The supplied sparse configuration uses
-`OPENCODE_API_KEY`, loaded from the environment or the repository `.env` file.
-Gemini native-video QA uses `GEMINI_API_KEY` for the Gemini Files API. Local
-Qwen3-VL video input uses `qwen-vl-utils` inside the vLLM environment.
+`OPENCODE_API_KEY`; Gemini frame and native-video QA use `GEMINI_API_KEY`.
+Keys can be exported in the environment or loaded from the repository `.env`
+file. Local Qwen3-VL video input uses `qwen-vl-utils` inside the vLLM
+environment.
 
 ## Gadi Data Paths
 
@@ -157,6 +158,7 @@ python main.py --mode counting
 | `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API; default for `run_all_eval.sh` |
 | `configs/qa_qwen3_8_max.json` | OpenCode Go Qwen3.8 Max frame-input config using Chat Completions |
 | `configs/qa_deepseek_v4_flash_vision_exp.json` | OpenCode Go DeepSeek V4 Flash Vision Exp frame-input config using Chat Completions |
+| `configs/qa_gemini_3_8_flash.json` | Gemini 3.8 Flash frame-input config using Google's OpenAI-compatible Chat Completions API |
 | `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
 | `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
 
@@ -280,6 +282,26 @@ graded-results, and final-mark files already exist, with the final mark newer th
 the other two. It rejects API-reported errors and checks effective frame coverage
 before grading; failed or incomplete runs continue to the next dataset.
 
+To run Gemini 3.8 Flash on one sequence with the same sampled-frame input as
+the OpenCode Go models, export a Gemini API key and submit the Gemini frame
+config:
+
+```bash
+export GEMINI_API_KEY="your-Gemini-API-key"
+CONFIGS="configs/qa_gemini_3_8_flash.json" \
+LIST="boreas-2025-07-18-14-55" MAX_FRAMES=512 qsub run_all_eval.sh
+```
+
+The job sends up to 512 chronologically sampled camera frames, resized to a
+512-pixel maximum side, in one Chat Completions request. Use the same sequence
+and frame settings as the OpenCode Go run when comparing scores. After the
+single-sequence run succeeds, omit `LIST` to evaluate the full configured set.
+Gemini results are written under
+`model_answers/gemini-3.8-flash/<dataset>/<benchmark>/`. This config uses
+Google's OpenAI-compatible Gemini endpoint; `qa_gemini_video.json` remains the
+separate option for native MP4 upload with a standalone `QA.run_questionnaire`
+invocation.
+
 To average a model's percentages across datasets with completed marks, run:
 
 ```bash
@@ -315,12 +337,21 @@ python -m QA.run_questionnaire \
     --frames-dir /path/to/camera \
     --questions /path/to/questions.json \
     --output answers.json
+
+# Gemini 3.8 Flash: same sampled camera-frame input used by run_all_eval.sh
+python -m QA.run_questionnaire \
+    --frames-dir /path/to/camera \
+    --questions /path/to/questions.json \
+    --config configs/qa_gemini_3_8_flash.json \
+    --frame-budget 512 \
+    --max-image-size 512 \
+    --output answers.json
 ```
 
 `configs/qa_gpt6_luna.json` remains the default for a direct
 `QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to the Grok 4.7,
 Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp OpenCode Go configs, using
-`OPENCODE_API_KEY`. Frame mode
+`OPENCODE_API_KEY`; the Gemini frame config uses `GEMINI_API_KEY`. Frame mode
 deterministically samples up to 128 images from
 the MP4 or camera folder, uniformly across elapsed video time, and resizes each
 to a longest side of at most 512 pixels while preserving aspect ratio. Use
@@ -336,6 +367,9 @@ error, the runner reduces the uniform frame sample by 50 and retries down to 50
 frames. Responses API runs also restart with a smaller uniform sample if OpenCode
 returns `Response is too large to store`. Output metadata records the initial
 and effective frame budgets and reductions.
+The Gemini frame config uses Google's OpenAI-compatible endpoint, sets
+`api_max_tokens_parameter` to `max_tokens`, and authenticates with
+`GEMINI_API_KEY`.
 `configs/qa_gemini_video.json`
 uses `GEMINI_API_KEY` and the
 Gemini Files API to upload the original MP4; the runner waits for provider-side
@@ -636,9 +670,10 @@ reasoning models, the configuration omits `temperature`; API requests use
 `api_temperature`, which is omitted when `null`, and `max_tokens` includes
 both reasoning and visible output tokens.
 
-The API wrapper sends a stable per-run `x-opencode-session` header and an
-identifying user agent, as required by OpenCode Go for third-party clients.
-Calls are sent sequentially, one at a time. Connection/time-out errors and
+OpenCode Go API requests include a stable per-run `x-opencode-session` header,
+as required for third-party clients; other OpenAI-compatible endpoints do not
+receive that OpenCode-specific header. Calls are sent sequentially, one at a
+time. Connection/time-out errors and
 HTTP 408, 409, 429, and 5xx errors are retried with exponential backoff and
 jitter, capped at five minutes unless the server's `Retry-After` header asks
 for a longer delay. Retries continue indefinitely unless `api_max_retries` is

@@ -1,0 +1,12 @@
+{
+    "model": "gemini-3.8-flash",
+    "backend": "api",
+    "api_protocol": "chat_completions",
+    "api_max_retries": 3,
+    "input_mode": "frames",
+    "api_base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+    "api_key_env": "GEMINI_API_KEY",
+    "api_temperature": null,
+    "api_max_tokens_parameter": "max_tokens",
+    "max_tokens": 4000
+}

@@ -647,8 +647,10 @@ the job to one dataset; edit the `LISTS` array to change the multi-dataset set.
 overridden through the environment. `CONFIGS` is a space-separated list of
 config paths (default: the Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision
 Exp configs); each listed model runs on every selected dataset in turn, and
-failed runs are recorded as `<model>/<list>`. `API_BATCH_SIZE` only applies to
-Responses API configurations. A model/dataset is skipped when non-empty answer,
+failed runs are recorded as `<model>/<list>`. The script checks the API key
+environment variable named by each model config's `api_key_env`; the Gemini
+frame config uses `GEMINI_API_KEY`. `API_BATCH_SIZE` only applies to Responses
+API configurations. A model/dataset is skipped when non-empty answer,
 graded-results, and final-mark files already exist, with the final mark newer
 than the other artifacts. Before grading new results, the script rejects
 API-reported errors and checks that the API accepted every effective sampled
@@ -857,6 +859,7 @@ The relevant configuration keys are:
 | `model` | Local model path/name or API model identifier |
 | `temperature` | Local vLLM sampling temperature; falls back to `0.2` when `null` |
 | `api_temperature` | API sampling temperature; omitted from the request when `null` or unset |
+| `api_max_tokens_parameter` | Optional Chat Completions token-limit field name; defaults to `max_completion_tokens`, while Gemini's OpenAI-compatible endpoint uses `max_tokens` |
 | `reasoning_effort` | Optional reasoning effort for Responses or Chat Completions APIs, such as `low` or `none` |
 | `api_max_retries` | Optional retry limit for transient API errors; unset retries indefinitely |
 | `max_tokens` | Maximum generated output tokens |
@@ -868,10 +871,11 @@ The relevant configuration keys are:
 | `api_base_url` | API base URL; Anthropic Messages mode strips a trailing `/v1` before the SDK appends `/v1/messages` |
 | `api_key_env` | Environment variable containing the API key |
 
-In API mode, `AIParser` sends an identifying user agent, an OpenCode client
-header, and one stable `x-opencode-session` ID for the process. Calls are
-sequential. Connection/time-out errors and HTTP 408, 409, 429, and 5xx responses
-are retried with exponential backoff and jitter, capped at five minutes unless
+In API mode, `AIParser` sends calls sequentially. OpenCode Go requests include a
+stable per-run `x-opencode-session` ID; other OpenAI-compatible endpoints do not
+receive that OpenCode-specific header. Connection/time-out errors and HTTP 408,
+409, 429, and 5xx responses are retried with exponential backoff and jitter,
+capped at five minutes unless
 the server's `Retry-After` header requests a longer delay. Retries continue
 indefinitely unless `api_max_retries` is set. Each retry logs the provider
 response body and request ID when available.
@@ -1207,6 +1211,7 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `qa_grok_4_7.json` | — | Default `run_all_eval.sh` OpenCode Go Grok 4.7 QA config using the Responses API with frame input |
 | `qa_qwen3_8_max.json` | — | OpenCode Go Qwen3.8 Max QA config using Chat Completions with frame input |
 | `qa_deepseek_v4_flash_vision_exp.json` | — | OpenCode Go DeepSeek V4 Flash Vision Exp QA config using Chat Completions with frame input |
+| `qa_gemini_3_8_flash.json` | — | Gemini 3.8 Flash QA config using Google's OpenAI-compatible Chat Completions endpoint with sampled frame input and `GEMINI_API_KEY` |
 | `qa_gemini_video.json` | — | QA runner config for Gemini using native MP4 input |
 | `qa_qwen3.json` | — | Local Qwen3-VL native-video QA config for Gadi |
 
@@ -1231,8 +1236,8 @@ The current temporal example uses local `Qwen/Qwen2.5-VL-72B-Instruct` with
 1. **Backend-specific environment is required** — The supplied sparse and
    temporal configurations use local vLLM and require four GPUs plus access to
    the cached `Qwen/Qwen3-VL-235B-A22B-Instruct-FP8` and
-   `Qwen/Qwen2.5-VL-72B-Instruct` models. Switching a configuration to
-   `backend: "api"` requires a valid `OPENCODE_API_KEY` and network access.
+   `Qwen/Qwen2.5-VL-72B-Instruct` models. API configurations require network
+   access and the key named by their `api_key_env` setting.
 
 2. **`vllm.pbs` runs the prototype** — The PBS script invokes `test_vlm.py`, not the mode dispatcher in `main.py`.
 

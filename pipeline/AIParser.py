@@ -53,6 +53,9 @@ class AIParser:
         self.local_temperature = 0.2 if temperature is None else temperature
         self.api_temperature = config.get("api_temperature")
         self.api_protocol = str(config.get("api_protocol", "responses")).lower()
+        self.api_max_tokens_parameter = config.get(
+            "api_max_tokens_parameter", "max_completion_tokens"
+        )
         self.api_max_retries = config.get("api_max_retries")
         self.max_tokens = max_tokens
         self.reasoning_effort = config.get("reasoning_effort")
@@ -121,9 +124,11 @@ class AIParser:
             # api_base_url = api_base_url.rstrip("/").removesuffix("/responses")
 
             # OpenCode Go uses this stable per-run ID for routing and prompt
-            # caching. Generic clients without it can be rejected or throttled.
-            self.api_session_id = f"ses_{uuid.uuid4().hex}"
-            default_headers = {"x-opencode-session": self.api_session_id}
+            # caching. Other OpenAI-compatible endpoints do not need this header.
+            default_headers = {}
+            if "opencode.ai" in api_base_url:
+                self.api_session_id = f"ses_{uuid.uuid4().hex}"
+                default_headers["x-opencode-session"] = self.api_session_id
             if self.api_protocol == "anthropic_messages":
                 from anthropic import APIConnectionError, Anthropic
 
@@ -285,7 +290,7 @@ class AIParser:
             request = {
                 "model": self.model_name,
                 "messages": messages,
-                "max_completion_tokens": max_tokens
+                self.api_max_tokens_parameter: max_tokens
                 if max_tokens is not None
                 else self.max_tokens,
             }

@@ -289,38 +289,35 @@ def render_latex_table(
     short_max_minutes: float = 10,
     medium_max_minutes: float = 15,
 ) -> str:
-    """Render an IEEE two-column LaTeX table using booktabs."""
+    """Render a compact, single-column IEEE table using booktabs."""
     rows = summarize_sequences(
         sequences,
         short_max_minutes=short_max_minutes,
         medium_max_minutes=medium_max_minutes,
     )
     lines = [
-        r"\begin{table*}[t]",
+        r"\begin{table}[!t]",
         r"\centering",
+        r"\begingroup",
+        r"\scriptsize",
+        r"\setlength{\tabcolsep}{2pt}",
+        r"\resizebox{\columnwidth}{!}{%",
         r"\begin{tabular}{lrrrrr}",
         r"\toprule",
-        r"\textbf{Duration group} & \textbf{\# Videos} & "
-        r"\textbf{Mean duration (min)} & \textbf{Sparse-event QA} & "
-        r"\textbf{Temporal-order QA} & \textbf{Total QA} "
+        r"\textbf{Group} & \textbf{\#Videos} & \textbf{Mean (min)} & "
+        r"\textbf{Sparse QA} & \textbf{Temporal QA} & \textbf{Total QA} "
         r"\\",
         r"\midrule",
     ]
 
     for row in rows:
-        label = group_label(
-            row.group,
-            short_max_minutes,
-            medium_max_minutes,
-            latex=True,
-        )
         mean_duration = (
             f"{row.mean_duration_minutes:.2f}"
             if row.mean_duration_minutes is not None
             else "--"
         )
         lines.append(
-            f"{label} & {row.video_count} & {mean_duration} & "
+            f"{row.group} & {row.video_count} & {mean_duration} & "
             f"{row.sparse_question_count} & {row.temporal_question_count} & "
             f"{row.total_question_count} "
             + r"\\"
@@ -339,10 +336,13 @@ def render_latex_table(
     lines.extend(
         [
             r"\bottomrule",
-            r"\end{tabular}",
+            r"\end{tabular}%",
+            r"}",
+            r"\endgroup",
             f"\\caption{{{caption}}}",
             r"\label{tab:duration_composition}",
-            r"\end{table*}",
+            r"\end{table}",
+            r"\FloatBarrier",
             "",
         ]
     )

@@ -50,6 +50,7 @@ fi
 MODEL_NAMES=()
 MODEL_FOLDERS=()
 API_PROTOCOLS=()
+API_KEY_ENVS=()
 for CONFIG in "${CONFIG_LIST[@]}"; do
   if [[ ! -f "$CONFIG" ]]; then
     echo "Model config not found: $CONFIG" >&2
@@ -64,11 +65,13 @@ config = json.loads(Path(sys.argv[1]).read_text())
 print(config.get("model", ""))
 print(config.get("backend", "local").lower())
 print(config.get("api_protocol", "responses").lower())
+print(config.get("api_key_env", "OPENCODE_API_KEY"))
 PY
   )
   MODEL_NAME="${CONFIG_SETTINGS[0]:-}"
   BACKEND="${CONFIG_SETTINGS[1]:-}"
   API_PROTOCOL="${CONFIG_SETTINGS[2]:-responses}"
+  API_KEY_ENV="${CONFIG_SETTINGS[3]:-OPENCODE_API_KEY}"
   if [[ -z "$MODEL_NAME" ]]; then
     echo "Model is missing from config: $CONFIG" >&2
     exit 1
@@ -77,15 +80,15 @@ PY
     echo "run_all_eval.sh requires API model configurations: $CONFIG" >&2
     exit 1
   fi
+  if [[ -z "${!API_KEY_ENV:-}" && ! -f .env ]]; then
+    echo "Set $API_KEY_ENV or provide it through the repository .env file" >&2
+    exit 1
+  fi
   MODEL_NAMES+=("$MODEL_NAME")
   MODEL_FOLDERS+=("${MODEL_NAME//\//-}")
   API_PROTOCOLS+=("$API_PROTOCOL")
+  API_KEY_ENVS+=("$API_KEY_ENV")
 done
-
-if [[ -z "${OPENCODE_API_KEY:-}" && ! -f .env ]]; then
-  echo "Set OPENCODE_API_KEY or provide it through the repository .env file" >&2
-  exit 1
-fi
 
 # Boreas sequences from the Temporal section of DATASET_PROGRESS.md.
 
@@ -168,10 +171,12 @@ for INDEX in "${!CONFIG_LIST[@]}"; do
   MODEL_NAME="${MODEL_NAMES[$INDEX]}"
   MODEL_FOLDER="${MODEL_FOLDERS[$INDEX]}"
   API_PROTOCOL="${API_PROTOCOLS[$INDEX]}"
+  API_KEY_ENV="${API_KEY_ENVS[$INDEX]}"
 
   echo "----------------------------------------------"
   echo "Model: $MODEL_NAME ($CONFIG)"
   echo "API protocol: $API_PROTOCOL"
+  echo "API key environment variable: $API_KEY_ENV"
   case "$API_PROTOCOL" in
     responses)
       echo "Responses API batch size: $API_BATCH_SIZE"
