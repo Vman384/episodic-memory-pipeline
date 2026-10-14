@@ -1,0 +1,237 @@
+{
+    "score": {
+        "correct": 0,
+        "total": 15,
+        "accuracy": 0.0
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle passing the parked van on the right and hydrant on the left, or the light SUV on the left and gray SUV on the right moving out of view?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle passed the parked van on the right and hydrant on the left."
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle passing the gated entrance on the right, or a dark car traveling across the intersection from right to left while the signal remained green?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle passed the gated entrance on the right."
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "pairwise_order",
+            "question": "Which happened first: a white SUV crossed the intersection from right to left and exited the frame, or a light-colored van passed from left to right across the far side?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A white SUV crossed from right to left and exited the frame."
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle passing the large roadside sign on the left, or passing the red pickup in the adjacent right lane?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle passed the large roadside sign on the left."
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "pairwise_order",
+            "question": "Which happened first: the black SUV in the adjacent left lane advancing alongside the camera vehicle, or a pedestrian crossing near the intersection?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The black SUV in the adjacent left lane advanced alongside the camera vehicle."
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                3,
+                0,
+                1,
+                2
+            ],
+            "correct_answers": [
+                "The vehicle draws closer to the roadside buildings and stop sign as the route curves slightly right.",
+                "The vehicle follows the snowy road\u2019s rightward curve, drawing closer to the no-entry sign and roadside structures.",
+                "The vehicle continues toward the stop sign and building as the road curves left.",
+                "The vehicle continues forward as the STOP sign on the right passes out of view."
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                3,
+                1,
+                2,
+                0
+            ],
+            "correct_answers": [
+                "A light-colored sedan travels from right to left in the far lanes while a dark SUV crosses left to right in the foreground.",
+                "A light-colored pickup passes across the intersection from right to left.",
+                "A gray SUV crosses from right to left through the center of the view.",
+                "A white SUV travels across the intersection from right to left, moving past the bus shelter."
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "sequence_order",
+            "question": "Put these events in chronological order.",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                3,
+                1,
+                0,
+                2
+            ],
+            "correct_answers": [
+                "A dark vehicle crosses the distant intersection from right toward left.",
+                "Cross traffic moves from left to right while the camera vehicle and nearby queue remain stopped.",
+                "A small group of pedestrians crosses the distant intersection in front of the stopped traffic.",
+                "A light-colored vehicle crosses from left toward the right while the camera vehicle remains queued."
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle passed the parked van on the right and the hydrant on the left?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle passed the partially visible vehicle at the right edge."
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "before_after",
+            "question": "What happened immediately after the white SUV traveled from right to left and exited the frame?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A gray minivan traveled from right to left and cleared the dashcam vehicle\u2019s path."
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "before_after",
+            "question": "What happened immediately before the vehicle passed the large roadside sign on the left?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "Several oncoming cars passed on the left while the car and van ahead remained in view."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "before_after",
+            "question": "What happened immediately after a dark car crossed the intersection from left to right while the dashcam vehicle and queued traffic remained stopped?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A dark vehicle crossed the distant intersection from right toward left."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "before_after",
+            "question": "What happened immediately before the vehicle passed the partially visible vehicle at the right edge?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle passed the parked van on the right and the hydrant on the left."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "before_after",
+            "question": "What happened immediately after the light-colored sedan moved across the intersection from right to left and exited the view?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "A gray minivan followed across the intersection from right to left."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle passed the red pickup in the adjacent right lane?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The white cargo van in the right lane advanced from beside the camera vehicle toward the front and left the frame."
+            ]
+        }
+    ]
+}

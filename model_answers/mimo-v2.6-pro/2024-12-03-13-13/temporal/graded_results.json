@@ -1,0 +1,249 @@
+{
+    "score": {
+        "correct": 0,
+        "total": 15,
+        "accuracy": 0.0
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle drove past a large dome-shaped structure, or the vehicle approached and stopped at the intersection traffic light?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle drove past a large dome-shaped structure."
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "pairwise_order",
+            "question": "Which happened first: the truck with the 'GS Freight Services Inc.' logo moved ahead and slightly left, or the vehicle drove under a bridge with advertisements?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The truck with the 'GS Freight Services Inc.' logo moved ahead and slightly left."
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle passed a pedestrian on the right side of the road, or the vehicle stopped at a red traffic light behind the black Honda CR-V?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle passed a pedestrian on the right side of the road."
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "pairwise_order",
+            "question": "Which happened first: the yellow school bus entered from the right and stopped behind the vehicle, or the pedestrian crossed the road in front of the vehicle?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The yellow school bus entered from the right and stopped behind the vehicle."
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "pairwise_order",
+            "question": "Which happened first: the vehicle transitioned from under a bridge onto the open highway, or the vehicle approached and stopped at a red traffic light before moving when it turned green?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle transitioned from under a bridge onto the open highway."
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "sequence_order",
+            "question": "Which is the chronological order of these events?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1,
+                0,
+                3,
+                2
+            ],
+            "correct_answers": [
+                "The vehicle approached and stopped at the intersection traffic light.",
+                "The vehicle drove past a white van parked on the right side of the road.",
+                "The vehicle passed a pedestrian on the right side of the road.",
+                "The vehicle drove under a bridge with advertisements."
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "sequence_order",
+            "question": "Which is the chronological order of these events?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "correct_answers": [
+                "The vehicle stopped at a red traffic light behind the black Honda CR-V.",
+                "The vehicle approached and passed through an intersection with a green traffic light.",
+                "The vehicle passed a white utility truck as it moved out of the frame.",
+                "The vehicle followed the black SUV while the white pickup truck remained in the adjacent lane."
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "sequence_order",
+            "question": "Which is the chronological order of these events?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                3,
+                1,
+                0,
+                2
+            ],
+            "correct_answers": [
+                "The vehicle followed the white SUV along the road toward a stop sign.",
+                "The vehicle approached a stop sign, stopped, and proceeded after the white SUV.",
+                "The vehicle approached and passed a stop sign while driving through the neighborhood.",
+                "The vehicle passed a silver car parked on the left side of the road."
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "sequence_order",
+            "question": "Which is the chronological order of these events?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1,
+                0,
+                3,
+                2
+            ],
+            "correct_answers": [
+                "The vehicle approached and passed through multiple intersections as the lights changed from green to yellow.",
+                "The vehicle drove under a concrete overpass and continued on the highway.",
+                "The vehicle passed a silver car in the left lane while maintaining distance from the white van.",
+                "The orange bus, blue SUV, white pickup truck, and white car moved out of the frame."
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "sequence_order",
+            "question": "Which is the chronological order of these events?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                3,
+                1,
+                2,
+                0
+            ],
+            "correct_answers": [
+                "The vehicle drove past a large dome-shaped structure on the left.",
+                "The vehicle approached and stopped at a red traffic light, then moved when it turned green.",
+                "The vehicle entered a tunnel-like structure under an overpass.",
+                "The vehicle approached and passed the stop sign in the neighborhood."
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "before_after",
+            "question": "What happened immediately before the vehicle approached and stopped at the intersection traffic light?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle passed the large tree and utility poles."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle drove under a bridge with advertisements?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle maintained a steady position behind the black SUV and black pickup truck, with a school bus appearing on the right."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "before_after",
+            "question": "What happened immediately before the vehicle transitioned from under a bridge onto the open highway?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle entered a tunnel-like structure under an overpass."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle approached and stopped at the stop sign, then proceeded after the white SUV?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "The vehicle continued driving straight through the neighborhood, passing houses and trees."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "before_after",
+            "question": "What happened immediately after the vehicle approached and stopped at a red traffic light, then began moving when it turned green?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "The vehicle passed through the intersection following a white SUV."
+            ]
+        }
+    ]
+}
