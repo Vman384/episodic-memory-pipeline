@@ -7,7 +7,4 @@ vids/
 
 .env
 
-# Temporary Gadi frame staging for local Vertex AI inference
-model_answers/gemini_vertex_staging/
-
 __pycache__/

@@ -8,6 +8,8 @@
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
+#PBS -o /g/data/pg06/FYP2026S1_3473/vertex_frame_prep.out
+#PBS -e /g/data/pg06/FYP2026S1_3473/vertex_frame_prep.err
 
 set -euo pipefail
 
@@ -88,7 +90,7 @@ for LIST in "${LISTS[@]}"; do
 done
 
 JOB_ID="${PBS_JOBID:-manual-$(date +%s)}"
-STAGING_DIR="$PBS_O_WORKDIR/model_answers/gemini_vertex_staging/$JOB_ID"
+STAGING_DIR="$BASE/gemini_vertex_staging/$JOB_ID"
 mkdir -p "$STAGING_DIR"
 
 echo "Benchmark: $BENCHMARK"

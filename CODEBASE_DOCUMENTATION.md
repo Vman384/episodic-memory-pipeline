@@ -684,7 +684,8 @@ root. It uses the same Boreas sequence list and temporal/sparse question paths
 as `run_all_eval.sh`, samples up to 512 timestamp-ordered camera frames per
 dataset, and resizes them to a maximum 512-pixel side. Staged data and a
 `manifest.json` are written under
-`model_answers/gemini_vertex_staging/<PBS_JOBID>/`. `LIST`, `BENCHMARK`,
+`/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/<PBS_JOBID>/`. PBS stdout and
+stderr are also directed to that project filesystem. `LIST`, `BENCHMARK`,
 `QUESTIONS`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, and `SEED` can be overridden.
 
 **Local inference:** After the PBS job finishes, run

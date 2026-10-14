@@ -332,10 +332,11 @@ From the repository root on Gadi, submit the copyq job:
 qsub prepare_vertex_eval.pbs
 ```
 
-It stages the same Boreas sequence list as `run_all_eval.sh` and prints the
-staging directory. Set `LIST` to prepare one sequence, or override `BENCHMARK`,
-`QUESTIONS`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, and `SEED`. Wait for the PBS job to
-finish before starting the local worker.
+It stages the same Boreas sequence list as `run_all_eval.sh` under
+`/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/<PBS_JOBID>/`; PBS output and
+error logs also go to `/g/data/pg06/FYP2026S1_3473/`. Set `LIST` to prepare one
+sequence, or override `BENCHMARK`, `QUESTIONS`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
+and `SEED`. Wait for the PBS job to finish before starting the local worker.
 
 On your computer, from your repository checkout, run:
 
