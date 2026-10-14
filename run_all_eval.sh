@@ -1,10 +1,10 @@
 #!/bin/bash
-#PBS -N qwen-3.8_temporal
+#PBS -N new-models_temporal
 #PBS -P pg06
 #PBS -q copyq
 #PBS -l ncpus=1
 #PBS -l mem=8GB
-#PBS -l walltime=3:00:00
+#PBS -l walltime=72:00:00
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
@@ -18,7 +18,7 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 BASE="/g/data/pg06/FYP2026S1_3473"
 BENCHMARK="${BENCHMARK:-temporal}"
-CONFIGS="${CONFIGS:-configs/qa_qwen3_8_max.json }"
+CONFIGS="${CONFIGS:-configs/qa_claude_haiku_5_5.json configs/qa_mimo_v2_6_pro.json configs/qa_glm_5_3_flash.json}"
 MAX_FRAMES="${MAX_FRAMES:-512}"
 MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
 API_BATCH_SIZE="${API_BATCH_SIZE:-10}"
@@ -41,6 +41,8 @@ QUESTION_RELATIVE_PATH="${QUESTION_RELATIVE_PATH:-$DEFAULT_QUESTION_RELATIVE_PAT
 
 # CONFIGS is a space-separated list of API/native-video model configs, e.g.
 # CONFIGS="configs/qa_grok_4_7.json configs/qa_gemini_video.json"
+# The default evaluates Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash.
+# Override CONFIGS with a space-separated list of config paths to select models.
 read -r -a CONFIG_LIST <<< "$CONFIGS"
 if ((${#CONFIG_LIST[@]} == 0)); then
   echo "CONFIGS must list at least one model config" >&2

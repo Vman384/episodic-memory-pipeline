@@ -158,8 +158,11 @@ python main.py --mode counting
 | `test_gateway.sh` | Checks that the OpenCode API keeps a conversation across requests (`previous_response_id`); run with `OPENCODE_API_KEY=... bash test_gateway.sh` |
 | `configs/answer_eval.json` | Model configuration used by legacy `run_model_answers.py` |
 | `configs/qa_kimi_k3.json` | OpenCode Go Kimi K3 frame-input config using Chat Completions |
+| `configs/qa_claude_haiku_5_5.json` | OpenCode Go Claude Haiku 5.5 frame-input config using Anthropic Messages |
+| `configs/qa_glm_5_3_flash.json` | OpenCode Go GLM-5.3-Flash frame-input config using Chat Completions |
 | `configs/qa_gpt6_luna.json` | OpenCode Go GPT-6 Luna frame-input config using the Responses API |
 | `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API; included by `submit_remaining_opencode_eval.sh` |
+| `configs/qa_mimo_v2_6_pro.json` | OpenCode Go MiMo-V2.6-Pro frame-input config using Chat Completions |
 | `configs/qa_qwen3_8_max.json` | OpenCode Go Qwen3.8 Max frame-input config using Chat Completions |
 | `configs/qa_deepseek_v4_flash_vision_exp.json` | OpenCode Go DeepSeek V4 Flash Vision Exp frame-input config using Chat Completions |
 | `configs/qa_gemini_3_8_flash.json` | Gemini 3.8 Flash frame-input config using Google's OpenAI-compatible Chat Completions API |
@@ -246,9 +249,11 @@ GPT-6 Luna and Kimi K3 runs, use the helper script:
 ./submit_remaining_opencode_eval.sh
 ```
 
-By default `run_all_eval.sh` uses Qwen3.8 Max. The helper sets Grok 4.7,
-Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp through OpenCode Go. These run on
-the active Boreas sequence IDs
+By default `run_all_eval.sh` runs Claude Haiku 5.5, MiMo-V2.6-Pro, and
+GLM-5.3-Flash through OpenCode Go. It evaluates every sequence in its `LISTS`
+array (17 Boreas sequences); leave `LIST` unset to use the full list. The helper
+script separately sets Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp.
+The sequences are the active Boreas IDs
 in the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
@@ -273,9 +278,11 @@ dataset list and write results under `sparse/`. Set `LIST=boreas-2024-12-04-14-4
 run just one dataset. `QUESTIONS`, `QUESTION_RELATIVE_PATH`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
 `API_BATCH_SIZE` (default: 10), and `SEED` are also overridable.
 
-To run several models in one job, set `CONFIGS` to a space-separated list of
-config paths. Each model runs on every selected dataset, one model after
-another:
+To choose different models, set `CONFIGS` to a space-separated list of config
+paths. Each model runs on every selected dataset, one model after another. The
+default `CONFIGS` value selects Claude Haiku 5.5, MiMo-V2.6-Pro, and
+GLM-5.3-Flash; the default `LISTS` array covers the full Boreas set. For example,
+to run only Grok 4.7 on the full list:
 
 ```bash
 CONFIGS="configs/qa_grok_4_7.json" qsub run_all_eval.sh
@@ -286,6 +293,22 @@ Before calling a model, the script skips that model/dataset when non-empty answe
 graded-results, and final-mark files already exist, with the final mark newer than
 the other two. It rejects API-reported errors and checks effective frame coverage
 before grading; failed or incomplete runs continue to the next dataset.
+
+Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash are available as OpenCode Go
+frame-input configs. Claude uses Anthropic Messages; MiMo and GLM-5.3-Flash use
+Chat Completions. Use the same `OPENCODE_API_KEY` as the other OpenCode Go models:
+
+```bash
+qsub run_all_eval.sh
+```
+
+Set `LIST=boreas-2025-07-18-14-55` only when you want to restrict the default
+three-model evaluation to one sequence. The PBS walltime is set to 72 hours for
+the default full-list run; completed model/dataset evaluations are skipped when
+the script is resubmitted.
+
+GLM-5.3 itself is text-only, so this frame-based VLM run uses the vision-capable
+GLM-5.3-Flash variant.
 
 To run Gemini 3.8 Flash on one sequence with the same sampled-frame input as
 the OpenCode Go models, add `GEMINI_API_KEY=your-key` to the repository-root
@@ -355,7 +378,13 @@ request and grading finish, it deletes that dataset's temporary local frames
 before pulling the next one. It also removes that dataset's staged Gadi copy
 after success. Answer JSON, grading, and marks stay on your computer under
 `model_answers/gemini-2.5-flash-vertex/<dataset>/<benchmark>/`. If needed, run
-`gcloud auth application-default login` locally first.
+`gcloud auth application-default login` locally first. The worker reuses an SSH
+control connection, so by default it prompts once for Gadi authentication. If
+you fill the local-only `ssh_pass` placeholder in `run_vertex_frame_eval.py`,
+the worker supplies it to SSH through a pseudo-terminal; never commit a real
+password. On reruns it skips completed datasets; an oversized dataset is
+uniformly reduced by 30 frames per retry, and its effective frame count is
+recorded in the answer metadata.
 
 To average a model's percentages across datasets with completed marks, run:
 
@@ -407,7 +436,10 @@ python -m QA.run_questionnaire \
 `QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to the Qwen3.8 Max
 config, while `submit_remaining_opencode_eval.sh` selects Grok 4.7, Qwen3.8 Max,
 and DeepSeek V4 Flash Vision Exp through OpenCode Go, using
-`OPENCODE_API_KEY`; the Gemini frame config uses `GEMINI_API_KEY`. Frame mode
+`OPENCODE_API_KEY`. Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash are also
+available through their configs and use `OPENCODE_API_KEY`; the Gemini frame
+config uses `GEMINI_API_KEY`. GLM-5.3 is text-only, so the frame-input config
+uses GLM-5.3-Flash. Frame mode
 deterministically samples up to 128 images from
 the MP4 or camera folder, uniformly across elapsed video time, and resizes each
 to a longest side of at most 512 pixels while preserving aspect ratio. Use

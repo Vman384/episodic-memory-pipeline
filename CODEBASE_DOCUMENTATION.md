@@ -119,7 +119,10 @@ episodic-memory-pipeline/
 │   ├── answer_eval.json
 │   ├── qa_gpt6_luna.json
 │   ├── qa_kimi_k3.json
+│   ├── qa_claude_haiku_5_5.json
+│   ├── qa_glm_5_3_flash.json
 │   ├── qa_grok_4_7.json
+│   ├── qa_mimo_v2_6_pro.json
 │   ├── qa_qwen3_8_max.json
 │   ├── qa_deepseek_v4_flash_vision_exp.json
 │   ├── qa_gemini_video.json
@@ -610,14 +613,14 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 ### `run_all_eval.sh`
 
 **Purpose:** PBS batch script that runs configured API QA models and grading
-for the Boreas sequence IDs in its `LISTS` array. Its `CONFIGS` default is
-Qwen3.8 Max; `submit_remaining_opencode_eval.sh` selects Grok 4.7, Qwen3.8 Max,
-and DeepSeek V4 Flash Vision Exp. Frame-input configs sample up
-to 512 frames by default and resize each to a maximum 512-pixel side. The Gemini
-native-video config uploads each original MP4 through the Files API. The default
-array has 10 active Boreas entries from the Temporal section of
+for the Boreas sequence IDs in its `LISTS` array. Its default `CONFIGS` includes
+Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash; `submit_remaining_opencode_eval.sh`
+selects Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp. Frame-input
+configs sample up to 512 frames by default and resize each to a maximum 512-pixel
+side. The Gemini native-video config uploads each original MP4 through the Files
+API. The default array contains all 17 active Boreas entries from the Temporal section of
 `DATASET_PROGRESS.md`; non-Boreas entries such as `forest_dataset` are excluded.
-The job uses the `copyq` queue, one CPU, 8 GB of memory, a 3-hour walltime, and
+The job uses the `copyq` queue, one CPU, 8 GB of memory, a 72-hour walltime, and
 `scratch/pg06+gdata/pg06` storage.
 
 **Entry point:** For each selected sequence it runs two commands:
@@ -649,9 +652,12 @@ the job to one dataset; edit the `LISTS` array to change the multi-dataset set.
 `BENCHMARK`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`,
 `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can also be
 overridden through the environment. `CONFIGS` is a space-separated list of
-config paths (default: the Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision
-Exp configs); each listed model runs on every selected dataset in turn, and
-failed runs are recorded as `<model>/<list>`. The script checks the API key
+config paths (default: Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash); each
+listed model runs on every selected dataset in turn, and failed runs are recorded
+as `<model>/<list>`. Leave `LIST` unset to run all 17 sequences, or set it to a
+single sequence to limit the run. Claude uses Anthropic Messages; MiMo and
+GLM-5.3-Flash use Chat Completions. All three use `OPENCODE_API_KEY`. GLM-5.3 is
+text-only, so the frame evaluator uses its vision-capable Flash variant. The script checks the API key
 environment variable named by each model config's `api_key_env`; both Gemini
 configs use `GEMINI_API_KEY`. Native-video Gemini runs use a separate
 `-native-video` output folder. `API_BATCH_SIZE` only applies to Responses API
@@ -702,8 +708,14 @@ The worker uses the QA prompt and question shuffling/parser, grades each
 response, and writes local outputs under
 `model_answers/gemini-2.5-flash-vertex/<dataset>/<benchmark>/`. The local
 temporary frame directory is removed immediately after each model request.
+SSH connection multiplexing reuses the authenticated session for subsequent
+SCP/SSH commands. The optional local-only `ssh_pass` variable supplies a
+password to the SSH prompt through a pseudo-terminal; its placeholder is
+`empty` by default.
 After successful grading, that dataset's staged Gadi directory is removed.
-Failed datasets retain their remote staged copy for a retry.
+Failed datasets retain their remote staged copy for a retry. Completed datasets
+are skipped on rerun; an oversized dataset's frame sample is reduced uniformly
+by 30 frames per retry, with the final count recorded in metadata.
 
 ---
 
@@ -831,8 +843,8 @@ Native-video mode passes the MP4 through the selected model's video stack.
 The local Qwen3-VL adapter uses `qwen-vl-utils` with vLLM. The Gemini adapter
 uses the Gemini Files API, waits for provider-side processing, and requires
 `google-genai` plus the key named by `api_key_env`. GPT-6 Luna, Kimi K3, Grok
-4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp use frame mode in the
-supplied configs.
+4.7, Qwen3.8 Max, DeepSeek V4 Flash Vision Exp, Claude Haiku 5.5,
+MiMo-V2.6-Pro, and GLM-5.3-Flash use frame mode in the supplied configs.
 
 `QuestionnaireParser.py` accepts the `{"questions": [...]}` structures from the
 sparse and temporal question-generation prompts. It shuffles question objects
@@ -1249,6 +1261,9 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `qa_gpt6_luna.json` | — | OpenCode Go GPT-6 Luna QA config using the Responses API with frame input |
 | `qa_kimi_k3.json` | — | OpenCode Go Kimi K3 QA config using Chat Completions with frame input |
 | `qa_grok_4_7.json` | — | OpenCode Go Grok 4.7 QA config using the Responses API with frame input; included by `submit_remaining_opencode_eval.sh` |
+| `qa_claude_haiku_5_5.json` | — | OpenCode Go Claude Haiku 5.5 QA config using Anthropic Messages with frame input |
+| `qa_mimo_v2_6_pro.json` | — | OpenCode Go MiMo-V2.6-Pro QA config using Chat Completions with frame input |
+| `qa_glm_5_3_flash.json` | — | OpenCode Go GLM-5.3-Flash QA config using Chat Completions with frame input; GLM-5.3 itself is text-only |
 | `qa_qwen3_8_max.json` | — | OpenCode Go Qwen3.8 Max QA config using Chat Completions with frame input |
 | `qa_deepseek_v4_flash_vision_exp.json` | — | OpenCode Go DeepSeek V4 Flash Vision Exp QA config using Chat Completions with frame input |
 | `qa_gemini_3_8_flash.json` | — | Gemini 3.8 Flash QA config using Google's OpenAI-compatible Chat Completions endpoint with sampled frame input and `GEMINI_API_KEY` |

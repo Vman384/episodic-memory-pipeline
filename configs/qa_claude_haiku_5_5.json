@@ -1,0 +1,12 @@
+{
+    "model": "claude-haiku-5-5",
+    "backend": "api",
+    "api_protocol": "anthropic_messages",
+    "api_max_retries": 3,
+    "input_mode": "frames",
+    "api_base_url": "https://opencode.ai/inference/go/v1",
+    "api_key_env": "OPENCODE_API_KEY",
+    "temperature": null,
+    "api_temperature": null,
+    "max_tokens": 4000
+}
