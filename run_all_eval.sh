@@ -39,8 +39,8 @@ case "$BENCHMARK" in
 esac
 QUESTION_RELATIVE_PATH="${QUESTION_RELATIVE_PATH:-$DEFAULT_QUESTION_RELATIVE_PATH}"
 
-# CONFIGS is a space-separated list of API model configs, e.g.
-# CONFIGS="configs/qa_gpt6_luna.json configs/qa_grok_4_7.json"
+# CONFIGS is a space-separated list of API/native-video model configs, e.g.
+# CONFIGS="configs/qa_grok_4_7.json configs/qa_gemini_video.json"
 read -r -a CONFIG_LIST <<< "$CONFIGS"
 if ((${#CONFIG_LIST[@]} == 0)); then
   echo "CONFIGS must list at least one model config" >&2
@@ -51,6 +51,7 @@ MODEL_NAMES=()
 MODEL_FOLDERS=()
 API_PROTOCOLS=()
 API_KEY_ENVS=()
+INPUT_MODES=()
 for CONFIG in "${CONFIG_LIST[@]}"; do
   if [[ ! -f "$CONFIG" ]]; then
     echo "Model config not found: $CONFIG" >&2
@@ -66,18 +67,28 @@ print(config.get("model", ""))
 print(config.get("backend", "local").lower())
 print(config.get("api_protocol", "responses").lower())
 print(config.get("api_key_env", "OPENCODE_API_KEY"))
+print(config.get("input_mode", "frames").lower())
 PY
   )
   MODEL_NAME="${CONFIG_SETTINGS[0]:-}"
   BACKEND="${CONFIG_SETTINGS[1]:-}"
   API_PROTOCOL="${CONFIG_SETTINGS[2]:-responses}"
   API_KEY_ENV="${CONFIG_SETTINGS[3]:-OPENCODE_API_KEY}"
+  INPUT_MODE="${CONFIG_SETTINGS[4]:-frames}"
   if [[ -z "$MODEL_NAME" ]]; then
     echo "Model is missing from config: $CONFIG" >&2
     exit 1
   fi
-  if [[ "$BACKEND" != "api" ]]; then
-    echo "run_all_eval.sh requires API model configurations: $CONFIG" >&2
+  if [[ "$INPUT_MODE" == "frames" && "$BACKEND" != "api" ]]; then
+    echo "Frame input requires an API model configuration: $CONFIG" >&2
+    exit 1
+  fi
+  if [[ "$INPUT_MODE" == "native_video" && "$BACKEND" != "gemini" ]]; then
+    echo "Native-video batch input requires the Gemini backend: $CONFIG" >&2
+    exit 1
+  fi
+  if [[ "$INPUT_MODE" != "frames" && "$INPUT_MODE" != "native_video" ]]; then
+    echo "Unsupported input_mode in config: $CONFIG" >&2
     exit 1
   fi
   if [[ -z "${!API_KEY_ENV:-}" && ! -f .env ]]; then
@@ -85,9 +96,14 @@ PY
     exit 1
   fi
   MODEL_NAMES+=("$MODEL_NAME")
-  MODEL_FOLDERS+=("${MODEL_NAME//\//-}")
+  MODEL_FOLDER="${MODEL_NAME//\//-}"
+  if [[ "$INPUT_MODE" == "native_video" ]]; then
+    MODEL_FOLDER+="-native-video"
+  fi
+  MODEL_FOLDERS+=("$MODEL_FOLDER")
   API_PROTOCOLS+=("$API_PROTOCOL")
   API_KEY_ENVS+=("$API_KEY_ENV")
+  INPUT_MODES+=("$INPUT_MODE")
 done
 
 # Boreas sequences from the Temporal section of DATASET_PROGRESS.md.
@@ -132,26 +148,36 @@ is_evaluation_complete() {
 # Check inputs only for datasets that still need at least one model run.
 for LIST in "${LISTS[@]}"; do
   DATASET_NAME="${LIST#boreas-}"
-  NEEDS_INPUTS=0
-  for MODEL_FOLDER in "${MODEL_FOLDERS[@]}"; do
+  NEEDS_CAMERA=0
+  NEEDS_VIDEO=0
+  for INDEX in "${!MODEL_FOLDERS[@]}"; do
+    MODEL_FOLDER="${MODEL_FOLDERS[$INDEX]}"
     if ! is_evaluation_complete "$MODEL_FOLDER" "$DATASET_NAME"; then
-      NEEDS_INPUTS=1
-      break
+      if [[ "${INPUT_MODES[$INDEX]}" == "native_video" ]]; then
+        NEEDS_VIDEO=1
+      else
+        NEEDS_CAMERA=1
+      fi
     fi
   done
-  if ((NEEDS_INPUTS == 0)); then
+  if ((NEEDS_CAMERA == 0 && NEEDS_VIDEO == 0)); then
     echo "All configured models already evaluated for $LIST; skipping input checks"
     continue
   fi
 
   CAMERA_DIR="$BASE/boreas_dataset/$LIST/camera"
+  VIDEO_FILE="$BASE/boreas_dataset/$LIST/video.mp4"
   QUESTIONS="$QUESTIONS_OVERRIDE"
   if [[ -z "$QUESTIONS" ]]; then
     QUESTIONS="$BASE/$LIST/$QUESTION_RELATIVE_PATH"
   fi
 
-  if [[ ! -d "$CAMERA_DIR" ]]; then
+  if ((NEEDS_CAMERA == 1)) && [[ ! -d "$CAMERA_DIR" ]]; then
     echo "Camera frame folder not found for $LIST: $CAMERA_DIR" >&2
+    exit 1
+  fi
+  if ((NEEDS_VIDEO == 1)) && [[ ! -f "$VIDEO_FILE" ]]; then
+    echo "Native video file not found for $LIST: $VIDEO_FILE" >&2
     exit 1
   fi
   if [[ ! -f "$QUESTIONS" ]]; then
@@ -163,7 +189,9 @@ done
 echo "Models: ${MODEL_NAMES[*]}"
 echo "Benchmark: $BENCHMARK"
 echo "Datasets: ${#LISTS[@]} Boreas sequences"
-echo "Frame budget: $MAX_FRAMES; max image side: $MAX_IMAGE_SIZE px"
+if [[ " ${INPUT_MODES[*]} " == *" frames "* ]]; then
+  echo "Frame budget: $MAX_FRAMES; max image side: $MAX_IMAGE_SIZE px"
+fi
 
 FAILED_LISTS=()
 for INDEX in "${!CONFIG_LIST[@]}"; do
@@ -172,29 +200,36 @@ for INDEX in "${!CONFIG_LIST[@]}"; do
   MODEL_FOLDER="${MODEL_FOLDERS[$INDEX]}"
   API_PROTOCOL="${API_PROTOCOLS[$INDEX]}"
   API_KEY_ENV="${API_KEY_ENVS[$INDEX]}"
+  INPUT_MODE="${INPUT_MODES[$INDEX]}"
 
   echo "----------------------------------------------"
   echo "Model: $MODEL_NAME ($CONFIG)"
-  echo "API protocol: $API_PROTOCOL"
+  echo "Input mode: $INPUT_MODE"
   echo "API key environment variable: $API_KEY_ENV"
-  case "$API_PROTOCOL" in
-    responses)
-      echo "Responses API batch size: $API_BATCH_SIZE"
-      ;;
-    chat_completions)
-      echo "Chat Completions sends all sampled frames in one request"
-      ;;
-    anthropic_messages)
-      echo "Anthropic Messages sends all sampled frames in one request"
-      ;;
-    *)
-      echo "Unsupported API protocol in config: $API_PROTOCOL" >&2
-      exit 1
-      ;;
-  esac
+  if [[ "$INPUT_MODE" == "native_video" ]]; then
+    echo "Gemini Files API uploads the original MP4"
+  else
+    echo "API protocol: $API_PROTOCOL"
+    case "$API_PROTOCOL" in
+      responses)
+        echo "Responses API batch size: $API_BATCH_SIZE"
+        ;;
+      chat_completions)
+        echo "Chat Completions sends all sampled frames in one request"
+        ;;
+      anthropic_messages)
+        echo "Anthropic Messages sends all sampled frames in one request"
+        ;;
+      *)
+        echo "Unsupported API protocol in config: $API_PROTOCOL" >&2
+        exit 1
+        ;;
+    esac
+  fi
 
   for LIST in "${LISTS[@]}"; do
     CAMERA_DIR="$BASE/boreas_dataset/$LIST/camera"
+    VIDEO_FILE="$BASE/boreas_dataset/$LIST/video.mp4"
     QUESTIONS="$QUESTIONS_OVERRIDE"
     if [[ -z "$QUESTIONS" ]]; then
       QUESTIONS="$BASE/$LIST/$QUESTION_RELATIVE_PATH"
@@ -217,22 +252,31 @@ for INDEX in "${!CONFIG_LIST[@]}"; do
     echo "Output: $OUTPUT_DIR"
     echo "=============================================="
 
-    if ! python3 -m QA.run_questionnaire \
-      --frames-dir "$CAMERA_DIR" \
-      --questions "$QUESTIONS" \
-      --config "$CONFIG" \
-      --input-mode frames \
-      --frame-budget "$MAX_FRAMES" \
-      --max-image-size "$MAX_IMAGE_SIZE" \
-      --api-batch-size "$API_BATCH_SIZE" \
-      --seed "$SEED" \
-      --output "$ANSWERS"; then
+    QA_ARGS=(
+      --questions "$QUESTIONS"
+      --config "$CONFIG"
+      --input-mode "$INPUT_MODE"
+      --seed "$SEED"
+      --output "$ANSWERS"
+    )
+    if [[ "$INPUT_MODE" == "native_video" ]]; then
+      QA_ARGS+=(--video "$VIDEO_FILE")
+    else
+      QA_ARGS+=(
+        --frames-dir "$CAMERA_DIR"
+        --frame-budget "$MAX_FRAMES"
+        --max-image-size "$MAX_IMAGE_SIZE"
+        --api-batch-size "$API_BATCH_SIZE"
+      )
+    fi
+
+    if ! python3 -m QA.run_questionnaire "${QA_ARGS[@]}"; then
       echo "QA failed for $MODEL_NAME on $LIST; continuing with the next dataset" >&2
       FAILED_LISTS+=("$MODEL_NAME/$LIST")
       continue
     fi
 
-    if ! python3 - "$ANSWERS" <<'PY'
+    if ! python3 - "$ANSWERS" "$INPUT_MODE" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -242,6 +286,10 @@ metadata = result.get("input_metadata", {})
 error = metadata.get("error") or metadata.get("question_error")
 if error:
     raise SystemExit(f"QA recorded an API error; refusing to grade: {error}")
+if sys.argv[2] == "native_video":
+    if metadata.get("provider") != "gemini" or metadata.get("uploaded_file_state") != "ACTIVE":
+        raise SystemExit("Missing successful Gemini video-upload metadata; refusing to grade")
+    raise SystemExit(0)
 sampled = metadata.get("frames_sampled", metadata.get("frames_used"))
 received = metadata.get("frames_received", metadata.get("frames_used"))
 if sampled is None or received is None:

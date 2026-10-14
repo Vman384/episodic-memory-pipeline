@@ -144,6 +144,10 @@ python main.py --mode counting
 | `run_model_answers.py` | Legacy image-answer runner; use `QA/` for the bounded, shared-question evaluation path |
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
 | `run_all_eval.sh` | PBS job that runs `QA/` and grading for Boreas sequences listed in `DATASET_PROGRESS.md` on the `copyq` queue |
+| `prepare_vertex_eval.pbs` | `copyq` job that samples and stages selected datasets' frames for local Vertex AI evaluation |
+| `prepare_vertex_frames.py` | Reuses the QA frame sampler to create resized, timestamp-ordered JPEGs for a staged dataset |
+| `run_vertex_frame_eval.py` | Local worker that SCP-pulls one dataset, calls Vertex AI, grades it, and deletes temporary images before continuing |
+| `test_vertex.py` | Vertex AI ADC smoke test for the configured GCP project |
 | `average_model_mark.py` | Prints the arithmetic mean of a model's completed dataset marks |
 | `submit_remaining_opencode_eval.sh` | Submits `run_all_eval.sh` for OpenCode Go QA models, excluding completed GPT-6 Luna and Kimi K3 |
 | `run_model_eval.sh` | PBS job that runs the QA runner and grader with local Qwen3-VL on Gadi |
@@ -155,11 +159,11 @@ python main.py --mode counting
 | `configs/answer_eval.json` | Model configuration used by legacy `run_model_answers.py` |
 | `configs/qa_kimi_k3.json` | OpenCode Go Kimi K3 frame-input config using Chat Completions |
 | `configs/qa_gpt6_luna.json` | OpenCode Go GPT-6 Luna frame-input config using the Responses API |
-| `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API; default for `run_all_eval.sh` |
+| `configs/qa_grok_4_7.json` | OpenCode Go Grok 4.7 frame-input config using the Responses API; included by `submit_remaining_opencode_eval.sh` |
 | `configs/qa_qwen3_8_max.json` | OpenCode Go Qwen3.8 Max frame-input config using Chat Completions |
 | `configs/qa_deepseek_v4_flash_vision_exp.json` | OpenCode Go DeepSeek V4 Flash Vision Exp frame-input config using Chat Completions |
 | `configs/qa_gemini_3_8_flash.json` | Gemini 3.8 Flash frame-input config using Google's OpenAI-compatible Chat Completions API |
-| `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input |
+| `configs/qa_gemini_video.json` | Gemini QA config using native MP4 input in standalone QA or `run_all_eval.sh` |
 | `configs/qa_qwen3.json` | Local Qwen3-VL QA config for native video input on Gadi |
 
 To download the full videos for the Boreas sequences listed in
@@ -242,8 +246,9 @@ GPT-6 Luna and Kimi K3 runs, use the helper script:
 ./submit_remaining_opencode_eval.sh
 ```
 
-By default it runs Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp
-through OpenCode Go (the `CONFIGS` default) on the 10 active Boreas sequence IDs
+By default `run_all_eval.sh` uses Qwen3.8 Max. The helper sets Grok 4.7,
+Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp through OpenCode Go. These run on
+the active Boreas sequence IDs
 in the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
 `DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
 `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
@@ -283,11 +288,10 @@ the other two. It rejects API-reported errors and checks effective frame coverag
 before grading; failed or incomplete runs continue to the next dataset.
 
 To run Gemini 3.8 Flash on one sequence with the same sampled-frame input as
-the OpenCode Go models, export a Gemini API key and submit the Gemini frame
-config:
+the OpenCode Go models, add `GEMINI_API_KEY=your-key` to the repository-root
+`.env` file (git-ignored), then submit the Gemini frame config:
 
 ```bash
-export GEMINI_API_KEY="your-Gemini-API-key"
 CONFIGS="configs/qa_gemini_3_8_flash.json" \
 LIST="boreas-2025-07-18-14-55" MAX_FRAMES=512 qsub run_all_eval.sh
 ```
@@ -298,9 +302,59 @@ and frame settings as the OpenCode Go run when comparing scores. After the
 single-sequence run succeeds, omit `LIST` to evaluate the full configured set.
 Gemini results are written under
 `model_answers/gemini-3.8-flash/<dataset>/<benchmark>/`. This config uses
-Google's OpenAI-compatible Gemini endpoint; `qa_gemini_video.json` remains the
-separate option for native MP4 upload with a standalone `QA.run_questionnaire`
-invocation.
+Google's OpenAI-compatible Gemini endpoint; `qa_gemini_video.json` is the
+separate option for native MP4 upload, both standalone and through
+`run_all_eval.sh`.
+
+To evaluate Gemini on each original MP4 instead, use its native-video config:
+
+```bash
+CONFIGS="configs/qa_gemini_video.json" \
+LIST="boreas-2025-07-18-14-55" qsub run_all_eval.sh
+```
+
+This reads `/g/data/pg06/FYP2026S1_3473/boreas_dataset/<sequence>/video.mp4`
+and uploads it through Gemini's Files API. The video must already be downloaded.
+Gemini's default static video processing samples about one frame per second;
+`MAX_FRAMES` does not apply in native-video mode. Results are kept separate in
+`model_answers/gemini-3.8-flash-native-video/<dataset>/<benchmark>/`.
+
+## Run Vertex AI from Your Computer
+
+Use this path when Gadi should prepare the frames but Vertex AI should be called
+from your computer with your existing `gcloud` Application Default Credentials.
+The Gadi job samples the same up-to-512 frames at a 512-pixel maximum side; it
+does not make model calls or need a Google API key.
+
+From the repository root on Gadi, submit the copyq job:
+
+```bash
+qsub prepare_vertex_eval.pbs
+```
+
+It stages the same Boreas sequence list as `run_all_eval.sh` and prints the
+staging directory. Set `LIST` to prepare one sequence, or override `BENCHMARK`,
+`QUESTIONS`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`, and `SEED`. Wait for the PBS job to
+finish before starting the local worker.
+
+On your computer, from your repository checkout, run:
+
+```bash
+python run_vertex_frame_eval.py \
+    --ssh-target YOUR_GADI_SSH_ALIAS \
+    --remote-stage /absolute/path/printed/by/the/job
+```
+
+Replace the SSH alias with the one that works with `ssh`/`scp` from your
+computer, and use the staging path printed by the job. The local worker uses
+the same Vertex project, location, and model as `test_vertex.py`
+(`episodic-memory-benchmark`, `us-central1`, `gemini-2.5-flash`). It calls
+Vertex directly using local ADC, not `GEMINI_API_KEY`. After each dataset's
+request and grading finish, it deletes that dataset's temporary local frames
+before pulling the next one. It also removes that dataset's staged Gadi copy
+after success. Answer JSON, grading, and marks stay on your computer under
+`model_answers/gemini-2.5-flash-vertex/<dataset>/<benchmark>/`. If needed, run
+`gcloud auth application-default login` locally first.
 
 To average a model's percentages across datasets with completed marks, run:
 
@@ -349,8 +403,9 @@ python -m QA.run_questionnaire \
 ```
 
 `configs/qa_gpt6_luna.json` remains the default for a direct
-`QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to the Grok 4.7,
-Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp OpenCode Go configs, using
+`QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to the Qwen3.8 Max
+config, while `submit_remaining_opencode_eval.sh` selects Grok 4.7, Qwen3.8 Max,
+and DeepSeek V4 Flash Vision Exp through OpenCode Go, using
 `OPENCODE_API_KEY`; the Gemini frame config uses `GEMINI_API_KEY`. Frame mode
 deterministically samples up to 128 images from
 the MP4 or camera folder, uniformly across elapsed video time, and resizes each
@@ -373,7 +428,8 @@ The Gemini frame config uses Google's OpenAI-compatible endpoint, sets
 `configs/qa_gemini_video.json`
 uses `GEMINI_API_KEY` and the
 Gemini Files API to upload the original MP4; the runner waits for provider-side
-video processing and does not decode frames locally. Set `input_mode` in the
+video processing and does not decode frames locally. Gemini's default static
+video processing samples at about 1 FPS. Set `input_mode` in the
 model config, or override it with `--input-mode frames` or
 `--input-mode native_video`. Native video input currently supports local
 Qwen3-VL through vLLM/`qwen-vl-utils` and Gemini through its Files API. Use

@@ -1,0 +1,131 @@
+#!/bin/bash
+#PBS -N vertex_frame_prep
+#PBS -P pg06
+#PBS -q copyq
+#PBS -l ncpus=1
+#PBS -l mem=8GB
+#PBS -l walltime=3:00:00
+#PBS -l storage=scratch/pg06+gdata/pg06
+#PBS -l wd
+#PBS -V
+
+set -euo pipefail
+
+module load python3/3.11.7
+
+cd "$PBS_O_WORKDIR"
+source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
+
+BASE="/g/data/pg06/FYP2026S1_3473"
+BENCHMARK="${BENCHMARK:-temporal}"
+MAX_FRAMES="${MAX_FRAMES:-512}"
+MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
+SEED="${SEED:-42}"
+QUESTIONS_OVERRIDE="${QUESTIONS:-}"
+
+case "$BENCHMARK" in
+  temporal)
+    QUESTION_RELATIVE_PATH="temporal_outputs/narratives/questions.json"
+    ;;
+  sparse)
+    QUESTION_RELATIVE_PATH="sparse_outputs/events/questions.json"
+    ;;
+  *)
+    echo "BENCHMARK must be 'temporal' or 'sparse'" >&2
+    exit 1
+    ;;
+esac
+
+if ((MAX_FRAMES < 0 || MAX_IMAGE_SIZE < 1)); then
+  echo "MAX_FRAMES must be >= 0 and MAX_IMAGE_SIZE must be >= 1" >&2
+  exit 1
+fi
+
+LISTS=(
+  "boreas-2025-07-18-14-55"
+  "boreas-2024-12-03-13-13"
+  "boreas-2024-12-03-13-34"
+  "boreas-2024-12-04-11-45"
+  "boreas-2024-12-04-11-56"
+  "boreas-2025-07-18-15-12"
+  "boreas-2024-12-04-14-44"
+  "boreas-2025-02-15-16-58"
+  "boreas-2025-07-18-11-53"
+  "boreas-2024-12-04-14-34"
+  "boreas-2024-12-04-14-38"
+  "boreas-2025-02-21-14-51"
+  "boreas-2025-02-15-17-19"
+  "boreas-2024-12-04-14-59"
+  "boreas-2025-07-18-10-33"
+  "boreas-2025-02-22-12-26"
+  "boreas-2025-08-13-10-36"
+)
+
+if [[ -n "${LIST:-}" ]]; then
+  LISTS=("$LIST")
+fi
+
+DATASET_NAMES=()
+QUESTION_FILES=()
+for LIST in "${LISTS[@]}"; do
+  DATASET_NAME="${LIST#boreas-}"
+  CAMERA_DIR="$BASE/boreas_dataset/$LIST/camera"
+  QUESTIONS="$QUESTIONS_OVERRIDE"
+  if [[ -z "$QUESTIONS" ]]; then
+    QUESTIONS="$BASE/$LIST/$QUESTION_RELATIVE_PATH"
+  fi
+
+  if [[ ! -d "$CAMERA_DIR" ]]; then
+    echo "Camera frame folder not found for $LIST: $CAMERA_DIR" >&2
+    exit 1
+  fi
+  if [[ ! -f "$QUESTIONS" ]]; then
+    echo "Question file not found for $LIST: $QUESTIONS" >&2
+    exit 1
+  fi
+  DATASET_NAMES+=("$DATASET_NAME")
+  QUESTION_FILES+=("$QUESTIONS")
+done
+
+JOB_ID="${PBS_JOBID:-manual-$(date +%s)}"
+STAGING_DIR="$PBS_O_WORKDIR/model_answers/gemini_vertex_staging/$JOB_ID"
+mkdir -p "$STAGING_DIR"
+
+echo "Benchmark: $BENCHMARK"
+echo "Datasets: ${#LISTS[@]}"
+echo "Frame budget: $MAX_FRAMES; max image side: $MAX_IMAGE_SIZE px"
+echo "Staging directory: $STAGING_DIR"
+
+for INDEX in "${!LISTS[@]}"; do
+  LIST="${LISTS[$INDEX]}"
+  DATASET_NAME="${DATASET_NAMES[$INDEX]}"
+  CAMERA_DIR="$BASE/boreas_dataset/$LIST/camera"
+  OUTPUT_DIR="$STAGING_DIR/$DATASET_NAME"
+
+  python3 prepare_vertex_frames.py \
+    --dataset "$DATASET_NAME" \
+    --frames-dir "$CAMERA_DIR" \
+    --questions "${QUESTION_FILES[$INDEX]}" \
+    --output-dir "$OUTPUT_DIR" \
+    --frame-budget "$MAX_FRAMES" \
+    --max-image-size "$MAX_IMAGE_SIZE"
+done
+
+python3 - "$STAGING_DIR/manifest.json" "$BENCHMARK" "$MAX_FRAMES" \
+  "$MAX_IMAGE_SIZE" "$SEED" "${DATASET_NAMES[@]}" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+manifest = {
+    "benchmark": sys.argv[2],
+    "frame_budget": int(sys.argv[3]),
+    "max_image_size": int(sys.argv[4]),
+    "seed": int(sys.argv[5]),
+    "datasets": sys.argv[6:],
+}
+Path(sys.argv[1]).write_text(json.dumps(manifest, indent=2) + "\n")
+PY
+
+echo "All datasets staged. Run the local Vertex worker with:"
+echo "  python run_vertex_frame_eval.py --ssh-target <gadi-ssh-alias> --remote-stage '$STAGING_DIR'"
