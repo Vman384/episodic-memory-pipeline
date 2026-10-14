@@ -1,0 +1,171 @@
+{
+  "score": {
+    "correct": 9,
+    "total": 9,
+    "accuracy": 1.0
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a person carrying a dark bag walk toward the dashcam along the left side of the narrow, snow-lined road?",
+      "correct": true,
+      "selected_indices": [
+        0
+      ],
+      "selected_answers": [
+        "Yes"
+      ],
+      "correct_indices": [
+        0
+      ],
+      "correct_answers": [
+        "Yes"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did the vehicle pass a University of Toronto autonomous-vehicle research vehicle parked along the road?",
+      "correct": true,
+      "selected_indices": [
+        0
+      ],
+      "selected_answers": [
+        "Yes"
+      ],
+      "correct_indices": [
+        0
+      ],
+      "correct_answers": [
+        "Yes"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Was a large, dark-rimmed circular feature visible at the base of a snow-covered dome beside the access lane?",
+      "correct": true,
+      "selected_indices": [
+        0
+      ],
+      "selected_answers": [
+        "Yes"
+      ],
+      "correct_indices": [
+        0
+      ],
+      "correct_answers": [
+        "Yes"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "deceptive",
+      "question": "Did a deer run across the snowy access road in front of the vehicle?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "No"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "deceptive",
+      "question": "Did a fallen tree branch partly block the narrow road?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "No"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a snowplow pass the vehicle on the access road?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "No"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "A person carrying a dark bag walked toward the dashcam along the left side of the narrow road."
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "A person carrying a dark bag walked toward the dashcam along the left side of the narrow road."
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "correct": true,
+      "selected_indices": [
+        2
+      ],
+      "selected_answers": [
+        "A large white domed structure stood behind a chain-link fence beside the snowy lane."
+      ],
+      "correct_indices": [
+        2
+      ],
+      "correct_answers": [
+        "A large white domed structure stood behind a chain-link fence beside the snowy lane."
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "correct": true,
+      "selected_indices": [
+        3
+      ],
+      "selected_answers": [
+        "A dish-shaped antenna and several long aerials were mounted on a tall metal tower behind a low industrial building."
+      ],
+      "correct_indices": [
+        3
+      ],
+      "correct_answers": [
+        "A dish-shaped antenna and several long aerials were mounted on a tall metal tower behind a low industrial building."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "score": {
+    "correct": 14,
+    "total": 15,
+    "accuracy": 0.9333
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a red SUV towing a small utility trailer pass toward the camera while crossing a narrow bridge with low railings and black-and-yellow hazard markers?",
+      "correct": false,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        0
+      ],
+      "correct_answers": [
+        "Yes"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did a green roadside sign reading “South Branch Nottawasaga R.” stand beside a bridge as the road curved into dense woods?",
+      "correct": true,
+      "selected_indices": [
+        0
+      ],
+      "selected_answers": [
+        "Yes"
+      ],
+      "correct_indices": [
+        0
+      ],
+      "correct_answers": [
+        "Yes"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did the paved road transition into pale loose gravel just before a bend through dense forest?",
+      "correct": true,
+      "selected_indices": [
+        0
+      ],
+      "selected_answers": [
+        "Yes"
+      ],
+      "correct_indices": [
+        0
+      ],
+      "correct_answers": [
+        "Yes"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Did a small dark utility trailer or piece of equipment with orange reflective markings sit partly in deep shade just off the right side of the road?",
+      "correct": true,
+      "selected_indices": [
+        0
+      ],
+      "selected_answers": [
+        "Yes"
+      ],
+      "correct_indices": [
+        0
+      ],
+      "correct_answers": [
+        "Yes"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Was a large steel lattice transmission tower visible close beside the road, with high-voltage lines stretching across the open field and above the roadway?",
+      "correct": true,
+      "selected_indices": [
+        0
+      ],
+      "selected_answers": [
+        "Yes"
+      ],
+      "correct_indices": [
+        0
+      ],
+      "correct_answers": [
+        "Yes"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a deer step onto the gravel road and cross in front of the vehicle?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "No"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a farm tractor approach on the gravel road and pass the vehicle?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "No"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did a fallen tree completely block the road and force the vehicle to stop?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "No"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Did a cyclist ride toward the vehicle along the narrow forest road?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "No"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Did a horse-drawn buggy travel along the road beside the open fields?",
+      "correct": true,
+      "selected_indices": [
+        1
+      ],
+      "selected_answers": [
+        "No"
+      ],
+      "correct_indices": [
+        1
+      ],
+      "correct_answers": [
+        "No"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "correct": true,
+      "selected_indices": [
+        3
+      ],
+      "selected_answers": [
+        "The road crossed a short bridge with low guardrails and black-and-yellow hazard panels at its entrance, then bent through the trees."
+      ],
+      "correct_indices": [
+        3
+      ],
+      "correct_answers": [
+        "The road crossed a short bridge with low guardrails and black-and-yellow hazard panels at its entrance, then bent through the trees."
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "correct": true,
+      "selected_indices": [
+        3
+      ],
+      "selected_answers": [
+        "A yellow roadside sign read “WATCH FOR SNOW PLOWS,” above a red-and-white striped marker beside the gravel road."
+      ],
+      "correct_indices": [
+        3
+      ],
+      "correct_answers": [
+        "A yellow roadside sign read “WATCH FOR SNOW PLOWS,” above a red-and-white striped marker beside the gravel road."
+      ]
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "correct": true,
+      "selected_indices": [
+        3
+      ],
+      "selected_answers": [
+        "A yellow diamond warning sign showed a red stop-sign shape with an upward arrow above it."
+      ],
+      "correct_indices": [
+        3
+      ],
+      "correct_answers": [
+        "A yellow diamond warning sign showed a red stop-sign shape with an upward arrow above it."
+      ]
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "correct": true,
+      "selected_indices": [
+        3
+      ],
+      "selected_answers": [
+        "A blue-surfaced court enclosed by tall dark fencing sat immediately beside the road."
+      ],
+      "correct_indices": [
+        3
+      ],
+      "correct_answers": [
+        "A blue-surfaced court enclosed by tall dark fencing sat immediately beside the road."
+      ]
+    },
+    {
+      "question_id": 15,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "correct": true,
+      "selected_indices": [
+        3
+      ],
+      "selected_answers": [
+        "A bright orange SUV was positioned side-on across the road ahead at a junction, with a stop sign visible beside it."
+      ],
+      "correct_indices": [
+        3
+      ],
+      "correct_answers": [
+        "A bright orange SUV was positioned side-on across the road ahead at a junction, with a stop sign visible beside it."
+      ]
+    }
+  ]
+}
