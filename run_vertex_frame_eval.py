@@ -2,7 +2,9 @@
 
 import argparse
 import json
+import os
 import posixpath
+import pty
 import re
 import shlex
 import subprocess
@@ -11,6 +13,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from QA.QuestionnaireParser import QuestionnaireParser
+from QA.VideoAIParser import _uniform_timestamp_indices
 from QA.run_questionnaire import PROMPT_FILE, build_prompt, parse_response
 from grade_answers import grade
 
@@ -19,6 +22,81 @@ DEFAULT_PROJECT = "episodic-memory-benchmark"
 DEFAULT_LOCATION = "us-central1"
 DEFAULT_MODEL = "gemini-2.5-flash"
 MAX_INLINE_MEDIA_BYTES = 14 * 1024 * 1024
+FRAME_REDUCTION_STEP = 30
+# Local-only override: replace "empty" with your password; never commit it.
+ssh_pass = "UpperReal270204"
+SSH_OPTIONS = (
+    "-o",
+    "ControlMaster=auto",
+    "-o",
+    "ControlPersist=1h",
+    "-o",
+    "ControlPath=~/.ssh/cm-%C",
+)
+
+
+class InlinePayloadTooLarge(RuntimeError):
+    """Raised when the sampled images do not fit in one Vertex request."""
+
+
+def fit_vertex_request_frames(
+    all_frame_paths: list[Path],
+) -> tuple[list[Path], list[int], int | None, list[dict]]:
+    """Reduce only an oversized dataset's uniform frame sample, by 30 per try."""
+    selected_indices = list(range(len(all_frame_paths)))
+    reductions = []
+
+    while True:
+        selected_paths = [all_frame_paths[index] for index in selected_indices]
+        try:
+            quality = compress_for_vertex(selected_paths)
+            return selected_paths, selected_indices, quality, reductions
+        except InlinePayloadTooLarge:
+            current_count = len(selected_indices)
+            if current_count <= 1:
+                raise
+
+            next_count = max(1, current_count - FRAME_REDUCTION_STEP)
+            positions = _uniform_timestamp_indices(range(current_count), next_count)
+            selected_indices = [selected_indices[position] for position in positions]
+            reductions.append(
+                {"frames_before": current_count, "frames_after": next_count}
+            )
+            print(
+                f"Vertex payload too large; retrying this dataset with "
+                f"{next_count} frames",
+                flush=True,
+            )
+
+
+def run_ssh_command(command: list[str]) -> None:
+    if ssh_pass == "empty":
+        subprocess.run(command, check=True)
+        return
+
+    prompt_tail = bytearray()
+
+    def read_ssh_output(master_fd: int) -> bytes:
+        try:
+            output = os.read(master_fd, 1024)
+        except OSError:
+            return b""
+        if b"password:" in (prompt_tail + output).lower():
+            prompt_tail.clear()
+            os.write(master_fd, ssh_pass.encode() + b"\n")
+        else:
+            prompt_tail.extend(output.lower())
+            del prompt_tail[:-32]
+        return output
+
+    status = pty.spawn(
+        command,
+        master_read=read_ssh_output,
+        stdin_read=lambda _fd: b"",
+    )
+    exit_code = os.waitstatus_to_exitcode(status)
+    if exit_code != 0:
+        raise subprocess.CalledProcessError(exit_code, command)
 
 
 def is_complete(output_dir: Path) -> bool:
@@ -38,16 +116,16 @@ def is_complete(output_dir: Path) -> bool:
 
 
 def scp_from_remote(target: str, remote_path: str, destination: Path, recursive=False):
-    command = ["scp"]
+    command = ["scp", *SSH_OPTIONS]
     if recursive:
         command.append("-r")
     command.extend([f"{target}:{remote_path}", str(destination)])
-    subprocess.run(command, check=True)
+    run_ssh_command(command)
 
 
 def cleanup_remote_dataset(target: str, remote_path: str) -> None:
     command = f"rm -rf -- {shlex.quote(remote_path)}"
-    subprocess.run(["ssh", target, command], check=True)
+    run_ssh_command(["ssh", *SSH_OPTIONS, target, command])
 
 
 def compress_for_vertex(frame_paths: list[Path]) -> int | None:
@@ -60,27 +138,34 @@ def compress_for_vertex(frame_paths: list[Path]) -> int | None:
     if total_bytes <= MAX_INLINE_MEDIA_BYTES:
         return None
 
-    for quality in (75, 60, 45):
-        for path in frame_paths:
-            with Image.open(path) as source:
-                image = source.convert("RGB")
-                buffer = BytesIO()
-                image.save(buffer, format="JPEG", quality=quality, optimize=True)
-            path.write_bytes(buffer.getvalue())
+    originals = {path: path.read_bytes() for path in frame_paths}
+    try:
+        for quality in (75, 60, 45):
+            for path, original in originals.items():
+                with Image.open(BytesIO(original)) as source:
+                    image = source.convert("RGB")
+                    buffer = BytesIO()
+                    image.save(buffer, format="JPEG", quality=quality, optimize=True)
+                path.write_bytes(buffer.getvalue())
 
-        total_bytes = sum(path.stat().st_size for path in frame_paths)
-        if total_bytes <= MAX_INLINE_MEDIA_BYTES:
-            print(
-                f"Compressed sampled JPEGs to quality {quality} "
-                f"({total_bytes / (1024 * 1024):.1f} MiB total)",
-                flush=True,
-            )
-            return quality
+            total_bytes = sum(path.stat().st_size for path in frame_paths)
+            if total_bytes <= MAX_INLINE_MEDIA_BYTES:
+                print(
+                    f"Compressed sampled JPEGs to quality {quality} "
+                    f"({total_bytes / (1024 * 1024):.1f} MiB total)",
+                    flush=True,
+                )
+                return quality
+    except Exception:
+        for path, original in originals.items():
+            path.write_bytes(original)
+        raise
 
-    raise RuntimeError(
+    for path, original in originals.items():
+        path.write_bytes(original)
+    raise InlinePayloadTooLarge(
         "The sampled images exceed Vertex's inline request limit after JPEG "
-        "compression; rerun frame preparation with a lower MAX_FRAMES or "
-        "MAX_IMAGE_SIZE"
+        "compression"
     )
 
 
@@ -192,14 +277,19 @@ def main() -> None:
                     recursive=True,
                 )
                 dataset_dir = temp_dir / dataset_name
-                frame_paths = sorted((dataset_dir / "frames").glob("*.jpg"))
-                if not frame_paths:
+                all_frame_paths = sorted((dataset_dir / "frames").glob("*.jpg"))
+                if not all_frame_paths:
                     raise RuntimeError(f"No sampled JPEGs staged for {dataset_name}")
 
                 frame_metadata = json.loads(
                     (dataset_dir / "frame_metadata.json").read_text()
                 )
-                compression_quality = compress_for_vertex(frame_paths)
+                (
+                    frame_paths,
+                    selected_indices,
+                    compression_quality,
+                    frame_reductions,
+                ) = fit_vertex_request_frames(all_frame_paths)
                 question_path = dataset_dir / "questions.json"
                 source_questions = json.loads(question_path.read_text())
                 questionnaire = QuestionnaireParser(seed=manifest["seed"]).load(
@@ -222,8 +312,26 @@ def main() -> None:
             # The temporary directory (including every transferred image) has
             # been deleted before grading or moving to the next dataset.
             answers = parse_response(response_text, questionnaire["questions"])
+            effective_frame_metadata = dict(frame_metadata)
+            for field in (
+                "sampled_frame_indices",
+                "sampled_frame_names",
+                "sampled_timestamps_seconds",
+            ):
+                values = frame_metadata.get(field)
+                if isinstance(values, list) and len(values) == len(all_frame_paths):
+                    effective_frame_metadata[field] = [
+                        values[index] for index in selected_indices
+                    ]
+            effective_frame_metadata["frames_used"] = len(frame_paths)
+            if frame_reductions:
+                effective_frame_metadata["frame_budget_initial"] = frame_metadata.get(
+                    "frame_budget"
+                )
+                effective_frame_metadata["frame_budget"] = len(frame_paths)
+                effective_frame_metadata["vertex_frame_reductions"] = frame_reductions
             metadata = {
-                **frame_metadata,
+                **effective_frame_metadata,
                 "provider": "vertex_ai",
                 "api_protocol": "vertex_generate_content",
                 "frames_sampled": len(frame_paths),
@@ -280,7 +388,7 @@ def main() -> None:
             f"rm -f -- {shlex.quote(manifest_path)} && "
             f"rmdir -- {shlex.quote(remote_stage)}"
         )
-        subprocess.run(["ssh", args.ssh_target, remote_cleanup], check=True)
+        run_ssh_command(["ssh", *SSH_OPTIONS, args.ssh_target, remote_cleanup])
     except (subprocess.CalledProcessError, OSError) as error:
         print(f"Completed all datasets, but could not remove staging manifest: {error}")
 

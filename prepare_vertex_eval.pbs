@@ -19,7 +19,7 @@ cd "$PBS_O_WORKDIR"
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 BASE="/g/data/pg06/FYP2026S1_3473"
-BENCHMARK="${BENCHMARK:-temporal}"
+BENCHMARK="${BENCHMARK:-sparse}"
 MAX_FRAMES="${MAX_FRAMES:-512}"
 MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
 SEED="${SEED:-42}"

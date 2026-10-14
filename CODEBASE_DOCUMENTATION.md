@@ -686,9 +686,10 @@ researcher's computer, so Gadi makes no Google API requests and receives no
 Google credentials.
 
 **Gadi preparation:** Submit `qsub prepare_vertex_eval.pbs` from the repository
-root. It uses the same Boreas sequence list and temporal/sparse question paths
-as `run_all_eval.sh`, samples up to 512 timestamp-ordered camera frames per
-dataset, and resizes them to a maximum 512-pixel side. Staged data and a
+root. It uses the same Boreas sequence list as `run_all_eval.sh` and defaults to
+sparse-event questions; set `BENCHMARK=temporal` to use temporal-order questions.
+It samples up to 512 timestamp-ordered camera frames per dataset and resizes
+them to a maximum 512-pixel side. Staged data and a
 `manifest.json` are written under
 `/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/<PBS_JOBID>/`. PBS stdout and
 stderr are also directed to that project filesystem. `LIST`, `BENCHMARK`,

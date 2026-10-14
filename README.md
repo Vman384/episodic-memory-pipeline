@@ -355,11 +355,13 @@ From the repository root on Gadi, submit the copyq job:
 qsub prepare_vertex_eval.pbs
 ```
 
-It stages the same Boreas sequence list as `run_all_eval.sh` under
+By default, it stages sparse-event questions for the same Boreas sequence list
+as `run_all_eval.sh` under
 `/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/<PBS_JOBID>/`; PBS output and
 error logs also go to `/g/data/pg06/FYP2026S1_3473/`. Set `LIST` to prepare one
 sequence, or override `BENCHMARK`, `QUESTIONS`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
-and `SEED`. Wait for the PBS job to finish before starting the local worker.
+and `SEED`. Set `BENCHMARK=temporal` to stage temporal-order questions instead.
+Wait for the PBS job to finish before starting the local worker.
 
 On your computer, from your repository checkout, run:
 
