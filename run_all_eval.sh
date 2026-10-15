@@ -18,7 +18,7 @@ source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 BASE="/g/data/pg06/FYP2026S1_3473"
 BENCHMARK="${BENCHMARK:-temporal}"
-CONFIGS="${CONFIGS:-configs/qa_claude_haiku_5_5.json configs/qa_mimo_v2_6_pro.json configs/qa_glm_5_3_flash.json}"
+CONFIGS="${CONFIGS:-configs/qa_grok_4_7.json}"
 MAX_FRAMES="${MAX_FRAMES:-512}"
 MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
 API_BATCH_SIZE="${API_BATCH_SIZE:-10}"
@@ -41,7 +41,7 @@ QUESTION_RELATIVE_PATH="${QUESTION_RELATIVE_PATH:-$DEFAULT_QUESTION_RELATIVE_PAT
 
 # CONFIGS is a space-separated list of API/native-video model configs, e.g.
 # CONFIGS="configs/qa_grok_4_7.json configs/qa_gemini_video.json"
-# The default evaluates Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash.
+# The default evaluates Grok 4.7; completed model/dataset runs are skipped.
 # Override CONFIGS with a space-separated list of config paths to select models.
 read -r -a CONFIG_LIST <<< "$CONFIGS"
 if ((${#CONFIG_LIST[@]} == 0)); then
@@ -125,8 +125,25 @@ LISTS=(
   "boreas-2025-02-21-14-51"
   "boreas-2025-02-15-17-19"
   "boreas-2024-12-04-14-59"
+  "boreas-2025-07-18-10-33"
+  "boreas-2025-02-22-12-26"
   "boreas-2025-08-13-10-36"
 )
+
+# Grok has completed the first two temporal sequences; leave other runs intact.
+if [[ "$BENCHMARK" == "temporal" && "${#MODEL_NAMES[@]}" == 1 \
+  && "${MODEL_NAMES[0]}" == "grok-4.7" ]]; then
+  REMAINING_LISTS=()
+  for CANDIDATE_LIST in "${LISTS[@]}"; do
+    case "$CANDIDATE_LIST" in
+      boreas-2025-07-18-14-55|boreas-2024-12-03-13-13)
+        continue
+        ;;
+    esac
+    REMAINING_LISTS+=("$CANDIDATE_LIST")
+  done
+  LISTS=("${REMAINING_LISTS[@]}")
+fi
 
 if [[ -n "${LIST:-}" ]]; then
   LISTS=("$LIST")

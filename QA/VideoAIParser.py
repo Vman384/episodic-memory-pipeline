@@ -566,12 +566,17 @@ class VideoAIParser:
                         previous_response_id=previous_response_id,
                     )
                 except RuntimeError as error:
-                    if self._is_response_store_size_error(error):
+                    is_store_size_error = self._is_response_store_size_error(error)
+                    if self._should_reduce_frame_budget(error):
                         next_frame_count = self._next_adaptive_frame_count(
                             current_frame_count,
-                            frames_received=max(
-                                0,
-                                frames_received - self.ADAPTIVE_FRAME_REDUCTION,
+                            frames_received=(
+                                max(
+                                    0,
+                                    frames_received - self.ADAPTIVE_FRAME_REDUCTION,
+                                )
+                                if is_store_size_error
+                                else 0
                             ),
                         )
                         if next_frame_count < current_frame_count:
@@ -583,16 +588,18 @@ class VideoAIParser:
                                 {
                                     "frames_before": current_frame_count,
                                     "frames_after": next_frame_count,
-                                    "status_code": 400,
+                                    "status_code": getattr(error, "status_code", None),
                                     "phase": "frame_batch",
                                     "failed_before_frame": first_frame,
                                     "frames_accepted_before_failure": frames_received,
+                                    "retry_count": getattr(error, "retry_count", 0),
                                 }
                             )
                             print(
-                                "Responses API response was too large to store; "
-                                f"restarting with {next_frame_count} uniformly "
-                                "sampled frames",
+                                "Responses API frame batch failed "
+                                f"(status={getattr(error, 'status_code', None)}): "
+                                f"{error}; restarting with {next_frame_count} "
+                                "uniformly sampled frames",
                                 flush=True,
                             )
                             restart_with_fewer_frames = True
@@ -658,10 +665,13 @@ class VideoAIParser:
                     previous_response_id=previous_response_id,
                 )
             except RuntimeError as error:
-                if self._is_response_store_size_error(error):
+                is_store_size_error = self._is_response_store_size_error(error)
+                if self._should_reduce_frame_budget(error):
                     next_frame_count = self._next_adaptive_frame_count(
                         current_frame_count,
-                        frames_received=frames_received,
+                        frames_received=(
+                            frames_received if is_store_size_error else 0
+                        ),
                     )
                     if next_frame_count < current_frame_count:
                         selected_indices = self._uniform_frame_subset(
@@ -672,15 +682,17 @@ class VideoAIParser:
                             {
                                 "frames_before": current_frame_count,
                                 "frames_after": next_frame_count,
-                                "status_code": 400,
+                                "status_code": getattr(error, "status_code", None),
                                 "phase": "question_request",
                                 "frames_accepted_before_failure": frames_received,
+                                "retry_count": getattr(error, "retry_count", 0),
                             }
                         )
                         print(
-                            "Responses API question response was too large to store; "
-                            f"restarting with {next_frame_count} uniformly sampled "
-                            "frames",
+                            "Responses API question request failed "
+                            f"(status={getattr(error, 'status_code', None)}): "
+                            f"{error}; restarting with {next_frame_count} uniformly "
+                            "sampled frames",
                             flush=True,
                         )
                         continue
@@ -760,6 +772,18 @@ class VideoAIParser:
             status_code == 400
             and "response is too large to store" in str(error).lower()
         )
+
+    @staticmethod
+    def _should_reduce_frame_budget(error: Exception) -> bool:
+        if not isinstance(error, APIRequestError):
+            return False
+        if error.retryable or VideoAIParser._is_response_store_size_error(error):
+            return True
+        try:
+            status_code = int(error.status_code)
+        except (TypeError, ValueError):
+            return False
+        return status_code in {408, 409, 413} or status_code >= 500
 
     def call_frames_dir(
         self,
