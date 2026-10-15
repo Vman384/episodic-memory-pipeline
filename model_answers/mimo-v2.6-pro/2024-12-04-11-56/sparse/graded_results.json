@@ -1,0 +1,219 @@
+{
+    "score": {
+        "correct": 0,
+        "total": 15,
+        "accuracy": 0.0
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did a large semi-truck carrying a long, flatbed load travel across the overpass from left to right?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Did a white commercial van marked 'Penn Refrigeration Ltd' cross the intersection from the left?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Was an orange X-shaped object lying in the left lane of the highway?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Did the vehicle pass a construction truck carrying traffic barrels and a temporary lane-closure sign on the right shoulder?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "existence",
+            "question": "Was a person standing on the right-side sidewalk near a large leafless tree?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a deer cross the highway directly in front of the vehicle?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Did a fallen tree partially block the rural road ahead?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Did a motorcyclist overtake the vehicle inside the tunnel?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "deceptive",
+            "question": "Did a road maintenance worker hold a stop sign on the shoulder?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "deceptive",
+            "question": "Did a horse and rider travel along the right side of the rural road?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A white utility truck with MICHELIN branding drove alongside the camera vehicle and moved ahead."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A large construction truck carrying traffic barrels and a temporary lane-closure sign was parked on the right shoulder."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A person stood on the sidewalk on the right side of the road near a large leafless tree."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A white commercial van marked 'Penn Refrigeration Ltd' crossed the intersection from the left."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "noteworthy",
+            "question": "Which of these rare events actually happened during the drive?",
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "An orange X-shaped object lay in the left lane of the highway."
+            ]
+        }
+    ]
+}

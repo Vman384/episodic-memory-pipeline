@@ -1,0 +1,279 @@
+{
+    "score": {
+        "correct": 12,
+        "total": 15,
+        "accuracy": 0.8
+    },
+    "results": [
+        {
+            "question_id": 1,
+            "type": "existence",
+            "question": "Did a bus on the opposite side of the road display the phrase \u201cGOLF GETS IT\u201d in a large side advertisement?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 2,
+            "type": "existence",
+            "question": "Did the road enter a concrete structure with two adjacent tunnel openings, one brightly lit with green lane signals and the other dark?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 3,
+            "type": "existence",
+            "question": "Did a narrow stairway climb the wooded embankment on the right beside a pedestrian railing?",
+            "correct": false,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 4,
+            "type": "existence",
+            "question": "Was a person in a high-visibility vest standing beside yellow equipment and temporary boards near tracks at the roadside?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 5,
+            "type": "existence",
+            "question": "Did a yellow roadside diamond sign read \u201cBRIDGE CLOSED\u201d on the residential street?",
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
+            "correct_indices": [
+                0
+            ],
+            "correct_answers": [
+                "Yes"
+            ]
+        },
+        {
+            "question_id": 6,
+            "type": "deceptive",
+            "question": "Did a deer stand at the edge of a snowy field beside the rural road?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 7,
+            "type": "deceptive",
+            "question": "Was a road-maintenance vehicle with flashing amber lights parked beside the tunnel entrance?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 8,
+            "type": "deceptive",
+            "question": "Did a cyclist wearing a reflective jacket ride along the residential street?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 9,
+            "type": "deceptive",
+            "question": "Did a fallen tree branch partly obstruct the forest-side shoulder?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 10,
+            "type": "deceptive",
+            "question": "Did a farm tractor wait at the edge of the rural intersection?",
+            "correct": true,
+            "selected_indices": [
+                1
+            ],
+            "selected_answers": [
+                "No"
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "No"
+            ]
+        },
+        {
+            "question_id": 11,
+            "type": "noteworthy",
+            "question": "Which event actually occurred during the drive?",
+            "correct": false,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "A snowplow was clearing the lane beside the highway."
+            ],
+            "correct_indices": [
+                1
+            ],
+            "correct_answers": [
+                "A long white semi-trailer was positioned across the right side of the intersection as the dashcam approached."
+            ]
+        },
+        {
+            "question_id": 12,
+            "type": "noteworthy",
+            "question": "Which event actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                2
+            ],
+            "selected_answers": [
+                "Two pedestrians walked along the pavement at the left side of the street beside patchy snow and parked vehicles."
+            ],
+            "correct_indices": [
+                2
+            ],
+            "correct_answers": [
+                "Two pedestrians walked along the pavement at the left side of the street beside patchy snow and parked vehicles."
+            ]
+        },
+        {
+            "question_id": 13,
+            "type": "noteworthy",
+            "question": "Which event actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A roadside sign read \u201cPine Street\u201d with a right-turning exit arrow beside the approach to a tunnel."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A roadside sign read \u201cPine Street\u201d with a right-turning exit arrow beside the approach to a tunnel."
+            ]
+        },
+        {
+            "question_id": 14,
+            "type": "noteworthy",
+            "question": "Which event actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A white pickup with a wide orange front plow approached the intersection while a high-visibility worker stood beside equipment on the left roadside."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A white pickup with a wide orange front plow approached the intersection while a high-visibility worker stood beside equipment on the left roadside."
+            ]
+        },
+        {
+            "question_id": 15,
+            "type": "noteworthy",
+            "question": "Which event actually occurred during the drive?",
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A large blue roadside sign read \u201cThorold Business Area \u2014 Exit Pine St.\u201d as the divided road approached an underpass."
+            ],
+            "correct_indices": [
+                3
+            ],
+            "correct_answers": [
+                "A large blue roadside sign read \u201cThorold Business Area \u2014 Exit Pine St.\u201d as the divided road approached an underpass."
+            ]
+        }
+    ]
+}
