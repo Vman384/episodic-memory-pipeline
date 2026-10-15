@@ -17,18 +17,21 @@ from QA.VideoAIParser import VideoAIParser
 QA_DIR = Path(__file__).resolve().parent
 PROMPT_FILE = QA_DIR / "prompts" / "answer_questions.txt"
 DEFAULT_CONFIG = QA_DIR.parent / "configs" / "qa_gpt6_luna.json"
+# Sparse types give away the answer (deceptive is always "No", existence is
+# always "Yes"), so the model never sees them. Temporal types stay visible.
+HIDDEN_TYPES = {"existence", "deceptive", "noteworthy"}
 
 
 def build_prompt(prompt_template: str, questionnaire: dict) -> str:
     """Add only the question text and options to the short answer prompt."""
-    questions = [
-        {
-            "type": question.get("type"),
-            "question": question["question"],
-            "options": question["options"],
-        }
-        for question in questionnaire["questions"]
-    ]
+    questions = []
+    for question in questionnaire["questions"]:
+        prompt_question = {}
+        if question.get("type") not in HIDDEN_TYPES:
+            prompt_question["type"] = question.get("type")
+        prompt_question["question"] = question["question"]
+        prompt_question["options"] = question["options"]
+        questions.append(prompt_question)
     return (
         f"{prompt_template.rstrip()}\n\n"
         "Questions:\n"

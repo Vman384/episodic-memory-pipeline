@@ -840,7 +840,8 @@ MiMo-V2.6-Pro, and GLM-5.3-Flash use frame mode in the supplied configs.
 `QuestionnaireParser.py` accepts the `{"questions": [...]}` structures from the
 sparse and temporal question-generation prompts. It shuffles question objects
 without changing option order. The model prompt includes only `type`, `question`,
-and `options`; it omits IDs, answer keys, evidence, false-event flags, and the
+and `options`, and leaves `type` out for sparse questions (`existence`,
+`deceptive`, `noteworthy`) because it would give away the answer; it omits IDs, answer keys, evidence, false-event flags, and the
 top-level `false_events` reviewer list. The model returns a positional JSON
 array of index lists, with zero-based option indexes; the runner maps array
 positions back to original question IDs for grading.
