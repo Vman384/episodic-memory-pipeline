@@ -143,7 +143,7 @@ python main.py --mode counting
 | `forest_run.sh` | Local Qwen3-VL sparse-event PBS job for the forest K-01 dataset; API and temporal examples are inactive |
 | `run_model_answers.py` | Legacy image-answer runner; use `QA/` for the bounded, shared-question evaluation path |
 | `grade_answers.py` | Scores an answers JSON against the question file and writes per-question results |
-| `run_all_eval.sh` | PBS job that runs `QA/` and grading for Boreas sequences listed in `DATASET_PROGRESS.md` on the `copyq` queue |
+| `run_all_eval.sh` | By default, stages sparse frames/questions for local Gemini Vertex evaluation; API QA configs remain available on the `copyq` queue |
 | `prepare_vertex_eval.pbs` | `copyq` job that samples and stages selected datasets' frames for local Vertex AI evaluation |
 | `prepare_vertex_frames.py` | Reuses the QA frame sampler to create resized, timestamp-ordered JPEGs for a staged dataset |
 | `run_vertex_frame_eval.py` | Local worker that SCP-pulls one dataset, calls Vertex AI, grades it, and deletes temporary images before continuing |
@@ -249,63 +249,32 @@ GPT-6 Luna and Kimi K3 runs, use the helper script:
 ./submit_remaining_opencode_eval.sh
 ```
 
-By default `run_all_eval.sh` runs Claude Haiku 5.5, MiMo-V2.6-Pro, and
-GLM-5.3-Flash through OpenCode Go. It evaluates every sequence in its `LISTS`
-array (17 Boreas sequences); leave `LIST` unset to use the full list. The helper
-script separately sets Grok 4.7, Qwen3.8 Max, and DeepSeek V4 Flash Vision Exp.
-The sequences are the active Boreas IDs
-in the `LISTS` array in `run_all_eval.sh`, copied from the **Temporal** section of
-`DATASET_PROGRESS.md` (`forest_dataset` is excluded). It reads camera frames from
-`/g/data/pg06/FYP2026S1_3473/boreas_dataset/<list>/camera` and temporal questions
-from `/g/data/pg06/FYP2026S1_3473/<list>/temporal_outputs/narratives/questions.json`.
-Each sequence uses up to 512 frames by default, resized to a maximum side of
-512 pixels. `MAX_FRAMES` can override the frame budget. Grok 4.7 uses the
-Responses API and sends sampled frames in batches of 10 before sending the
-questions in the same stored conversation. Qwen3.8 Max and DeepSeek V4 Flash
-Vision Exp each send all sampled frames with the questions in one request.
-Results are saved under the directory from which the job was submitted:
+By default, `run_all_eval.sh` stages sparse-event inputs for Gemini Vertex AI.
+It uses the 15 Boreas sequences in its `LISTS` array, samples up to 512 camera
+frames per sequence (512-pixel maximum side), and writes staged files under
+`/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/<PBS_JOBID>/`. It does not
+call Vertex from Gadi. Leave `LIST` unset for all 15 sequences or set it to one
+sequence; `BENCHMARK=temporal` stages temporal questions instead. `MAX_FRAMES`,
+`MAX_IMAGE_SIZE`, `QUESTIONS`, and `SEED` can be overridden.
 
-```text
-model_answers/grok-4.7/<dataset>/temporal/
-    question_answer.json
-    graded_results.json
-    final_mark.txt
-```
+After the job prints its staging path, run the local SCP/Vertex worker as
+described in [Run Vertex AI from Your Computer](#run-vertex-ai-from-your-computer).
+Pass `--force` for this rerun because previous Gemini Vertex outputs are already
+complete. The QA prompt hides sparse question-type labels, including
+`deceptive`; the deceptive questions themselves remain part of the benchmark.
 
-`final_mark.txt` contains a score such as `10/20 (50.00%)`. Set
-`BENCHMARK=sparse` to read `sparse_outputs/events/questions.json` for the same
-dataset list and write results under `sparse/`. Set `LIST=boreas-2024-12-04-14-44` to
-run just one dataset. `QUESTIONS`, `QUESTION_RELATIVE_PATH`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
-`API_BATCH_SIZE` (default: 10), and `SEED` are also overridable.
-
-To choose different models, set `CONFIGS` to a space-separated list of config
-paths. Each model runs on every selected dataset, one model after another. The
-default `CONFIGS` value selects Claude Haiku 5.5, MiMo-V2.6-Pro, and
-GLM-5.3-Flash; the default `LISTS` array covers the full Boreas set. For example,
-to run only Grok 4.7 on the full list:
+To run the on-Gadi API evaluator instead, set `CONFIGS` to one or more model
+config paths. For example, to run only Grok 4.7 on the full list:
 
 ```bash
 CONFIGS="configs/qa_grok_4_7.json" qsub run_all_eval.sh
 ```
 
-Results for each model are stored under its own `model_answers/<model>/` folder.
+API results for each model are stored under its own `model_answers/<model>/` folder.
 Before calling a model, the script skips that model/dataset when non-empty answer,
 graded-results, and final-mark files already exist, with the final mark newer than
 the other two. It rejects API-reported errors and checks effective frame coverage
 before grading; failed or incomplete runs continue to the next dataset.
-
-Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash are available as OpenCode Go
-frame-input configs. Claude uses Anthropic Messages; MiMo and GLM-5.3-Flash use
-Chat Completions. Use the same `OPENCODE_API_KEY` as the other OpenCode Go models:
-
-```bash
-qsub run_all_eval.sh
-```
-
-Set `LIST=boreas-2025-07-18-14-55` only when you want to restrict the default
-three-model evaluation to one sequence. The PBS walltime is set to 72 hours for
-the default full-list run; completed model/dataset evaluations are skipped when
-the script is resubmitted.
 
 GLM-5.3 itself is text-only, so this frame-based VLM run uses the vision-capable
 GLM-5.3-Flash variant.
@@ -349,14 +318,16 @@ from your computer with your existing `gcloud` Application Default Credentials.
 The Gadi job samples the same up-to-512 frames at a 512-pixel maximum side; it
 does not make model calls or need a Google API key.
 
-From the repository root on Gadi, submit the copyq job:
+From the repository root on Gadi, submit the copyq job. `run_all_eval.sh` now
+delegates to this staging workflow by default; submitting the preparation script
+directly is also supported:
 
 ```bash
-qsub prepare_vertex_eval.pbs
+qsub run_all_eval.sh
 ```
 
-By default, it stages sparse-event questions for the same Boreas sequence list
-as `run_all_eval.sh` under
+By default, it stages sparse-event questions for the 15 sequence IDs in
+`run_all_eval.sh` under
 `/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/<PBS_JOBID>/`; PBS output and
 error logs also go to `/g/data/pg06/FYP2026S1_3473/`. Set `LIST` to prepare one
 sequence, or override `BENCHMARK`, `QUESTIONS`, `MAX_FRAMES`, `MAX_IMAGE_SIZE`,
@@ -368,7 +339,8 @@ On your computer, from your repository checkout, run:
 ```bash
 python run_vertex_frame_eval.py \
     --ssh-target YOUR_GADI_SSH_ALIAS \
-    --remote-stage /absolute/path/printed/by/the/job
+    --remote-stage /absolute/path/printed/by/the/job \
+    --force
 ```
 
 Replace the SSH alias with the one that works with `ssh`/`scp` from your
@@ -384,9 +356,10 @@ after success. Answer JSON, grading, and marks stay on your computer under
 control connection, so by default it prompts once for Gadi authentication. If
 you fill the local-only `ssh_pass` placeholder in `run_vertex_frame_eval.py`,
 the worker supplies it to SSH through a pseudo-terminal; never commit a real
-password. On reruns it skips completed datasets; an oversized dataset is
-uniformly reduced by 30 frames per retry, and its effective frame count is
-recorded in the answer metadata.
+password. By default, the worker skips completed datasets; `--force` reruns
+them and overwrites their local results. An oversized dataset is uniformly
+reduced by 30 frames per retry, and its effective frame count is recorded in
+the answer metadata.
 
 To average a model's percentages across datasets with completed marks, run:
 
@@ -435,9 +408,10 @@ python -m QA.run_questionnaire \
 ```
 
 `configs/qa_gpt6_luna.json` remains the default for a direct
-`QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to the Qwen3.8 Max
-config, while `submit_remaining_opencode_eval.sh` selects Grok 4.7, Qwen3.8 Max,
-and DeepSeek V4 Flash Vision Exp through OpenCode Go, using
+`QA.run_questionnaire` invocation; `run_all_eval.sh` defaults to staging sparse
+inputs for Gemini Vertex. Set `CONFIGS` to an API QA config to use its on-Gadi
+runner. `submit_remaining_opencode_eval.sh` selects Grok 4.7, Qwen3.8 Max, and
+DeepSeek V4 Flash Vision Exp through OpenCode Go, using
 `OPENCODE_API_KEY`. Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash are also
 available through their configs and use `OPENCODE_API_KEY`; the Gemini frame
 config uses `GEMINI_API_KEY`. GLM-5.3 is text-only, so the frame-input config

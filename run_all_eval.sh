@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N new-models_temporal
+#PBS -N gemini_vertex_sparse
 #PBS -P pg06
 #PBS -q copyq
 #PBS -l ncpus=1
@@ -8,8 +8,19 @@
 #PBS -l storage=scratch/pg06+gdata/pg06
 #PBS -l wd
 #PBS -V
+#PBS -o /g/data/pg06/FYP2026S1_3473/run_all_eval.out
+#PBS -e /g/data/pg06/FYP2026S1_3473/run_all_eval.err
 
 set -euo pipefail
+
+BENCHMARK="${BENCHMARK:-sparse}"
+CONFIGS="${CONFIGS:-vertex}"
+
+# Vertex inference runs on the user's machine. Gadi only stages its inputs;
+# run_vertex_frame_eval.py then SCPs each dataset locally for Gemini Vertex.
+if [[ "$CONFIGS" == "vertex" ]]; then
+  exec bash "$PBS_O_WORKDIR/prepare_vertex_eval.pbs"
+fi
 
 module load python3/3.11.7
 
@@ -17,8 +28,6 @@ cd "$PBS_O_WORKDIR"
 source /scratch/pg06/vm4618/envs/vllm_env/bin/activate
 
 BASE="/g/data/pg06/FYP2026S1_3473"
-BENCHMARK="${BENCHMARK:-temporal}"
-CONFIGS="${CONFIGS:-configs/qa_kimi_k3.json}"
 
 MAX_FRAMES="${MAX_FRAMES:-512}"
 MAX_IMAGE_SIZE="${MAX_IMAGE_SIZE:-512}"
@@ -40,10 +49,10 @@ case "$BENCHMARK" in
 esac
 QUESTION_RELATIVE_PATH="${QUESTION_RELATIVE_PATH:-$DEFAULT_QUESTION_RELATIVE_PATH}"
 
-# CONFIGS is a space-separated list of API/native-video model configs, e.g.
+# CONFIGS=vertex (the default) stages inputs for local Gemini Vertex inference.
+# Otherwise CONFIGS is a space-separated list of API/native-video configs, e.g.
 # CONFIGS="configs/qa_grok_4_7.json configs/qa_gemini_video.json"
-# The default evaluates Claude Haiku 5.5, MiMo-V2.6-Pro, and GLM-5.3-Flash.
-# Override CONFIGS with a space-separated list of config paths to select models.
+# Set CONFIGS to one or more config paths to run those API models on Gadi.
 read -r -a CONFIG_LIST <<< "$CONFIGS"
 if ((${#CONFIG_LIST[@]} == 0)); then
   echo "CONFIGS must list at least one model config" >&2

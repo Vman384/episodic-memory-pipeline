@@ -214,6 +214,11 @@ def main() -> None:
         default=None,
         help="Local directory for answers and graded results",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-evaluate datasets even when completed local results already exist",
+    )
     args = parser.parse_args()
 
     remote_stage = args.remote_stage.rstrip("/")
@@ -255,7 +260,7 @@ def main() -> None:
             raise SystemExit(f"Unsafe dataset name in staging manifest: {dataset_name!r}")
 
         output_dir = output_root / dataset_name / manifest["benchmark"]
-        if is_complete(output_dir):
+        if is_complete(output_dir) and not args.force:
             print(f"Already complete; skipping {dataset_name}", flush=True)
             try:
                 cleanup_remote_dataset(

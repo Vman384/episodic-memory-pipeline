@@ -41,7 +41,7 @@ This project is a **benchmarking pipeline** to assess **Vision Language Models' 
 
 10. **Forest Run Script** (`forest_run.sh`) — PBS job script currently configured for local Qwen3-VL sparse-event processing on forest K-01; API and temporal examples remain commented out.
 
-11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — Uses the QA runner with deterministic sampled frames or native MP4 input, answers the benchmark questions, then grades the result. `run_model_answers.py` remains a legacy alternative. `run_all_eval.sh` defaults to Grok 4.7, supports configured API models and native-video Gemini, and stores answers, detailed grading, and final marks under `model_answers/` in the submission directory.
+11. **Model Answer Evaluation** (`QA/`, `grade_answers.py`, `run_all_eval.sh`) — By default, `run_all_eval.sh` stages sparse frames/questions on Gadi for local Gemini Vertex inference, then the local worker SCPs datasets here and grades them. Set `CONFIGS` to run API models on Gadi, including native-video Gemini. `run_model_answers.py` remains a legacy alternative.
 
 12. **Video Questionnaire Runner** (`QA/`) — Loads sparse or temporal `questions.json`, removes answer and evidence metadata from the model prompt, randomizes question order, then uses configured frame-sequence or native MP4 input. Frame mode defaults to 128 frames resized to a maximum 512-pixel side.
 
@@ -611,21 +611,18 @@ list. Each result contains `question_id`, `type`, `question`, `correct`,
 
 ### `run_all_eval.sh`
 
-**Purpose:** PBS batch script that runs configured API QA models and grading
-for the Boreas sequence IDs in its `LISTS` array. The default config runs Grok
-4.7 through the Responses API. Frame-input configs sample up to 512 frames by
-default and resize each to a maximum 512-pixel side. The Gemini native-video
-config uploads each original MP4 through the Files API. The default array
-contains all 17 active Boreas entries from the Temporal section of
-`DATASET_PROGRESS.md`; non-Boreas entries such as `forest_dataset` are excluded.
-The default Grok temporal run excludes its two completed datasets, so it
-processes the remaining 15. Other selected models and benchmarks retain the
-full sequence list; completed model/dataset results are skipped by the
-completion check.
-The job uses the `copyq` queue, one CPU, 8 GB of memory, a 72-hour walltime, and
+**Purpose:** By default, stages sparse QA inputs on Gadi for the local Gemini
+Vertex worker. Set `CONFIGS` to a model config path or space-separated config
+paths to run the legacy API QA and grading flow on Gadi. Frame-input configs
+sample up to 512 frames by default and resize each to a maximum 512-pixel side;
+Gemini's native-video API config uploads each original MP4 through the Files
+API. The sequence list contains 15 active Boreas entries from the Temporal
+section of `DATASET_PROGRESS.md`; non-Boreas entries such as `forest_dataset`
+are excluded.
+The job uses the `copyq` queue, one CPU, 8 GB of memory, a 3-hour walltime, and
 `scratch/pg06+gdata/pg06` storage.
 
-**Entry point:** For each selected sequence it runs two commands:
+**API-config entry point:** For each selected sequence it runs two commands:
 
 1. It loops over the literal IDs in `LISTS`, checks the input required by each
    config (`camera/` frames or `video.mp4`) and the question file, then calls
@@ -639,8 +636,8 @@ The job uses the `copyq` queue, one CPU, 8 GB of memory, a 72-hour walltime, and
 2. `grade_answers.py` with the same questions file, `--answers` pointing at that
    answer file, and `--output` `graded_results.json` in the same output folder.
 
-The default output path, relative to the directory from which the job was
-submitted, is:
+API-config output paths are relative to the directory from which the job was
+submitted, for example:
 
 ```text
 model_answers/grok-4.7/<dataset>/temporal/
@@ -653,11 +650,11 @@ model_answers/grok-4.7/<dataset>/temporal/
 the job to one dataset; edit the `LISTS` array to change the multi-dataset set.
 `BENCHMARK`, `QUESTIONS`, `QUESTION_RELATIVE_PATH`,
 `MAX_FRAMES`, `MAX_IMAGE_SIZE`, `API_BATCH_SIZE`, and `SEED` can also be
-overridden through the environment. `CONFIGS` is a space-separated list of
-config paths (default: Grok 4.7); each listed model runs on every selected
-dataset in turn, and failed runs are recorded as `<model>/<list>`. Leave `LIST`
-unset to use the selected dataset set (15 for the default Grok temporal run, 17
-for other runs), or set it to a single sequence to limit the run.
+overridden through the environment. `CONFIGS=vertex` is the default and invokes
+`prepare_vertex_eval.pbs`; set `CONFIGS` to config paths to use the Gadi API
+runner. Each listed API model runs on every selected dataset in turn, and
+failed runs are recorded as `<model>/<list>`. Leave `LIST` unset to use all 15
+sequences, or set it to a single sequence to limit the run.
 Grok uses the Responses API with batches of 10 frames and allows three API
 retries. After retryable HTTP errors exhaust that limit, the frame sample is
 reduced by 50 and the evaluation restarts; response-store size errors also
@@ -679,8 +676,8 @@ correct/total percentages in a model's `final_mark.txt` files, weighting each
 dataset equally. It skips datasets without a final mark and reports how many
 marks were included. Use `--benchmark sparse` for sparse-event results.
 Submit from the repository root with `qsub run_all_eval.sh`. The default run
-evaluates Grok 4.7; use `CONFIGS` to select another model or a space-separated
-set of model configs.
+stages sparse inputs for Vertex AI; use `CONFIGS=<config-paths>` to run API
+models on Gadi.
 
 ---
 
@@ -690,9 +687,10 @@ set of model configs.
 researcher's computer, so Gadi makes no Google API requests and receives no
 Google credentials.
 
-**Gadi preparation:** Submit `qsub prepare_vertex_eval.pbs` from the repository
-root. It uses the same Boreas sequence list as `run_all_eval.sh` and defaults to
-sparse-event questions; set `BENCHMARK=temporal` to use temporal-order questions.
+**Gadi preparation:** Submit `qsub run_all_eval.sh` from the repository root
+(or submit `prepare_vertex_eval.pbs` directly). It uses the same 15 Boreas
+sequence IDs as `run_all_eval.sh` and defaults to sparse-event questions; set
+`BENCHMARK=temporal` to use temporal-order questions.
 It samples up to 512 timestamp-ordered camera frames per dataset and resizes
 them to a maximum 512-pixel side. Staged data and a
 `manifest.json` are written under
@@ -720,8 +718,9 @@ password to the SSH prompt through a pseudo-terminal; its placeholder is
 `empty` by default.
 After successful grading, that dataset's staged Gadi directory is removed.
 Failed datasets retain their remote staged copy for a retry. Completed datasets
-are skipped on rerun; an oversized dataset's frame sample is reduced uniformly
-by 30 frames per retry, with the final count recorded in metadata.
+are skipped unless `--force` is supplied; forced runs overwrite completed local
+outputs. An oversized dataset's frame sample is reduced uniformly by 30 frames
+per retry, with the final count recorded in metadata.
 
 ---
 
@@ -1252,7 +1251,7 @@ the benchmark category; `main.py --mode` selects the pipeline and prompt set.
 | `answer_eval.json` | — | Model settings for `run_model_answers.py` (not a pipeline config; no `task` or paths) |
 | `qa_gpt6_luna.json` | — | OpenCode Go GPT-6 Luna QA config using the Responses API with frame input |
 | `qa_kimi_k3.json` | — | OpenCode Go Kimi K3 QA config using Chat Completions with frame input |
-| `qa_grok_4_7.json` | — | OpenCode Go Grok 4.7 QA config using the Responses API with frame input; default model for `run_all_eval.sh` |
+| `qa_grok_4_7.json` | — | OpenCode Go Grok 4.7 QA config using the Responses API with frame input; selectable in `run_all_eval.sh` |
 | `qa_claude_haiku_5_5.json` | — | OpenCode Go Claude Haiku 5.5 QA config using Anthropic Messages with frame input |
 | `qa_mimo_v2_6_pro.json` | — | OpenCode Go MiMo-V2.6-Pro QA config using Chat Completions with frame input |
 | `qa_glm_5_3_flash.json` | — | OpenCode Go GLM-5.3-Flash QA config using Chat Completions with frame input; GLM-5.3 itself is text-only |
