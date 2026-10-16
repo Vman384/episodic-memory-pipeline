@@ -1,8 +1,8 @@
 {
   "score": {
-    "correct": 8,
+    "correct": 7,
     "total": 9,
-    "accuracy": 0.8889
+    "accuracy": 0.7778
   },
   "results": [
     {
@@ -135,12 +135,12 @@
       "question_id": 8,
       "type": "noteworthy",
       "question": "Which of these events actually happened during the drive?",
-      "correct": true,
+      "correct": false,
       "selected_indices": [
-        1
+        3
       ],
       "selected_answers": [
-        "A small, dark irregular patch was visible on the roadway in the driving lane inside the tunnel."
+        "Water dripped from the tunnel ceiling and formed a wet patch in the lane."
       ],
       "correct_indices": [
         1

@@ -1,8 +1,8 @@
 {
   "score": {
-    "correct": 11,
+    "correct": 9,
     "total": 15,
-    "accuracy": 0.7333
+    "accuracy": 0.6
   },
   "results": [
     {
@@ -243,12 +243,12 @@
       "question_id": 14,
       "type": "noteworthy",
       "question": "Which of these rare events actually happened during the drive?",
-      "correct": true,
+      "correct": false,
       "selected_indices": [
-        3
+        1
       ],
       "selected_answers": [
-        "A cluster of loose, used tires was piled beside a weathered white trailer."
+        "A yellow school bus was stopped beside a rural roadside shelter."
       ],
       "correct_indices": [
         3
@@ -261,12 +261,12 @@
       "question_id": 15,
       "type": "noteworthy",
       "question": "Which of these rare events actually happened during the drive?",
-      "correct": true,
+      "correct": false,
       "selected_indices": [
-        3
+        1
       ],
       "selected_answers": [
-        "A long blue warehouse and a broad yard with stacked materials and equipment stood beside the gravel road."
+        "A small roadside waterfall spilled from a culvert into a drainage ditch."
       ],
       "correct_indices": [
         3

@@ -9,12 +9,12 @@
       "question_id": 1,
       "type": "existence",
       "question": "Was a small airplane visible high above the snowy residential street?",
-      "correct": false,
+      "correct": true,
       "selected_indices": [
-        1
+        0
       ],
       "selected_answers": [
-        "No"
+        "Yes"
       ],
       "correct_indices": [
         0
@@ -81,12 +81,12 @@
       "question_id": 5,
       "type": "existence",
       "question": "Was a large rear panel on a UPS truck swung outward while the truck was on the road?",
-      "correct": true,
+      "correct": false,
       "selected_indices": [
-        0
+        1
       ],
       "selected_answers": [
-        "Yes"
+        "No"
       ],
       "correct_indices": [
         0

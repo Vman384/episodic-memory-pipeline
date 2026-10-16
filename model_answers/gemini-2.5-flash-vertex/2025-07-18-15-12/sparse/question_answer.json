@@ -2,8 +2,8 @@
   "model": "gemini-2.5-flash",
   "backend": "vertex_ai",
   "input_mode": "frames",
-  "input_source": "/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/181261194.gadi-pbs/2025-07-18-15-12/frames",
-  "questions_file": "/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/181261194.gadi-pbs/2025-07-18-15-12/questions.json",
+  "input_source": "/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/181380985.gadi-pbs/2025-07-18-15-12/frames",
+  "questions_file": "/g/data/pg06/FYP2026S1_3473/gemini_vertex_staging/181380985.gadi-pbs/2025-07-18-15-12/questions.json",
   "question_order": [
     8,
     6,
@@ -1591,7 +1591,7 @@
     {
       "question_id": 3,
       "answer_indices": [
-        0
+        1
       ]
     },
     {
@@ -1603,7 +1603,7 @@
     {
       "question_id": 10,
       "answer_indices": [
-        3
+        1
       ]
     },
     {
@@ -1645,9 +1645,9 @@
     {
       "question_id": 11,
       "answer_indices": [
-        2
+        0
       ]
     }
   ],
-  "raw_response": "```json\n[\n  [1],\n  [1],\n  [0],\n  [2],\n  [3],\n  [1],\n  [1],\n  [0],\n  [1],\n  [0],\n  [1],\n  [2]\n]\n```"
+  "raw_response": "```json\n[\n  [1],\n  [1],\n  [1],\n  [2],\n  [1],\n  [1],\n  [1],\n  [0],\n  [1],\n  [0],\n  [1],\n  [0]\n]\n```"
 }

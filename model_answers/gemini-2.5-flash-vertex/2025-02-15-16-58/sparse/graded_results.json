@@ -1,8 +1,8 @@
 {
   "score": {
-    "correct": 11,
+    "correct": 12,
     "total": 14,
-    "accuracy": 0.7857
+    "accuracy": 0.8571
   },
   "results": [
     {
@@ -171,12 +171,12 @@
       "question_id": 10,
       "type": "noteworthy",
       "question": "Which vehicle-related event actually happened during the drive?",
-      "correct": false,
+      "correct": true,
       "selected_indices": [
-        0
+        1
       ],
       "selected_answers": [
-        "A blue hatchback merged from the shoulder into the adjacent lane."
+        "A white sedan entered from the bottom left and moved into the adjacent lane."
       ],
       "correct_indices": [
         1

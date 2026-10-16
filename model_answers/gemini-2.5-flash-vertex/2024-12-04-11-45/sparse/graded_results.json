@@ -1,8 +1,8 @@
 {
   "score": {
-    "correct": 5,
+    "correct": 6,
     "total": 6,
-    "accuracy": 0.8333
+    "accuracy": 1.0
   },
   "results": [
     {
@@ -27,12 +27,12 @@
       "question_id": 2,
       "type": "existence",
       "question": "Did a person on a three-wheeled motorcycle with a passenger cross an intersection from left to right?",
-      "correct": false,
+      "correct": true,
       "selected_indices": [
-        1
+        0
       ],
       "selected_answers": [
-        "No"
+        "Yes"
       ],
       "correct_indices": [
         0

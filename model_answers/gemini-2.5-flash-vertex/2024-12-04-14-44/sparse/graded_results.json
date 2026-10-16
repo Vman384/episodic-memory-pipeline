@@ -1,20 +1,20 @@
 {
   "score": {
-    "correct": 14,
+    "correct": 11,
     "total": 15,
-    "accuracy": 0.9333
+    "accuracy": 0.7333
   },
   "results": [
     {
       "question_id": 1,
       "type": "existence",
       "question": "Did a black SUV enter from the left and drive parallel to the camera vehicle in the adjacent lane?",
-      "correct": true,
+      "correct": false,
       "selected_indices": [
-        0
+        1
       ],
       "selected_answers": [
-        "Yes"
+        "No"
       ],
       "correct_indices": [
         0
@@ -63,12 +63,12 @@
       "question_id": 4,
       "type": "existence",
       "question": "Did a yellow school bus approach an intersection from the cross street?",
-      "correct": true,
+      "correct": false,
       "selected_indices": [
-        0
+        1
       ],
       "selected_answers": [
-        "Yes"
+        "No"
       ],
       "correct_indices": [
         0
@@ -207,12 +207,12 @@
       "question_id": 12,
       "type": "noteworthy",
       "question": "Which event actually happened during the drive?",
-      "correct": true,
+      "correct": false,
       "selected_indices": [
-        1
+        0
       ],
       "selected_answers": [
-        "A yellow school bus appeared in the distance, approaching the intersection from the cross street."
+        "A school bus stopped at the intersection and extended its stop arm."
       ],
       "correct_indices": [
         1

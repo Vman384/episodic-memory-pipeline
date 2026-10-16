@@ -1,8 +1,8 @@
 {
   "score": {
-    "correct": 12,
+    "correct": 13,
     "total": 15,
-    "accuracy": 0.8
+    "accuracy": 0.8667
   },
   "results": [
     {
@@ -63,12 +63,12 @@
       "question_id": 4,
       "type": "existence",
       "question": "Did the vehicle pass a railway crossing on a rural stretch with cracked pavement and snow along the shoulders?",
-      "correct": false,
+      "correct": true,
       "selected_indices": [
-        1
+        0
       ],
       "selected_answers": [
-        "No"
+        "Yes"
       ],
       "correct_indices": [
         0
@@ -81,12 +81,12 @@
       "question_id": 5,
       "type": "existence",
       "question": "Was there a narrow access road marked “LOCK 7” leading between chain-link fencing and gate sections?",
-      "correct": true,
+      "correct": false,
       "selected_indices": [
-        0
+        1
       ],
       "selected_answers": [
-        "Yes"
+        "No"
       ],
       "correct_indices": [
         0
@@ -189,12 +189,12 @@
       "question_id": 11,
       "type": "noteworthy",
       "question": "Which of these events actually occurred during the drive?",
-      "correct": false,
+      "correct": true,
       "selected_indices": [
-        2
+        3
       ],
       "selected_answers": [
-        "A road crew had placed a portable speed-limit sign on the rural shoulder."
+        "A white box truck approached the tunnel with several diamond-shaped placards visible across its rear."
       ],
       "correct_indices": [
         3
