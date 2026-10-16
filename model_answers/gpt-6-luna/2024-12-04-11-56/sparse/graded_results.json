@@ -27,12 +27,12 @@
             "question_id": 2,
             "type": "existence",
             "question": "Did a white commercial van marked 'Penn Refrigeration Ltd' cross the intersection from the left?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -63,12 +63,12 @@
             "question_id": 4,
             "type": "existence",
             "question": "Did the vehicle pass a construction truck carrying traffic barrels and a temporary lane-closure sign on the right shoulder?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 0
@@ -189,12 +189,12 @@
             "question_id": 11,
             "type": "noteworthy",
             "question": "Which of these rare events actually happened during the drive?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                0
+                3
             ],
             "selected_answers": [
-                "A school bus stopped with its warning lights flashing near the roadside."
+                "A white utility truck with MICHELIN branding drove alongside the camera vehicle and moved ahead."
             ],
             "correct_indices": [
                 3
@@ -243,13 +243,9 @@
             "question_id": 14,
             "type": "noteworthy",
             "question": "Which of these rare events actually happened during the drive?",
-            "correct": true,
-            "selected_indices": [
-                3
-            ],
-            "selected_answers": [
-                "A white commercial van marked 'Penn Refrigeration Ltd' crossed the intersection from the left."
-            ],
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
             "correct_indices": [
                 3
             ],

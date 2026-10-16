@@ -1598,7 +1598,7 @@
     {
       "question_id": 3,
       "answer_indices": [
-        0
+        1
       ]
     },
     {
@@ -1610,7 +1610,7 @@
     {
       "question_id": 10,
       "answer_indices": [
-        2
+        1
       ]
     },
     {
@@ -1652,9 +1652,9 @@
     {
       "question_id": 11,
       "answer_indices": [
-        2
+        0
       ]
     }
   ],
-  "raw_response": "```json\n[[1], [1], [0], [2], [2], [1], [1], [0], [1], [0], [1], [2]]\n```\n\nThese answers are best guesses from the sampled frames, not a full verification. The tunnel, deer, road-maintenance-stop, motorcyclist and ATV questions look like \"No\" based on what I could see. The white sedan turning onto the dusty track and the red dump truck passing in the oncoming lane are the clearest matches. Questions 3 and 12 involve the tractor, which I'm less sure about. Questions 5 and 4's options were largely absent from the frames, so those picks are least certain."
+  "raw_response": "[[1],[1],[1],[2],[1],[1],[1],[0],[1],[0],[1],[0]]"
 }

@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 14,
+        "correct": 13,
         "total": 15,
-        "accuracy": 0.9333
+        "accuracy": 0.8667
     },
     "results": [
         {
@@ -81,12 +81,12 @@
             "question_id": 5,
             "type": "existence",
             "question": "Did a grey pickup truck equipped with a snowplow blade enter the lane beside the vehicle?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0

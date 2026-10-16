@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 11,
+        "correct": 10,
         "total": 12,
-        "accuracy": 0.9167
+        "accuracy": 0.8333
     },
     "results": [
         {
@@ -171,13 +171,9 @@
             "question_id": 10,
             "type": "noteworthy",
             "question": "Which of these events actually happened during the drive?",
-            "correct": true,
-            "selected_indices": [
-                3
-            ],
-            "selected_answers": [
-                "A person on an ATV drove parallel to the camera vehicle while raising dust."
-            ],
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
             "correct_indices": [
                 3
             ],

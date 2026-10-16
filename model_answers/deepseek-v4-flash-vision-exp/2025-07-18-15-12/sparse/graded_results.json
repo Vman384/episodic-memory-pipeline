@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 11,
+        "correct": 10,
         "total": 12,
-        "accuracy": 0.9167
+        "accuracy": 0.8333
     },
     "results": [
         {
@@ -27,12 +27,12 @@
             "question_id": 2,
             "type": "existence",
             "question": "Did a person on an ATV drive parallel to the camera vehicle while kicking up dust?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -45,12 +45,12 @@
             "question_id": 3,
             "type": "existence",
             "question": "Was a red tractor with a canopy parked on the right shoulder of a dirt road with a person in its seat?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 0
@@ -171,12 +171,12 @@
             "question_id": 10,
             "type": "noteworthy",
             "question": "Which of these events actually happened during the drive?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                3
+                2
             ],
             "selected_answers": [
-                "A person on an ATV drove parallel to the camera vehicle while raising dust."
+                "A cyclist in a bright vest approached in the opposite lane."
             ],
             "correct_indices": [
                 3

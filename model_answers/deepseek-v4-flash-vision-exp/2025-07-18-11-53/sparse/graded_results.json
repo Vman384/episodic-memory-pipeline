@@ -1,20 +1,20 @@
 {
     "score": {
-        "correct": 15,
+        "correct": 12,
         "total": 15,
-        "accuracy": 1.0
+        "accuracy": 0.8
     },
     "results": [
         {
             "question_id": 1,
             "type": "existence",
             "question": "Did a red SUV towing a small utility trailer pass toward the camera while crossing a narrow bridge with low railings and black-and-yellow hazard markers?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -63,12 +63,12 @@
             "question_id": 4,
             "type": "existence",
             "question": "Did a small dark utility trailer or piece of equipment with orange reflective markings sit partly in deep shade just off the right side of the road?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -117,12 +117,12 @@
             "question_id": 7,
             "type": "deceptive",
             "question": "Did a farm tractor approach on the gravel road and pass the vehicle?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 1

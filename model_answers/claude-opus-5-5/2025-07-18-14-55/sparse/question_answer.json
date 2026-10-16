@@ -1670,5 +1670,5 @@
       ]
     }
   ],
-  "raw_response": "[[1],[1],[0],[1],[1],[1],[1],[0],[1],[0],[0],[0],[0],[1]]"
+  "raw_response": "```json\n[[1],[1],[0],[1],[1],[1],[1],[0],[1],[0],[0],[0],[0],[1]]\n```\n\nA few of these are uncertain:\n- **Large truck (Q3):** A red dump truck clearly passes in the opposite lane, so I answered Yes. However, it is also listed as a distractor in Q2 and Q14, where I picked a different event as the intended one.\n- **Orange cone, RV and \"NO EXIT\" sign:** I could not clearly confirm these in the frames. I answered Yes mainly because each appears as the only plausible \"rare event\" option in its question.\n- **Two cyclists:** Two small road users riding ahead in the lane are visible, so that Yes is well supported.\n- **Cows:** The grey shapes in a roadside field looked more like hay bales than cows, so I answered No."
 }

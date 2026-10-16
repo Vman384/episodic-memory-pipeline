@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 12,
+        "correct": 11,
         "total": 15,
-        "accuracy": 0.8
+        "accuracy": 0.7333
     },
     "results": [
         {
@@ -27,12 +27,12 @@
             "question_id": 2,
             "type": "existence",
             "question": "Did the road enter a concrete structure with two adjacent tunnel openings, one brightly lit with green lane signals and the other dark?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -153,12 +153,12 @@
             "question_id": 9,
             "type": "deceptive",
             "question": "Did a fallen tree branch partly obstruct the forest-side shoulder?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 1
@@ -189,12 +189,12 @@
             "question_id": 11,
             "type": "noteworthy",
             "question": "Which event actually occurred during the drive?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "A snowplow was clearing the lane beside the highway."
+                "A long white semi-trailer was positioned across the right side of the intersection as the dashcam approached."
             ],
             "correct_indices": [
                 1

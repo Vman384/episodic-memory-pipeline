@@ -1,20 +1,20 @@
 {
     "score": {
-        "correct": 13,
+        "correct": 10,
         "total": 14,
-        "accuracy": 0.9286
+        "accuracy": 0.7143
     },
     "results": [
         {
             "question_id": 1,
             "type": "existence",
             "question": "Did the digital billboard on the overpass change from the 'Make Vince Fly Again' advertisement to a blue-and-white 'Pure Fibre' advertisement?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -27,12 +27,12 @@
             "question_id": 2,
             "type": "existence",
             "question": "Was a person seen walking a dog on the snow-covered sidewalk to the right of the road?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 0
@@ -63,12 +63,12 @@
             "question_id": 4,
             "type": "existence",
             "question": "Was a person wearing a red jacket and carrying a yellow bag seen walking away on the right sidewalk?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -189,12 +189,12 @@
             "question_id": 11,
             "type": "noteworthy",
             "question": "Which sign-related event actually happened during the drive?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                3
+                1
             ],
             "selected_answers": [
-                "The overpass billboard changed from the 'Make Vince Fly Again' advertisement to a blue-and-white 'Pure Fibre' advertisement."
+                "A roadside electronic speed display lit up with a vehicle's speed."
             ],
             "correct_indices": [
                 3
@@ -243,12 +243,12 @@
             "question_id": 14,
             "type": "noteworthy",
             "question": "Which pedestrian event actually happened during the drive?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                3
+                0
             ],
             "selected_answers": [
-                "A person wearing a red jacket and carrying a yellow bag walked away on the right sidewalk."
+                "A person in a blue coat walked away along the sidewalk carrying a dark backpack."
             ],
             "correct_indices": [
                 3

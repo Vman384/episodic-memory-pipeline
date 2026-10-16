@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 6,
+        "correct": 5,
         "total": 6,
-        "accuracy": 1.0
+        "accuracy": 0.8333
     },
     "results": [
         {
@@ -63,12 +63,12 @@
             "question_id": 4,
             "type": "deceptive",
             "question": "Did a maintenance vehicle stop inside the tunnel and block one lane?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 1

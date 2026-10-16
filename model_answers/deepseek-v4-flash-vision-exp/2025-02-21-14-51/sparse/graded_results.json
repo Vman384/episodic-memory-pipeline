@@ -1,20 +1,20 @@
 {
     "score": {
-        "correct": 15,
+        "correct": 11,
         "total": 15,
-        "accuracy": 1.0
+        "accuracy": 0.7333
     },
     "results": [
         {
             "question_id": 1,
             "type": "existence",
             "question": "Was a small airplane visible high above the snowy residential street?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -27,12 +27,12 @@
             "question_id": 2,
             "type": "existence",
             "question": "Did a box truck sit angled across much of the road near a junction?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -63,12 +63,12 @@
             "question_id": 4,
             "type": "existence",
             "question": "Did the vehicle pass a roadside sign reading \u201cAUTHORIZED PARKING ONLY\u201d beside a University of Toronto directory?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -81,12 +81,12 @@
             "question_id": 5,
             "type": "existence",
             "question": "Was a large rear panel on a UPS truck swung outward while the truck was on the road?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0

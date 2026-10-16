@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 12,
+        "correct": 11,
         "total": 15,
-        "accuracy": 0.8
+        "accuracy": 0.7333
     },
     "results": [
         {
@@ -27,9 +27,13 @@
             "question_id": 2,
             "type": "existence",
             "question": "Was a white SUV ahead marked \u201cBY-LAW ENFORCEMENT\u201d across its rear?",
-            "correct": false,
-            "selected_indices": null,
-            "selected_answers": null,
+            "correct": true,
+            "selected_indices": [
+                0
+            ],
+            "selected_answers": [
+                "Yes"
+            ],
             "correct_indices": [
                 0
             ],
@@ -41,12 +45,12 @@
             "question_id": 3,
             "type": "existence",
             "question": "Did a yellow school bus pass in the opposite lane with its red STOP arm extended?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -185,9 +189,13 @@
             "question_id": 11,
             "type": "noteworthy",
             "question": "Which of these events actually occurred during the drive?",
-            "correct": false,
-            "selected_indices": null,
-            "selected_answers": null,
+            "correct": true,
+            "selected_indices": [
+                3
+            ],
+            "selected_answers": [
+                "A white box truck approached the tunnel with several diamond-shaped placards visible across its rear."
+            ],
             "correct_indices": [
                 3
             ],
@@ -201,10 +209,10 @@
             "question": "Which of these events actually occurred during the drive?",
             "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "A flock of geese crossed the rural road from one field to another."
+                "A red warning beacon flashed above the entrance to the tunnel."
             ],
             "correct_indices": [
                 2
@@ -235,12 +243,12 @@
             "question_id": 14,
             "type": "noteworthy",
             "question": "Which of these events actually occurred during the drive?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                3
+                1
             ],
             "selected_answers": [
-                "A tall white grain elevator with vertical lettering and a blue conveyor stood beside the road."
+                "A concrete mixer truck turned out of the Niagara Ready Mix entrance and proceeded ahead."
             ],
             "correct_indices": [
                 3
@@ -253,13 +261,9 @@
             "question_id": 15,
             "type": "noteworthy",
             "question": "Which of these events actually occurred during the drive?",
-            "correct": true,
-            "selected_indices": [
-                3
-            ],
-            "selected_answers": [
-                "A roadside industrial site had tall storage silos, one marked \u201cNIAGARA,\u201d beside a low blue-roofed structure."
-            ],
+            "correct": false,
+            "selected_indices": null,
+            "selected_answers": null,
             "correct_indices": [
                 3
             ],

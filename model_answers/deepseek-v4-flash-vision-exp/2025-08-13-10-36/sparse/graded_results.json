@@ -27,12 +27,12 @@
             "question_id": 2,
             "type": "existence",
             "question": "Did a bulky nest-like structure sit on top of a roadside utility-pole crossarm?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 0
@@ -81,12 +81,12 @@
             "question_id": 5,
             "type": "existence",
             "question": "Was there a roadside sign reading \u201cTRUCKS PLEASE AVOID USE OF ENGINE BRAKES\u201d?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -209,10 +209,10 @@
             "question": "Which of these rare events actually happened during the drive?",
             "correct": false,
             "selected_indices": [
-                2
+                1
             ],
             "selected_answers": [
-                "A flock of sheep stood behind a wire fence beside the road."
+                "A combine harvester was parked partly on the roadside beside a crop field."
             ],
             "correct_indices": [
                 3
@@ -245,10 +245,10 @@
             "question": "Which of these rare events actually happened during the drive?",
             "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "A red barn with a silo stood immediately beside the road."
+                "A yellow school bus was stopped beside a rural roadside shelter."
             ],
             "correct_indices": [
                 3

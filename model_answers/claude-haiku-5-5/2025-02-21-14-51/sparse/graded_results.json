@@ -27,12 +27,12 @@
             "question_id": 2,
             "type": "existence",
             "question": "Did a box truck sit angled across much of the road near a junction?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 0
@@ -45,12 +45,12 @@
             "question_id": 3,
             "type": "existence",
             "question": "Was a dark bird perched on a traffic-signal arm above an intersection?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0

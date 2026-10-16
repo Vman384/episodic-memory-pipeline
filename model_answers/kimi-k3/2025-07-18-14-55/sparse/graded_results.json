@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 9,
+        "correct": 8,
         "total": 14,
-        "accuracy": 0.6429
+        "accuracy": 0.5714
     },
     "results": [
         {
@@ -27,12 +27,12 @@
             "question_id": 2,
             "type": "existence",
             "question": "Was there a yellow roadside sign reading \"NO EXIT\" visible on the right side of the road?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0

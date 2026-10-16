@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 10,
+        "correct": 8,
         "total": 10,
-        "accuracy": 1.0
+        "accuracy": 0.8
     },
     "results": [
         {
@@ -45,12 +45,12 @@
             "question_id": 3,
             "type": "existence",
             "question": "Did a white Bell utility truck enter from the left and turn left across the vehicle's path?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -63,12 +63,12 @@
             "question_id": 4,
             "type": "existence",
             "question": "Did a white Ryder delivery truck enter from the right and cross in front of the camera vehicle?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0

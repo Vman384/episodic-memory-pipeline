@@ -63,12 +63,12 @@
             "question_id": 4,
             "type": "existence",
             "question": "Did the vehicle pass a railway crossing on a rural stretch with cracked pavement and snow along the shoulders?",
-            "correct": true,
+            "correct": false,
             "selected_indices": [
-                0
+                1
             ],
             "selected_answers": [
-                "Yes"
+                "No"
             ],
             "correct_indices": [
                 0
@@ -243,12 +243,12 @@
             "question_id": 14,
             "type": "noteworthy",
             "question": "Which of these events actually occurred during the drive?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                1
+                3
             ],
             "selected_answers": [
-                "A concrete mixer truck turned out of the Niagara Ready Mix entrance and proceeded ahead."
+                "A tall white grain elevator with vertical lettering and a blue conveyor stood beside the road."
             ],
             "correct_indices": [
                 3

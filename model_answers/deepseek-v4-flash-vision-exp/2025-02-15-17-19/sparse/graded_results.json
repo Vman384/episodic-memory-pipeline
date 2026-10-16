@@ -1,8 +1,8 @@
 {
     "score": {
-        "correct": 13,
+        "correct": 15,
         "total": 15,
-        "accuracy": 0.8667
+        "accuracy": 1.0
     },
     "results": [
         {
@@ -63,12 +63,12 @@
             "question_id": 4,
             "type": "existence",
             "question": "Was an oncoming red snowplow with a wide angled blade passing on the snow-covered road?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                1
+                0
             ],
             "selected_answers": [
-                "No"
+                "Yes"
             ],
             "correct_indices": [
                 0
@@ -261,12 +261,12 @@
             "question_id": 15,
             "type": "noteworthy",
             "question": "Which of these events actually occurred during the drive?",
-            "correct": false,
+            "correct": true,
             "selected_indices": [
-                2
+                3
             ],
             "selected_answers": [
-                "A city bus stopped in the middle of the intersection to let passengers off."
+                "A snowplow truck with its blade lowered was working ahead near an intersection."
             ],
             "correct_indices": [
                 3
