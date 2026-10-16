@@ -1,0 +1,275 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passing the parked gray SUV on the left, or passing the West Park sign and entrance on the right?",
+      "options": [
+        "Passing the parked gray SUV on the left",
+        "Passing the West Park sign and entrance on the right"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        8,
+        9
+      ],
+      "frame_evidence": [
+        "1755095856425616.jpg",
+        "1755095856825620.jpg"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: passing the roadside mailbox and approaching the yellow 'NO EXIT' sign, or an oncoming black pickup passing on the left?",
+      "options": [
+        "The oncoming black pickup passing on the left",
+        "Passing the roadside mailbox and approaching the yellow 'NO EXIT' sign"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        12,
+        13
+      ],
+      "frame_evidence": [
+        "1755095867225766.jpg",
+        "1755095872025864.jpg"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: passing the roadside maximum-80 sign, or an oncoming white pickup passing in the opposite lane?",
+      "options": [
+        "An oncoming white pickup passing in the opposite lane",
+        "Passing the roadside maximum-80 sign"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        16,
+        18
+      ],
+      "frame_evidence": [
+        "1755095883225742.jpg",
+        "1755095898025826.jpg"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: passing the irrigation machine on the left, or the trailer and equipment on the right shoulder disappearing from view?",
+      "options": [
+        "The trailer and equipment on the right shoulder disappearing from view",
+        "Passing the irrigation machine on the left"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        23,
+        24
+      ],
+      "frame_evidence": [
+        "1755096334830062.jpg",
+        "1755096350430228.jpg"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: passing the tractor and trailer with people beside it on the left, or a black pickup approaching in the opposite lane?",
+      "options": [
+        "A black pickup approaching in the opposite lane",
+        "Passing the tractor and trailer with people beside it on the left"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        33,
+        34
+      ],
+      "frame_evidence": [
+        "1755096808034504.jpg",
+        "1755096813234555.jpg"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle passes the parked gray SUV on the left.",
+        "The vehicle passes the West Park sign and entrance on the right.",
+        "The vehicle approaches a right-side road or driveway entrance.",
+        "The vehicle passes a parked RV and house on the right."
+      ],
+      "answer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "event_ids": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "frame_evidence": [
+        "1755095856425616.jpg",
+        "1755095856825620.jpg",
+        "1755095863225724.jpg",
+        "1755095866825762.jpg"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle turns left off the paved road and onto the muddy farm track.",
+        "The vehicle passes the tank-and-pipe setup on the left.",
+        "The vehicle drives past the irrigation machine on the left.",
+        "The trailer and equipment on the right shoulder recede and disappear from view."
+      ],
+      "answer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "event_ids": [
+        20,
+        22,
+        23,
+        24
+      ],
+      "frame_evidence": [
+        "1755095924825968.jpg",
+        "1755096236029070.jpg",
+        "1755096334830062.jpg",
+        "1755096350430228.jpg"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "A red pickup approaches and passes on the left.",
+        "A white SUV approaches and passes on the left.",
+        "A driveway or side road on the left comes into view and joins the main road.",
+        "The vehicle turns left into the gravel parking area."
+      ],
+      "answer_indices": [
+        1,
+        2,
+        0,
+        3
+      ],
+      "event_ids": [
+        42,
+        41,
+        44,
+        45
+      ],
+      "frame_evidence": [
+        "1755096912035594.jpg",
+        "1755096903235478.jpg",
+        "1755096932835834.jpg",
+        "1755096944435913.jpg"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed the parked gray SUV on the left?",
+      "options": [
+        "It passed the West Park sign and entrance on the right.",
+        "It passed the roadside mailbox and approached the yellow 'NO EXIT' sign.",
+        "It approached a right-side road or driveway entrance.",
+        "It passed a parked RV and house on the right."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        8,
+        9,
+        12,
+        10,
+        11
+      ],
+      "frame_evidence": [
+        "1755095856425616.jpg",
+        "1755095856825620.jpg",
+        "1755095867225766.jpg",
+        "1755095863225724.jpg",
+        "1755095866825762.jpg"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed the orange traffic cone?",
+      "options": [
+        "It passed the roadside maximum-80 sign.",
+        "It moved forward through a broad paved junction and continued onto the straight rural road.",
+        "An oncoming black pickup passed on the left.",
+        "It approached and passed the yellow warning sign on the right shoulder."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        14,
+        15,
+        16,
+        13,
+        19
+      ],
+      "frame_evidence": [
+        "1755095877225811.jpg",
+        "1755095882425750.jpg",
+        "1755095883225742.jpg",
+        "1755095872025864.jpg",
+        "1755095909225898.jpg"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle turned right at the junction?",
+      "options": [
+        "It approached and passed the roadside sign on the right while continuing straight.",
+        "It drove forward past the irrigation machine on the left.",
+        "It passed a tractor and trailer with people beside it on the left.",
+        "It approached the crossroad and narrower track continuing straight ahead."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        31,
+        23,
+        33,
+        28,
+        30
+      ],
+      "frame_evidence": [
+        "1755096787234288.jpg",
+        "1755096334830062.jpg",
+        "1755096808034504.jpg",
+        "1755096688433531.jpg",
+        "1755096735234020.jpg"
+      ]
+    }
+  ]
+}

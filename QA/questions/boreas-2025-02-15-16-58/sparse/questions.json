@@ -1,0 +1,394 @@
+{
+  "false_events": [
+    {
+      "question_id": 6,
+      "description": "A deer stepped onto the road from the forest and crossed in front of the vehicle.",
+      "why_plausible": "Wildlife can cross rural roads near forested areas, but this event is not in the verified event list.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 7,
+      "description": "A cyclist in a reflective vest rode along the snowy shoulder.",
+      "why_plausible": "A cyclist using a rural roadside is possible, though no such cyclist appears in the verified events.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 8,
+      "description": "A road-maintenance truck was stopped beside the entrance to the tunnel.",
+      "why_plausible": "Maintenance vehicles can be present near tunnels, but this one was not reported in the verified events.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 9,
+      "description": "A large fallen branch partly blocked the road in a forested stretch.",
+      "why_plausible": "Branches can fall onto roads in wooded areas, but no road obstruction of this kind is listed.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 10,
+      "description": "A tractor pulled out from a rural driveway ahead of the vehicle.",
+      "why_plausible": "Farm equipment can enter rural roads from driveways, but this event is not among the verified events.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 11,
+      "description": "A blue hatchback merged from the shoulder into the adjacent lane.",
+      "why_plausible": "A vehicle merging from the roadside is a plausible traffic event, but the verified event involved a white sedan entering from the bottom left.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A delivery truck overtook the dashcam vehicle on the left.",
+      "why_plausible": "Overtaking by a truck is plausible on a multi-lane road, but it is not listed as an event from this drive.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A dark SUV moved from the adjacent lane onto an exit ramp.",
+      "why_plausible": "Vehicles commonly leave traffic via an exit ramp, but this maneuver is not among the verified events.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "The digital billboard changed to a yellow road-safety warning.",
+      "why_plausible": "Digital billboards can switch to public-safety messages, but the verified change was from one advertisement to a Pure Fibre advertisement.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A roadside electronic speed display lit up with a vehicle's speed.",
+      "why_plausible": "Electronic speed displays are plausible roadside fixtures, but no such display event is in the verified list.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "The overpass billboard went dark as the vehicle passed beneath it.",
+      "why_plausible": "A digital sign could plausibly turn off or lose its display, but the verified event was an advertisement change, not the sign going dark.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A jogger in a fluorescent jacket ran along the snowy sidewalk.",
+      "why_plausible": "A jogger on a sidewalk is plausible in a residential area, but the verified event involved a person walking a dog.",
+      "source_event_ids": [
+        3
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A child pulled a sled along the sidewalk beside the road.",
+      "why_plausible": "Sledding or pulling a sled is plausible in a snowy area, but no child with a sled is listed among the verified events.",
+      "source_event_ids": [
+        3
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A person shoveled snow from the edge of a residential driveway.",
+      "why_plausible": "Shoveling snow near a road is plausible in winter, but it is not one of the verified events.",
+      "source_event_ids": [
+        3
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A person loaded firewood into the back of a pickup beside the road.",
+      "why_plausible": "Loading supplies beside a parked vehicle is plausible in a rural area, but the verified event was a person standing by a parked white van.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A road worker stood beside a parked snowplow on the roadside.",
+      "why_plausible": "Road crews and snowplows are plausible in snowy conditions, but no worker or snowplow is listed in the verified events.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A pedestrian crossed the road from a driveway in front of a parked car.",
+      "why_plausible": "A pedestrian crossing near parked vehicles is plausible on a rural road, but this event is not in the verified list.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A person in a blue coat walked away along the sidewalk carrying a dark backpack.",
+      "why_plausible": "A pedestrian carrying a backpack is plausible in a residential area, but the verified event described a person in a red jacket with a yellow bag.",
+      "source_event_ids": [
+        5
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A person pushed a stroller away from the camera along the sidewalk.",
+      "why_plausible": "Someone pushing a stroller on a sidewalk is plausible, but this event is not among the verified events.",
+      "source_event_ids": [
+        5
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A person walked a bicycle along the snowy sidewalk.",
+      "why_plausible": "A person walking a bicycle beside a road is plausible, but no such event is listed in the verified events.",
+      "source_event_ids": [
+        5
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did the digital billboard on the overpass change from the 'Make Vince Fly Again' advertisement to a blue-and-white 'Pure Fibre' advertisement?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Was a person seen walking a dog on the snow-covered sidewalk to the right of the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did a person in dark clothing appear in the snowbank beside a parked white van?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Was a person wearing a red jacket and carrying a yellow bag seen walking away on the right sidewalk?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "deceptive",
+      "question": "Did a deer step onto the road from the forest and cross in front of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a cyclist in a reflective vest ride along the snowy shoulder?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Was a road-maintenance truck stopped beside the entrance to the tunnel?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did a large fallen branch partly block the road in a forested stretch?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Did a tractor pull out from a rural driveway ahead of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "noteworthy",
+      "question": "Which vehicle-related event actually happened during the drive?",
+      "options": [
+        "A blue hatchback merged from the shoulder into the adjacent lane.",
+        "A white sedan entered from the bottom left and moved into the adjacent lane.",
+        "A delivery truck overtook the dashcam vehicle on the left.",
+        "A dark SUV moved from the adjacent lane onto an exit ramp."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which sign-related event actually happened during the drive?",
+      "options": [
+        "The digital billboard changed to a yellow road-safety warning.",
+        "A roadside electronic speed display lit up with a vehicle's speed.",
+        "The overpass billboard went dark as the vehicle passed beneath it.",
+        "The overpass billboard changed from the 'Make Vince Fly Again' advertisement to a blue-and-white 'Pure Fibre' advertisement."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which sidewalk activity actually happened during the drive?",
+      "options": [
+        "A jogger in a fluorescent jacket ran along the snowy sidewalk.",
+        "A child pulled a sled along the sidewalk beside the road.",
+        "A person shoveled snow from the edge of a residential driveway.",
+        "A person walked a dog on the snow-covered sidewalk to the right of the road."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which roadside person-related event actually happened during the drive?",
+      "options": [
+        "A person loaded firewood into the back of a pickup beside the road.",
+        "A person in dark clothing appeared in the snowbank beside a parked white van.",
+        "A road worker stood beside a parked snowplow on the roadside.",
+        "A pedestrian crossed the road from a driveway in front of a parked car."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which pedestrian event actually happened during the drive?",
+      "options": [
+        "A person in a blue coat walked away along the sidewalk carrying a dark backpack.",
+        "A person pushed a stroller away from the camera along the sidewalk.",
+        "A person walked a bicycle along the snowy sidewalk.",
+        "A person wearing a red jacket and carrying a yellow bag walked away on the right sidewalk."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

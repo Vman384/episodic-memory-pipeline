@@ -1,0 +1,381 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle drove past a large dome-shaped structure, or the vehicle approached and stopped at the intersection traffic light?",
+      "options": [
+        "The vehicle drove past a large dome-shaped structure.",
+        "The vehicle approached and stopped at the intersection traffic light."
+      ], 
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        8,
+        22
+      ],
+      "frame_evidence": [
+        "1733249652286774.png",
+        "1733249717286798.png"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: the truck with the 'GS Freight Services Inc.' logo moved ahead and slightly left, or the vehicle drove under a bridge with advertisements?",
+      "options": [
+        "The truck with the 'GS Freight Services Inc.' logo moved ahead and slightly left.",
+        "The vehicle drove under a bridge with advertisements."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        27,
+        38
+      ],
+      "frame_evidence": [
+        "1733249737286926.png",
+        "1733249802287660.png"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a pedestrian on the right side of the road, or the vehicle stopped at a red traffic light behind the black Honda CR-V?",
+      "options": [
+        "The vehicle passed a pedestrian on the right side of the road.",
+        "The vehicle stopped at a red traffic light behind the black Honda CR-V."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        42,
+        57
+      ],
+      "frame_evidence": [
+        "1733249822287770.png",
+        "1733249912288510.png"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the yellow school bus entered from the right and stopped behind the vehicle, or the pedestrian crossed the road in front of the vehicle?",
+      "options": [
+        "The yellow school bus entered from the right and stopped behind the vehicle.",
+        "The pedestrian crossed the road in front of the vehicle."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        77,
+        91
+      ],
+      "frame_evidence": [
+        "1733250027289534.png",
+        "1733250097290178.png"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle transitioned from under a bridge onto the open highway, or the vehicle approached and stopped at a red traffic light before moving when it turned green?",
+      "options": [
+        "The vehicle transitioned from under a bridge onto the open highway.",
+        "The vehicle approached and stopped at a red traffic light before moving when it turned green."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        107,
+        119
+      ],
+      "frame_evidence": [
+        "1733250352293426.png",
+        "1733250577294520.png"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle drove past a white van parked on the right side of the road.",
+        "The vehicle approached and stopped at the intersection traffic light.",
+        "The vehicle drove under a bridge with advertisements.",
+        "The vehicle passed a pedestrian on the right side of the road."
+      ],
+      "answer_indices": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "event_ids": [
+        22,
+        12,
+        38,
+        42
+      ],
+      "frame_evidence": [
+        "1733249717286798.png",
+        "1733249677286492.png",
+        "1733249802287660.png",
+        "1733249822287770.png"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle stopped at a red traffic light behind the black Honda CR-V.",
+        "The vehicle approached and passed through an intersection with a green traffic light.",
+        "The vehicle passed a white utility truck as it moved out of the frame.",
+        "The vehicle followed the black SUV while the white pickup truck remained in the adjacent lane."
+      ],
+      "answer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "event_ids": [
+        57,
+        60,
+        61,
+        54
+      ],
+      "frame_evidence": [
+        "1733249912288510.png",
+        "1733249927288622.png",
+        "1733249932288692.png",
+        "1733249897288390.png"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle approached and passed a stop sign while driving through the neighborhood.",
+        "The vehicle approached a stop sign, stopped, and proceeded after the white SUV.",
+        "The vehicle passed a silver car parked on the left side of the road.",
+        "The vehicle followed the white SUV along the road toward a stop sign."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "event_ids": [
+        127,
+        124,
+        129,
+        123
+      ],
+      "frame_evidence": [
+        "1733250637295263.png",
+        "1733250622294978.png",
+        "1733250647295105.png",
+        "1733250617294964.png"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle drove under a concrete overpass and continued on the highway.",
+        "The vehicle approached and passed through multiple intersections as the lights changed from green to yellow.",
+        "The orange bus, blue SUV, white pickup truck, and white car moved out of the frame.",
+        "The vehicle passed a silver car in the left lane while maintaining distance from the white van."
+      ],
+      "answer_indices": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "event_ids": [
+        109,
+        115,
+        113,
+        112
+      ],
+      "frame_evidence": [
+        "1733250422293142.png",
+        "1733250502293929.png",
+        "1733250492293822.png",
+        "1733250487293755.png"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle approached and passed the stop sign in the neighborhood.",
+        "The vehicle approached and stopped at a red traffic light, then moved when it turned green.",
+        "The vehicle entered a tunnel-like structure under an overpass.",
+        "The vehicle drove past a large dome-shaped structure on the left."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "event_ids": [
+        127,
+        119,
+        106,
+        8
+      ],
+      "frame_evidence": [
+        "1733250637295263.png",
+        "1733250577294520.png",
+        "1733250312292106.png",
+        "1733249652286774.png"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle approached and stopped at the intersection traffic light?",
+      "options": [
+        "The vehicle passed the large tree and utility poles.",
+        "The traffic light changed from red to green.",
+        "The vehicle remained stationary as other vehicles moved through the intersection.",
+        "The vehicle drove under a bridge with advertisements."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        22,
+        21,
+        23,
+        38
+      ],
+      "frame_evidence": [
+        "1733249717286798.png",
+        "1733249712287095.png",
+        "1733249722287006.png",
+        "1733249802287660.png"
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle drove under a bridge with advertisements?",
+      "options": [
+        "The vehicle approached a traffic light and stopped behind the black Honda CR-V.",
+        "The vehicle maintained a steady position behind the black SUV and black pickup truck, with a school bus appearing on the right.",
+        "The vehicle passed the pedestrian on the right side of the road.",
+        "The vehicle approached the stop sign in the neighborhood."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        38,
+        39,
+        57,
+        123
+      ],
+      "frame_evidence": [
+        "1733249802287660.png",
+        "1733249807287601.png",
+        "1733249912288510.png",
+        "1733250617294964.png"
+      ]
+    },
+    {
+      "question_id": 13,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle transitioned from under a bridge onto the open highway?",
+      "options": [
+        "The vehicle approached and passed through multiple intersections as the lights changed from green to yellow.",
+        "The vehicle entered a tunnel-like structure under an overpass.",
+        "The vehicle approached and stopped at a red traffic light.",
+        "The vehicle followed the white SUV toward a stop sign."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        107,
+        106,
+        109,
+        123
+      ],
+      "frame_evidence": [
+        "1733250352293426.png",
+        "1733250312292106.png",
+        "1733250422293142.png",
+        "1733250617294964.png"
+      ]
+    },
+    {
+      "question_id": 14,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle approached and stopped at the stop sign, then proceeded after the white SUV?",
+      "options": [
+        "The vehicle followed the white SUV as it approached the stop sign.",
+        "The vehicle continued driving straight through the neighborhood, passing houses and trees.",
+        "The vehicle drove past a large dome-shaped structure.",
+        "The vehicle passed a silver car parked on the left side of the road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        124,
+        123,
+        126,
+        8,
+        129
+      ],
+      "frame_evidence": [
+        "1733250622294978.png",
+        "1733250617294964.png",
+        "1733250632295212.png",
+        "1733249652286774.png",
+        "1733250647295105.png"
+      ]
+    },
+    {
+      "question_id": 15,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle approached and stopped at a red traffic light, then began moving when it turned green?",
+      "options": [
+        "The vehicle passed through the intersection following a white SUV.",
+        "The vehicle entered a tunnel-like structure under an overpass.",
+        "The vehicle passed a pedestrian on the right side of the road.",
+        "The vehicle approached the stop sign in the neighborhood."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        119,
+        120,
+        106,
+        42
+      ],
+      "frame_evidence": [
+        "1733250577294520.png",
+        "1733250582294560.png",
+        "1733250312292106.png",
+        "1733249822287770.png"
+      ]
+    }
+  ]
+}

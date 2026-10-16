@@ -1,0 +1,359 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: a small piece of debris drew closer on the roadway, or a white box truck passed through the foreground in the lane to the left?",
+      "options": [
+        "A small piece of debris drew closer on the roadway.",
+        "A white box truck passed through the foreground in the lane to the left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3,
+        5
+      ],
+      "frame_evidence": [
+        "1733340906941414.jpg",
+        "1733340918540521.jpg"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: a white pickup passed in the opposite direction across the median, or a gray panel van appeared at the left edge and proceeded forward alongside the camera vehicle?",
+      "options": [
+        "A gray panel van appeared at the left edge and proceeded forward alongside the camera vehicle.",
+        "A white pickup passed in the opposite direction across the median."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        6,
+        11
+      ],
+      "frame_evidence": [
+        "1733340922140568.jpg",
+        "1733340934940832.jpg"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the Thorold Business Area/Pine Street sign, or a dark vehicle came up alongside on the left?",
+      "options": [
+        "A dark vehicle came up alongside on the left.",
+        "The vehicle passed the Thorold Business Area/Pine Street sign."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        12,
+        14
+      ],
+      "frame_evidence": [
+        "1733340937740954.jpg",
+        "1733340992543160.jpg"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: a dark sedan traveled across the intersection from left to right, or the vehicle followed a dark SUV around a rightward bend?",
+      "options": [
+        "The vehicle followed a dark SUV around a rightward bend.",
+        "A dark sedan traveled across the intersection from left to right."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        17,
+        19
+      ],
+      "frame_evidence": [
+        "1733341011341012.jpg",
+        "1733341020941934.jpg"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: an oncoming dark car passed the dashcam vehicle on the left, or a white pickup with an orange snowplow blade passed across the front of the dashcam vehicle?",
+      "options": [
+        "A white pickup with an orange snowplow blade passed across the front of the dashcam vehicle.",
+        "An oncoming dark car passed the dashcam vehicle on the left."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        20,
+        23
+      ],
+      "frame_evidence": [
+        "1733341026141876.jpg",
+        "1733341036542203.jpg"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "A silver sedan moved forward in the adjacent left lane toward the underpass.",
+        "A white box truck advanced in the lane to the left and continued ahead.",
+        "A white pickup passed in the opposite direction across the median.",
+        "A white SUV came into view from the left and proceeded ahead in the adjacent lane."
+      ],
+      "answer_indices": [
+        1,
+        2,
+        0,
+        3
+      ],
+      "event_ids": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "frame_evidence": [
+        "1733340918540521.jpg",
+        "1733340922140568.jpg",
+        "1733340922140568.jpg",
+        "1733340923740580.jpg"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle passed the Thorold Business Area/Pine Street sign and drew closer to the Pine Street exit and underpass.",
+        "A gray panel van appeared at the left edge and proceeded forward alongside the camera vehicle.",
+        "A dump truck moved farther ahead and became smaller.",
+        "Vehicles in the lane to the left moved past the dashcam vehicle as additional vehicles came into view."
+      ],
+      "answer_indices": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "event_ids": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "frame_evidence": [
+        "1733340927740582.jpg",
+        "1733340932540839.jpg",
+        "1733340934940832.jpg",
+        "1733340937740954.jpg"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "Road markings diverged to form a right-hand exit lane that curved uphill.",
+        "The vehicle approached the tunnel behind a cargo truck, followed it through, and emerged onto a tree-lined road.",
+        "A dark vehicle came up alongside on the left.",
+        "The vehicle passed the Thorold Business Area/Pine Street sign and drew closer to the underpass."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "event_ids": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "frame_evidence": [
+        "1733340937740954.jpg",
+        "1733340948201294.jpg",
+        "1733340992543160.jpg",
+        "1733340996541552.jpg"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "A dark car entered from the left and crossed the intersection in front of the dashcam and minivan.",
+        "A dark sedan traveled across the intersection from left to right while the minivan ahead waited.",
+        "The dashcam vehicle rolled toward the stop line behind the dark minivan.",
+        "The vehicle followed a dark SUV around a rightward bend as the road straightened."
+      ],
+      "answer_indices": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "event_ids": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "frame_evidence": [
+        "1733341010541039.jpg",
+        "1733341011341012.jpg",
+        "1733341017341532.jpg",
+        "1733341020941934.jpg"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle advanced through the Pine Street intersection as a dark SUV passed in the opposing lane.",
+        "A white pickup with an orange snowplow blade approached and passed across the dashcam vehicle's front.",
+        "The vehicle reached the marked intersection approach and advanced toward the stop line under a green signal.",
+        "The vehicle reached the intersection and turned left onto the side street."
+      ],
+      "answer_indices": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "event_ids": [
+        22,
+        23,
+        24,
+        25
+      ],
+      "frame_evidence": [
+        "1733341034142002.jpg",
+        "1733341036542203.jpg",
+        "1733341041743216.jpg",
+        "1733341048141731.jpg"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately after a dump truck moved farther ahead and became smaller?",
+      "options": [
+        "A gray panel van appeared at the left edge and proceeded forward alongside the camera vehicle.",
+        "A white SUV came into view from the left and proceeded ahead.",
+        "The vehicle approached the tunnel behind a cargo truck.",
+        "The vehicle passed the Thorold Business Area/Pine Street sign."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        10,
+        11
+      ],
+      "frame_evidence": [
+        "1733340932540839.jpg",
+        "1733340934940832.jpg"
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle followed a cargo truck through the tunnel and emerged onto a tree-lined road?",
+      "options": [
+        "A dark vehicle came up alongside on the left.",
+        "The vehicle passed the Thorold Business Area/Pine Street sign and drew closer to the underpass.",
+        "Road markings diverged to form a right-hand exit lane.",
+        "The vehicle rolled toward the stop line behind a dark minivan."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        12,
+        13
+      ],
+      "frame_evidence": [
+        "1733340937740954.jpg",
+        "1733340948201294.jpg"
+      ]
+    },
+    {
+      "question_id": 13,
+      "type": "before_after",
+      "question": "What happened immediately after a dark sedan traveled across the intersection from left to right while the minivan ahead waited?",
+      "options": [
+        "The vehicle followed a dark SUV around a rightward bend.",
+        "A dark car entered from the left and crossed the intersection in front of the dashcam and minivan.",
+        "The dashcam vehicle rolled toward the stop line behind the dark minivan.",
+        "The vehicle reached the marked intersection approach under a green traffic signal."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        17,
+        18
+      ],
+      "frame_evidence": [
+        "1733341011341012.jpg",
+        "1733341017341532.jpg"
+      ]
+    },
+    {
+      "question_id": 14,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle continued toward the intersection while the dark minivan ahead shifted right and left the roadway in the camera's forward lane?",
+      "options": [
+        "The vehicle reached the marked intersection approach and advanced toward the stop line under a green signal.",
+        "An oncoming dark car approached and passed on the left.",
+        "A white pickup with an orange snowplow blade passed across the dashcam vehicle's front.",
+        "The vehicle followed a dark SUV around a rightward bend."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        21,
+        22
+      ],
+      "frame_evidence": [
+        "1733341031342232.jpg",
+        "1733341034142002.jpg"
+      ]
+    },
+    {
+      "question_id": 15,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle reached the intersection and turned left onto the side street?",
+      "options": [
+        "A dark car crossed the intersection in front of the dashcam and minivan.",
+        "The vehicle advanced through the Pine Street intersection as a dark SUV passed on the left.",
+        "A white pickup with an orange snowplow blade passed across the dashcam vehicle's front.",
+        "The vehicle reached the marked intersection approach under a green signal."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        24,
+        25
+      ],
+      "frame_evidence": [
+        "1733341041743216.jpg",
+        "1733341048141731.jpg"
+      ]
+    }
+  ]
+}

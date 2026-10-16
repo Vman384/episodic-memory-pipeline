@@ -1,0 +1,381 @@
+{
+  "false_events": [
+    {
+      "question_id": 6,
+      "description": "A deer crossed the highway directly in front of the vehicle.",
+      "why_plausible": "Deer can plausibly cross roads in forested and rural surroundings, but this crossing did not occur in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 7,
+      "description": "A fallen tree partially blocked the rural road ahead.",
+      "why_plausible": "A fallen tree would be plausible on a forest road, especially after weather, but no such obstruction occurred.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 8,
+      "description": "A motorcyclist overtook the vehicle inside the tunnel.",
+      "why_plausible": "Motorcycles can travel through tunnels and overtake traffic, but no motorcyclist overtook the vehicle.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 9,
+      "description": "A road maintenance worker held a stop sign on the shoulder.",
+      "why_plausible": "Temporary workers and stop signs are common near rural roadwork, but this did not happen in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 10,
+      "description": "A horse and rider traveled along the right side of the rural road.",
+      "why_plausible": "Equestrians can appear on quiet rural roads, but no horse and rider were present.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 11,
+      "description": "A school bus stopped with its warning lights flashing near the roadside.",
+      "why_plausible": "A school bus stopping is plausible on a rural or suburban road, but it did not occur during this drive.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 11,
+      "description": "A flock of geese crossed the roadway in front of the vehicle.",
+      "why_plausible": "Birds can cross open rural roads, but no flock of geese crossed the vehicle's path.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 11,
+      "description": "A blue sedan stopped in the travel lane to make a U-turn.",
+      "why_plausible": "A vehicle making a U-turn is plausible on a broad road or at an intersection, but no such maneuver occurred.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 12,
+      "description": "A black bear stood beside the forest road as the vehicle passed.",
+      "why_plausible": "Black bears can occur near forest roads, but no bear appeared in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 12,
+      "description": "A road crew placed orange cones across one lane ahead of the vehicle.",
+      "why_plausible": "Cones are common during highway maintenance, but no crew placed cones across a lane in this video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 12,
+      "description": "A cyclist in a bright yellow jacket rode through the tunnel.",
+      "why_plausible": "A cyclist could plausibly use a tunnel or its shoulder, but no such cyclist appeared.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 13,
+      "description": "A white pickup truck towing a boat entered the intersection.",
+      "why_plausible": "Pickup trucks towing recreational equipment are plausible on rural roads, but this combination did not appear.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 13,
+      "description": "A fox ran from the roadside into the forest.",
+      "why_plausible": "Foxes may cross roads near wooded areas, but no fox was seen.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 13,
+      "description": "A traffic signal temporarily changed to flashing red as the vehicle approached.",
+      "why_plausible": "Flashing signals can occur at rural intersections or during low-traffic periods, but this did not happen.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 14,
+      "description": "A fire engine with flashing lights approached in the opposite lane.",
+      "why_plausible": "Emergency vehicles can plausibly use rural highways and tunnels, but no fire engine approached.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 14,
+      "description": "A worker operated a portable asphalt-paving machine on the right shoulder.",
+      "why_plausible": "Roadside paving equipment is plausible near construction zones, but no worker operated such a machine.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 14,
+      "description": "A delivery cyclist crossed the intersection in front of the vehicle.",
+      "why_plausible": "Cyclists may cross intersections in developed or semi-rural areas, but no delivery cyclist crossed.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 15,
+      "description": "A large roadside billboard fell onto the edge of the shoulder.",
+      "why_plausible": "A damaged billboard could occur near a highway after severe weather, but no billboard fell.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 15,
+      "description": "A tow truck stopped behind a disabled car on the highway shoulder.",
+      "why_plausible": "Disabled vehicles and tow trucks are common highway occurrences, but none appeared in this configuration.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 15,
+      "description": "A group of hikers emerged from a forest trail beside the road.",
+      "why_plausible": "Hikers can appear near forest roads, but no group emerged from a trail.",
+      "source_event_ids": []
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a large semi-truck carrying a long, flatbed load travel across the overpass from left to right?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did a white commercial van marked 'Penn Refrigeration Ltd' cross the intersection from the left?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Was an orange X-shaped object lying in the left lane of the highway?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Did the vehicle pass a construction truck carrying traffic barrels and a temporary lane-closure sign on the right shoulder?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Was a person standing on the right-side sidewalk near a large leafless tree?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a deer cross the highway directly in front of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a fallen tree partially block the rural road ahead?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did a motorcyclist overtake the vehicle inside the tunnel?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Did a road maintenance worker hold a stop sign on the shoulder?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Did a horse and rider travel along the right side of the rural road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A school bus stopped with its warning lights flashing near the roadside.",
+        "A flock of geese crossed the roadway in front of the vehicle.",
+        "A blue sedan stopped in the travel lane to make a U-turn.",
+        "A white utility truck with MICHELIN branding drove alongside the camera vehicle and moved ahead."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        6
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A black bear stood beside the forest road as the vehicle passed.",
+        "A large construction truck carrying traffic barrels and a temporary lane-closure sign was parked on the right shoulder.",
+        "A road crew placed orange cones across one lane ahead of the vehicle.",
+        "A cyclist in a bright yellow jacket rode through the tunnel."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A white pickup truck towing a boat entered the intersection.",
+        "A person stood on the sidewalk on the right side of the road near a large leafless tree.",
+        "A fox ran from the roadside into the forest.",
+        "A traffic signal temporarily changed to flashing red as the vehicle approached."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A fire engine with flashing lights approached in the opposite lane.",
+        "A worker operated a portable asphalt-paving machine on the right shoulder.",
+        "A delivery cyclist crossed the intersection in front of the vehicle.",
+        "A white commercial van marked 'Penn Refrigeration Ltd' crossed the intersection from the left."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 15,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A large roadside billboard fell onto the edge of the shoulder.",
+        "A tow truck stopped behind a disabled car on the highway shoulder.",
+        "A group of hikers emerged from a forest trail beside the road.",
+        "An orange X-shaped object lay in the left lane of the highway."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

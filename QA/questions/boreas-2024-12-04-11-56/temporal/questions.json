@@ -1,0 +1,271 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the blue sign indicating nearby attractions, or a red truck appeared in the left lane?",
+      "options": [
+        "The vehicle passed the blue sign indicating nearby attractions.",
+        "A red truck appeared in the left lane."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        46,
+        47
+      ],
+      "frame_evidence": [
+        "1733331623252230.png",
+        "1733331625252203.png"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle approached a yellow road sign indicating a lane merge, or an orange utility truck appeared on the left side of the road?",
+      "options": [
+        "An orange utility truck appeared on the left side of the road.",
+        "The vehicle approached a yellow road sign indicating a lane merge."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        26,
+        35
+      ],
+      "frame_evidence": [
+        "1733331533251385.png",
+        "1733331574251722.png"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: a silver sedan entered the left lane and passed the vehicle, or the vehicle approached the green road sign for Welland Ave. and Niagara St.?",
+      "options": [
+        "The vehicle approached the green road sign for Welland Ave. and Niagara St.",
+        "A silver sedan entered the left lane and passed the vehicle."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        99,
+        106
+      ],
+      "frame_evidence": [
+        "1733331856254872.png",
+        "1733331888255734.png"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a car carrier truck on the right, or the vehicle passed a black car that changed lanes?",
+      "options": [
+        "The vehicle passed a black car that changed lanes.",
+        "The vehicle passed a car carrier truck on the right."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        93,
+        95
+      ],
+      "frame_evidence": [
+        "1733331833254574.png",
+        "1733331838254481.png"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed under the green Glendale Ave. Niagara-on-the-Lake sign, or the vehicle entered a tunnel?",
+      "options": [
+        "The vehicle entered a tunnel.",
+        "The vehicle passed under the green Glendale Ave. Niagara-on-the-Lake sign."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        54,
+        130
+      ],
+      "frame_evidence": [
+        "1733331653252376.png",
+        "1733332008259032.png"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle approaches a construction zone indicated by an orange sign.",
+        "A white truck appears on the left side of the road and continues driving alongside the vehicle.",
+        "The vehicle maintains a steady position behind the large truck.",
+        "The vehicle approaches a yellow road sign indicating a lane merge."
+      ],
+      "answer_indices": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "event_ids": [
+        55,
+        27,
+        28,
+        26
+      ],
+      "frame_evidence": [
+        "1733331658252416.png",
+        "1733331534251393.png",
+        "1733331538251397.png",
+        "1733331533251385.png"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle follows a white truck on a rural road.",
+        "The vehicle passes by a pedestrian and a silver car.",
+        "The vehicle approaches and passes a large truck with an oversized load on the right.",
+        "The vehicle approaches and stops at a stop sign on a curved road."
+      ],
+      "answer_indices": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "event_ids": [
+        143,
+        139,
+        73,
+        63
+      ],
+      "frame_evidence": [
+        "1733331438251738.png",
+        "1733332048255940.png",
+        "1733331738253547.png",
+        "1733331693252529.png"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "A garbage truck moves forward in the left lane.",
+        "The vehicle stops at a red traffic light.",
+        "The traffic light turns green and the vehicle begins to move forward.",
+        "The vehicle approaches and passes through an intersection following the green left-turn signal."
+      ],
+      "answer_indices": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "event_ids": [
+        133,
+        134,
+        135,
+        136
+      ],
+      "frame_evidence": [
+        "1733332023255750.png",
+        "1733332028255604.png",
+        "1733332031255623.png",
+        "1733332033255594.png"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle approached and stopped at the stop sign in the suburban area?",
+      "options": [
+        "The vehicle continues driving straight, passing by buildings and parked vehicles.",
+        "The vehicle proceeds after stopping at the stop sign.",
+        "The vehicle continues driving straight under the overpass toward a red traffic light.",
+        "Other vehicles begin to move through the intersection."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        3,
+        4,
+        5,
+        7,
+        10
+      ],
+      "frame_evidence": [
+        "1733331428251608.png",
+        "1733331431251970.png",
+        "1733331433251844.png",
+        "1733331443251012.png",
+        "1733331456251732.png"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle approached the yellow road sign indicating a lane merge?",
+      "options": [
+        "The vehicle maintains a steady position behind the large truck.",
+        "A white truck appears on the left side of the road and continues driving alongside the vehicle.",
+        "An orange utility truck appears on the left side of the road.",
+        "The vehicle passes a blue sign indicating nearby attractions."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        26,
+        27,
+        28,
+        46
+      ],
+      "frame_evidence": [
+        "1733331533251385.png",
+        "1733331534251393.png",
+        "1733331538251397.png",
+        "1733331623252230.png"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle was stopped at a red traffic light before the green signal?",
+      "options": [
+        "The vehicle approaches and passes through the intersection, following the green left-turn signal.",
+        "The vehicle continues driving forward on the multi-lane road.",
+        "The traffic light turns green, and the vehicle begins to move forward.",
+        "A garbage truck moves forward in the left lane."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        134,
+        135,
+        136,
+        133
+      ],
+      "frame_evidence": [
+        "1733332028255604.png",
+        "1733332031255623.png",
+        "1733332033255594.png",
+        "1733332023255750.png"
+      ]
+    }
+  ]
+}

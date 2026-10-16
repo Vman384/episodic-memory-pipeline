@@ -1,0 +1,389 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: a silver car passed the vehicle on the left at an intersection, or the traffic light changed from red to green and the vehicle began moving?",
+      "options": [
+        "A silver car passed the vehicle on the left at an intersection.",
+        "The traffic light changed from red to green and the vehicle began moving."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        8,
+        10
+      ],
+      "frame_evidence": [
+        "1733250989798060.png",
+        "1733251044798564.png"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: a large truck was seen driving on the left side of the road, or the vehicle passed under an overpass with advertisements?",
+      "options": [
+        "A large truck was seen driving on the left side of the road.",
+        "The vehicle passed under an overpass with advertisements."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        19,
+        98
+      ],
+      "frame_evidence": [
+        "1733251149799255.png",
+        "1733251499802484.png"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: a flatbed truck carrying a car passed on the left, or the vehicle drove through a tunnel and passed a white car on the left?",
+      "options": [
+        "A flatbed truck carrying a car passed on the left.",
+        "The vehicle drove through a tunnel and passed a white car on the left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        68,
+        36
+      ],
+      "frame_evidence": [
+        "1733251374801324.png",
+        "1733251234802306.png"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a large truck on the left, or a double-decker bus moved ahead of the vehicle?",
+      "options": [
+        "The vehicle passed a large truck on the left.",
+        "A double-decker bus moved ahead of the vehicle."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        82,
+        111
+      ],
+      "frame_evidence": [
+        "1733251425801906.png",
+        "1733251564802881.png"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: a white pickup truck was seen driving in the opposite direction, or the traffic light turned green and the vehicle proceeded through an intersection?",
+      "options": [
+        "A white pickup truck was seen driving in the opposite direction.",
+        "The traffic light turned green and the vehicle proceeded through an intersection."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        42,
+        78
+      ],
+      "frame_evidence": [
+        "1733251259800193.png",
+        "1733251413801667.png"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle exited a tunnel and continued on a rural road.",
+        "The vehicle approached a stop sign and stopped.",
+        "A black pickup truck was seen driving on the left.",
+        "The vehicle drove through a parking lot toward a building."
+      ],
+      "answer_indices": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "event_ids": [
+        17,
+        2,
+        40,
+        123
+      ],
+      "frame_evidence": [
+        "1733251142799419.png",
+        "1733250949797695.png",
+        "1733251249800074.png",
+        "1733251619803865.png"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle passed through an intersection with green traffic lights.",
+        "The vehicle approached and passed under an overpass.",
+        "A silver minivan passed by on the left.",
+        "The vehicle stopped at a red traffic light and then proceeded when it turned green."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "event_ids": [
+        88,
+        35,
+        79,
+        69
+      ],
+      "frame_evidence": [
+        "1733251454802003.png",
+        "1733251229799950.png",
+        "1733251414801656.png",
+        "1733251375801337.png"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle approached and crossed an intersection with a black SUV on the left.",
+        "The vehicle passed a zebra crossing.",
+        "The vehicle passed a Toyota dealership sign.",
+        "The vehicle passed a cyclist on the right after an intersection."
+      ],
+      "answer_indices": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "event_ids": [
+        97,
+        4,
+        99,
+        13
+      ],
+      "frame_evidence": [
+        "1733251494802398.png",
+        "1733250959797721.png",
+        "1733251504802414.png",
+        "1733251124799168.png"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "A red car passed by on the left.",
+        "A white pickup truck was seen driving in the opposite direction.",
+        "A black pickup truck was seen driving on the left.",
+        "A flatbed truck carrying a car passed by on the left."
+      ],
+      "answer_indices": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "event_ids": [
+        70,
+        42,
+        40,
+        68
+      ],
+      "frame_evidence": [
+        "1733251378801355.png",
+        "1733251259800193.png",
+        "1733251249800074.png",
+        "1733251374801324.png"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle passed a large truck on the left.",
+        "The vehicle drove under a concrete overpass.",
+        "The vehicle drove through a tunnel with artificial lighting.",
+        "The vehicle exited a tunnel and continued onto a highway."
+      ],
+      "answer_indices": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "event_ids": [
+        57,
+        36,
+        37,
+        82
+      ],
+      "frame_evidence": [
+        "1733251329802511.png",
+        "1733251234802306.png",
+        "1733251237799960.png",
+        "1733251425801906.png"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed under the overpass in the early highway segment?",
+      "options": [
+        "The vehicle traveled through a tunnel with artificial lighting.",
+        "A silver car drove past on the left.",
+        "The vehicle exited a tunnel onto a rural road.",
+        "A large truck was seen driving on the left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        15,
+        16,
+        8,
+        17,
+        19
+      ],
+      "frame_evidence": [
+        "1733251134799235.png",
+        "1733251139802305.png",
+        "1733250989798060.png",
+        "1733251142799419.png",
+        "1733251149799255.png"
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle drove through the parking lot toward the building?",
+      "options": [
+        "The vehicle followed a gentle curve to the right on a rural road.",
+        "The vehicle passed a fenced area and a building on a paved road.",
+        "The vehicle passed a large truck on the left.",
+        "The vehicle passed under an overpass with advertisements."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        123,
+        120,
+        126,
+        82,
+        98
+      ],
+      "frame_evidence": [
+        "1733251619803865.png",
+        "1733251604804612.png",
+        "1733251634807502.png",
+        "1733251425801906.png",
+        "1733251499802484.png"
+      ]
+    },
+    {
+      "question_id": 13,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed a large truck on the left?",
+      "options": [
+        "The vehicle continued driving straight while passing trees and buildings on the right.",
+        "The vehicle drove through a parking lot toward a building.",
+        "A silver car moved into the left lane and passed the vehicle.",
+        "The vehicle stopped at a red traffic light."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        82,
+        84,
+        123,
+        71,
+        87
+      ],
+      "frame_evidence": [
+        "1733251425801906.png",
+        "1733251434801893.png",
+        "1733251619803865.png",
+        "1733251382801409.png",
+        "1733251449801955.png"
+      ]
+    },
+    {
+      "question_id": 14,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle passed a Toyota dealership sign?",
+      "options": [
+        "The vehicle drove under an overpass with advertisements.",
+        "The vehicle crossed an intersection with a black SUV on the left.",
+        "The traffic light turned green and the vehicle proceeded.",
+        "The vehicle drove through a tunnel."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        99,
+        98,
+        97,
+        78,
+        36
+      ],
+      "frame_evidence": [
+        "1733251504802414.png",
+        "1733251499802484.png",
+        "1733251494802398.png",
+        "1733251413801667.png",
+        "1733251234802306.png"
+      ]
+    },
+    {
+      "question_id": 15,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed through the intersection as the light turned green in the later rural-road segment?",
+      "options": [
+        "The vehicle passed a 'Festival of Lights' signboard.",
+        "The vehicle drove under a concrete overpass.",
+        "A flatbed truck carrying a car passed on the left.",
+        "The vehicle approached and stopped at another red traffic light."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        65,
+        66,
+        57,
+        68,
+        76
+      ],
+      "frame_evidence": [
+        "1733251365801788.png",
+        "1733251366801466.png",
+        "1733251329802511.png",
+        "1733251374801324.png",
+        "1733251404801592.png"
+      ]
+    }
+  ]
+}

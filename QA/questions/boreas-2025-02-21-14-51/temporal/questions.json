@@ -1,0 +1,324 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the white pickup passed in the opposing lanes, or the white sedan beside the pickup advanced along the right side of the queued vehicles?",
+      "options": [
+        "The white pickup passed in the opposing lanes.",
+        "The white sedan beside the pickup advanced along the right side of the queued vehicles."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        19,
+        20
+      ],
+      "frame_evidence": [
+        "1740167616658683.jpg",
+        "1740167626258772.jpg"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: the dark sedan passed the camera vehicle and exited at the left edge, or the light-colored minivan passed by the camera vehicle?",
+      "options": [
+        "The dark sedan passed the camera vehicle and exited at the left edge.",
+        "The light-colored minivan passed by the camera vehicle."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        24,
+        25
+      ],
+      "frame_evidence": [
+        "1740167648658990.jpg",
+        "1740167649458998.jpg"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the school bus parked along the left curb, or it passed the parked white service van on the right?",
+      "options": [
+        "The vehicle passed the parked white service van on the right.",
+        "The vehicle passed the school bus parked along the left curb."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        83,
+        84
+      ],
+      "frame_evidence": [
+        "1740167952661919.jpg",
+        "1740167967862022.jpg"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the white sedan parked on the right, or it passed the parked minivan on the right?",
+      "options": [
+        "The vehicle passed the parked minivan on the right.",
+        "The vehicle passed the white sedan parked on the right."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        100,
+        101
+      ],
+      "frame_evidence": [
+        "1740168085463192.jpg",
+        "1740168091063276.jpg"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the dark minivan parked on the left, or it passed the light-colored sedan parked along the left curb?",
+      "options": [
+        "The vehicle passed the light-colored sedan parked along the left curb.",
+        "The vehicle passed the dark minivan parked on the left."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        129,
+        130
+      ],
+      "frame_evidence": [
+        "1740168264664609.jpg",
+        "1740168270264649.jpg"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred.",
+      "options": [
+        "The vehicle proceeds onto the road and continues forward beside snowbanks, bare trees, utility poles, and the building.",
+        "The vehicle turns across the cracked paved area toward the narrow road.",
+        "The dashcam vehicle continues toward the intersection as a box truck moves across it toward the right.",
+        "The white box truck continues across the intersection toward the right and clears the visible roadway."
+      ],
+      "answer_indices": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "event_ids": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "frame_evidence": [
+        "1740167564658003.jpg",
+        "1740167566258162.jpg",
+        "1740167587058340.jpg",
+        "1740167592658433.jpg"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred.",
+      "options": [
+        "A light-colored minivan approaches in the opposing lane and passes by the camera vehicle.",
+        "An oncoming dark pickup approaches and passes in the opposing lanes across the snow-covered median.",
+        "A silver minivan approaches in the opposing lane and passes out of view to the left.",
+        "A blue sedan advances in the lane to the right of the camera vehicle, moving from alongside to ahead."
+      ],
+      "answer_indices": [
+        0,
+        1,
+        3,
+        2
+      ],
+      "event_ids": [
+        25,
+        27,
+        28,
+        26
+      ],
+      "frame_evidence": [
+        "1740167649458998.jpg",
+        "1740167659859113.jpg",
+        "1740167659859113.jpg",
+        "1740167655059060.jpg"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred.",
+      "options": [
+        "The vehicle advances over the marked pedestrian crosswalk and continues along the residential street as it bends to the right.",
+        "The vehicle continues toward the pedestrian crossing and traffic signals.",
+        "The vehicle moves forward through the green-lit intersection and over the crosswalk, entering the residential street.",
+        "The vehicle passes a pedestrian walking on the left sidewalk."
+      ],
+      "answer_indices": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "event_ids": [
+        97,
+        91,
+        98,
+        99
+      ],
+      "frame_evidence": [
+        "1740168066662994.jpg",
+        "1740168018262737.jpg",
+        "1740168068663034.jpg",
+        "1740168075063140.jpg"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred.",
+      "options": [
+        "The vehicle proceeds onto the bridge along the straight, snow-lined road.",
+        "An oncoming dark SUV grows larger in the left lane and passes the dashcam vehicle.",
+        "A gray sedan approaches in the opposing lane and passes the dashcam vehicle on the left.",
+        "A dark vehicle approaches in the opposing lane while the dashcam continues forward."
+      ],
+      "answer_indices": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "event_ids": [
+        109,
+        110,
+        111,
+        108
+      ],
+      "frame_evidence": [
+        "1740168119063488.jpg",
+        "1740168121463510.jpg",
+        "1740168130263600.jpg",
+        "1740168110263422.jpg"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred.",
+      "options": [
+        "A dark sedan crosses the far side of the intersection from right to left and exits the frame.",
+        "The camera vehicle proceeds straight through the intersection and continues down the arterial.",
+        "A white SUV enters from the right and proceeds leftward along the far side of the intersection.",
+        "A dark gray car travels from right to left across the far side of the intersection."
+      ],
+      "answer_indices": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "event_ids": [
+        162,
+        163,
+        164,
+        165
+      ],
+      "frame_evidence": [
+        "1740168432666585.jpg",
+        "1740168435066570.jpg",
+        "1740168438266600.jpg",
+        "1740168439066518.jpg"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle turned across the cracked paved area toward the narrow road?",
+      "options": [
+        "The vehicle proceeds onto the road beside snowbanks, bare trees, utility poles, and the building.",
+        "The vehicle follows the access road around a left bend and enters the open industrial lot.",
+        "The vehicle follows the road as it bends to the right, bringing a building, parked vehicles, and a stop sign into view."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        7,
+        8,
+        4,
+        1
+      ],
+      "frame_evidence": [
+        "1740167564658003.jpg",
+        "1740167566258162.jpg",
+        "1740167525457804.jpg",
+        "1740167504257542.jpg"
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle continued toward the intersection behind the red pickup while opposing traffic passed on the other side of the median?",
+      "options": [
+        "The vehicle continues straight through the intersection and proceeds along the road behind the pickup.",
+        "The vehicle rolls onto the marked crosswalk behind the pickup and begins entering the intersection.",
+        "The vehicle continues behind the red pickup and approaches, then passes, the keep-right sign on the median."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        56,
+        55,
+        57,
+        58
+      ],
+      "frame_evidence": [
+        "1740167827860790.jpg",
+        "1740167825460787.jpg",
+        "1740167829460802.jpg",
+        "1740167844660987.jpg"
+      ]
+    },
+    {
+      "question_id": 13,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle drove past a bus shelter on the right and continued toward the bridge?",
+      "options": [
+        "The vehicle proceeds onto the bridge along the straight, snow-lined road.",
+        "A gray sedan approaches in the opposing lane and passes the dashcam vehicle on the left.",
+        "The vehicle passes the dark SUV parked along the left curb."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        107,
+        108,
+        109,
+        113
+      ],
+      "frame_evidence": [
+        "1740168107863416.jpg",
+        "1740168110263422.jpg",
+        "1740168119063488.jpg",
+        "1740168141463742.jpg"
+      ]
+    }
+  ]
+}

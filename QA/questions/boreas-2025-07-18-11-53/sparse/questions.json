@@ -1,0 +1,441 @@
+{
+  "false_events": [
+    {
+      "question_id": 6,
+      "description": "A deer stepped onto the gravel road and crossed in front of the vehicle.",
+      "why_plausible": "Wildlife could plausibly cross a quiet road through dense forest.",
+      "source_event_ids": [
+        19,
+        27
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A farm tractor approached on the gravel road and passed the vehicle.",
+      "why_plausible": "Farm machinery could plausibly use a rural road between fields.",
+      "source_event_ids": [
+        55,
+        57
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "A fallen tree completely blocked the road, forcing the vehicle to stop.",
+      "why_plausible": "Fallen trees are a credible obstruction on a road closely bordered by woodland.",
+      "source_event_ids": [
+        70,
+        72
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A cyclist rode toward the vehicle along the narrow forest road.",
+      "why_plausible": "A cyclist could plausibly use a quiet rural road through the woods.",
+      "source_event_ids": [
+        88,
+        89
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A horse-drawn buggy traveled along the road beside the open fields.",
+      "why_plausible": "A horse-drawn vehicle could plausibly appear on a rural road near farmland.",
+      "source_event_ids": [
+        55,
+        57
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A black bear stood beside the road near the wooded bend.",
+      "why_plausible": "A bear could plausibly be seen beside a secluded forest road.",
+      "source_event_ids": [
+        1,
+        27
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A construction worker used a handheld stop sign to direct traffic past roadwork.",
+      "why_plausible": "Temporary roadwork and flaggers can occur on rural roads.",
+      "source_event_ids": [
+        32,
+        34
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A flock of wild turkeys crossed the road from one wooded shoulder to the other.",
+      "why_plausible": "Wild turkeys can plausibly cross quiet roads in forested areas.",
+      "source_event_ids": [
+        18,
+        49
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A delivery van was parked beside a rural mailbox while a person unloaded packages.",
+      "why_plausible": "Deliveries to roadside homes are plausible along a rural route.",
+      "source_event_ids": [
+        4,
+        25
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A loose dog ran across the road from a farmhouse driveway.",
+      "why_plausible": "A dog could plausibly get onto a rural road near homes and driveways.",
+      "source_event_ids": [
+        62,
+        63
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A farm worker drove a small riding mower along the road shoulder.",
+      "why_plausible": "Mowing equipment could plausibly be used near fields and rural properties.",
+      "source_event_ids": [
+        54,
+        56
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A snowplow came toward the vehicle on the forest road.",
+      "why_plausible": "Snowplows are credible vehicles on forest roads, particularly where winter-plowing warnings are posted.",
+      "source_event_ids": [
+        24,
+        38
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A red pickup truck towing a boat trailer passed the vehicle on the gravel road.",
+      "why_plausible": "A pickup towing a trailer could plausibly travel on a rural gravel route.",
+      "source_event_ids": [
+        1,
+        19
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A group of hikers walked along the road carrying backpacks.",
+      "why_plausible": "Hikers could plausibly use a quiet road near wooded recreation areas.",
+      "source_event_ids": [
+        101,
+        145
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A motorcycle overtook the vehicle on the paved two-lane road.",
+      "why_plausible": "A motorcycle could plausibly travel along a paved rural road.",
+      "source_event_ids": [
+        113,
+        127
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A flock of sheep spilled through an open fence and wandered across the road.",
+      "why_plausible": "Livestock could plausibly be near a rural road bordered by fenced fields.",
+      "source_event_ids": [
+        55,
+        82
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A road crew operated a paving machine while resurfacing the lane.",
+      "why_plausible": "Road maintenance is plausible on a rural road with visibly deteriorated pavement.",
+      "source_event_ids": [
+        102,
+        103
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A horse stood loose on the road near a fenced field.",
+      "why_plausible": "A loose farm animal could plausibly reach a rural road beside fenced land.",
+      "source_event_ids": [
+        55,
+        62
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A fire engine passed the vehicle with its emergency lights flashing.",
+      "why_plausible": "Emergency vehicles can plausibly use rural roads connecting wooded and populated areas.",
+      "source_event_ids": [
+        100,
+        141
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A roadside vendor had set up a small produce stand beside the road.",
+      "why_plausible": "A produce stand could plausibly appear along a road passing rural properties and fields.",
+      "source_event_ids": [
+        57,
+        62
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a red SUV towing a small utility trailer pass toward the camera while crossing a narrow bridge with low railings and black-and-yellow hazard markers?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did a green roadside sign reading \u201cSouth Branch Nottawasaga R.\u201d stand beside a bridge as the road curved into dense woods?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did the paved road transition into pale loose gravel just before a bend through dense forest?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        16
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Did a small dark utility trailer or piece of equipment with orange reflective markings sit partly in deep shade just off the right side of the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        64
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Was a large steel lattice transmission tower visible close beside the road, with high-voltage lines stretching across the open field and above the roadway?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        127
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a deer step onto the gravel road and cross in front of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a farm tractor approach on the gravel road and pass the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did a fallen tree completely block the road and force the vehicle to stop?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Did a cyclist ride toward the vehicle along the narrow forest road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Did a horse-drawn buggy travel along the road beside the open fields?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A black bear stood beside the road near a wooded bend.",
+        "A construction worker directed traffic past roadwork using a handheld stop sign.",
+        "A flock of wild turkeys crossed the road between the wooded shoulders.",
+        "The road crossed a short bridge with low guardrails and black-and-yellow hazard panels at its entrance, then bent through the trees."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        13
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A delivery van stopped beside a rural mailbox while someone unloaded packages.",
+        "A loose dog ran across the road from a farmhouse driveway.",
+        "A farm worker drove a riding mower along the road shoulder.",
+        "A yellow roadside sign read \u201cWATCH FOR SNOW PLOWS,\u201d above a red-and-white striped marker beside the gravel road."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        24
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A snowplow came toward the vehicle on the forest road.",
+        "A red pickup towing a boat trailer passed on the gravel road.",
+        "A group of hikers walked along the road carrying backpacks.",
+        "A yellow diamond warning sign showed a red stop-sign shape with an upward arrow above it."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        84
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A motorcycle overtook the vehicle on the paved two-lane road.",
+        "A flock of sheep crossed the road after getting through an open fence.",
+        "A road crew operated a paving machine while resurfacing the lane.",
+        "A blue-surfaced court enclosed by tall dark fencing sat immediately beside the road."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        134
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 15,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A horse stood loose on the road near a fenced field.",
+        "A fire engine passed with its emergency lights flashing.",
+        "A roadside vendor had set up a small produce stand.",
+        "A bright orange SUV was positioned side-on across the road ahead at a junction, with a stop sign visible beside it."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        147
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

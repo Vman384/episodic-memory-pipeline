@@ -1,0 +1,329 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passing the open chain-link gate and its stop sign, or the vehicle passing the parked van on the right?",
+      "options": [
+        "The vehicle passed the open chain-link gate and its stop sign.",
+        "The vehicle passed the parked van on the right."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        8,
+        9
+      ],
+      "frame_evidence": [
+        "1739658049192692.jpg",
+        "1739658054792222.jpg"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: a pedestrian walking across the foreground crosswalk from left to right with a green bag, or a white pickup traveling from left to right across the foreground?",
+      "options": [
+        "A white pickup traveled from left to right across the foreground.",
+        "A pedestrian carrying a green bag walked across the foreground crosswalk from left to right."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        32,
+        34
+      ],
+      "frame_evidence": [
+        "1739658161196511.jpg",
+        "1739658166796558.jpg"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passing the bus shelter on the right, or the vehicle passing the gray sedan parked on the right?",
+      "options": [
+        "The vehicle passed the bus shelter on the right.",
+        "The vehicle passed the gray sedan parked on the right."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        85,
+        95
+      ],
+      "frame_evidence": [
+        "1739658329198950.jpg",
+        "1739658385198381.jpg"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passing the parked gray sedan on the left, or a pedestrian becoming visible on the snowy left roadside?",
+      "options": [
+        "A pedestrian became visible on the snowy left roadside.",
+        "The vehicle passed the parked gray sedan on the left."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        154,
+        156
+      ],
+      "frame_evidence": [
+        "1739658833204336.jpg",
+        "1739658842004407.jpg"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle emerging from beneath the bridge, or an orange car passing in the opposing lanes?",
+      "options": [
+        "The vehicle emerged from beneath the bridge.",
+        "An orange car passed in the opposing lanes."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        179,
+        182
+      ],
+      "frame_evidence": [
+        "1739658964055398.jpg",
+        "1739658984405563.jpg"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle passed the open chain-link gate and its stop sign.",
+        "The vehicle passed the parked van on the right.",
+        "The vehicle followed the snow-covered road around a left-hand bend.",
+        "The vehicle passed the cone and parked cars while drawing alongside the building."
+      ],
+      "answer_indices": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "event_ids": [
+        12,
+        10,
+        8,
+        9
+      ],
+      "frame_evidence": [
+        "1739658072393771.jpg",
+        "1739658060392558.jpg",
+        "1739658049192692.jpg",
+        "1739658054792222.jpg"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle began rolling forward across the snowy crosswalk and into the intersection.",
+        "A pedestrian carrying a green bag walked across the foreground crosswalk from left to right.",
+        "A dark SUV crossed from left to right in front of the waiting vehicle.",
+        "A light-colored sedan crossed from right to left while the vehicle waited."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "event_ids": [
+        19,
+        32,
+        37,
+        56
+      ],
+      "frame_evidence": [
+        "1739658110792777.jpg",
+        "1739658161196511.jpg",
+        "1739658178396746.jpg",
+        "1739658231197876.jpg"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle turned right at the intersection and proceeded along the residential street.",
+        "The vehicle passed the roadside speed-hump warning sign.",
+        "The vehicle passed the parked silver hatchback on the left.",
+        "The vehicle approached a person shoveling snow beside the left side of the road."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "event_ids": [
+        137,
+        128,
+        131,
+        135
+      ],
+      "frame_evidence": [
+        "1739658650002845.jpg",
+        "1739658586802331.jpg",
+        "1739658594402393.jpg",
+        "1739658621202610.jpg"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle passed the open chain-link gate and its stop sign?",
+      "options": [
+        "The vehicle passed the parked van on the right.",
+        "The vehicle passed the parked minivan on the right while approaching a stop sign.",
+        "The vehicle passed the portable no-entry sign and followed the lane as it curved right.",
+        "The vehicle proceeded past the white SUV on the left and the tan or gray SUV on the right."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        7,
+        8,
+        9,
+        11
+      ],
+      "frame_evidence": [
+        "1739658043591454.jpg",
+        "1739658049192692.jpg",
+        "1739658054792222.jpg",
+        "1739658071593517.jpg"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed the bus shelter on the right?",
+      "options": [
+        "An oncoming car approached in the opposite lane and passed the vehicle.",
+        "The vehicle passed the gray sedan parked on the right.",
+        "The vehicle passed a pedestrian walking along the left roadside.",
+        "The vehicle approached the speed hump and its warning sign."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        85,
+        87,
+        95,
+        83,
+        82
+      ],
+      "frame_evidence": [
+        "1739658329198950.jpg",
+        "1739658340448874.jpg",
+        "1739658385198381.jpg",
+        "1739658323649429.jpg",
+        "1739658320799053.jpg"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle emerged from beneath the bridge?",
+      "options": [
+        "An oncoming light-colored car passed the dashcam vehicle.",
+        "The vehicle approached the advertising-covered bridge and began passing beneath it.",
+        "An orange car passed in the opposing lanes.",
+        "A dark pickup truck passed the dashcam vehicle in the left lane."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        178,
+        179,
+        180,
+        182,
+        185
+      ],
+      "frame_evidence": [
+        "1739658962005381.jpg",
+        "1739658964055398.jpg",
+        "1739658967605427.jpg",
+        "1739658984405563.jpg",
+        "1739659003655719.jpg"
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed the parked gray sedan on the left?",
+      "options": [
+        "A pedestrian became visible on the snowy left roadside.",
+        "An oncoming dark car approached and passed the vehicle on the left.",
+        "The vehicle passed the bus shelter on the left.",
+        "The vehicle approached the marked intersection and crosswalk as an oncoming car approached."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        154,
+        155,
+        160,
+        157,
+        156
+      ],
+      "frame_evidence": [
+        "1739658833204336.jpg",
+        "1739658838804381.jpg",
+        "1739658861204564.jpg",
+        "1739658844404427.jpg",
+        "1739658842004407.jpg"
+      ]
+    },
+    {
+      "question_id": 13,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle turned right from the intersection onto the snow-covered road?",
+      "options": [
+        "The vehicle passed the roadside sign and approached the building and parking area.",
+        "An oncoming car approached and passed the vehicle.",
+        "A dark pickup truck passed the dashcam vehicle in the left lane.",
+        "The vehicle advanced along the snowy lane and passed the stationary snow-covered van parked on the left."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        198,
+        199,
+        200,
+        197,
+        185
+      ],
+      "frame_evidence": [
+        "1739659075206300.jpg",
+        "1739659102006517.jpg",
+        "1739659124406698.jpg",
+        "1739659074006289.jpg",
+        "1739659003655719.jpg"
+      ]
+    }
+  ]
+}

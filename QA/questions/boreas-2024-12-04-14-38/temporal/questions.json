@@ -1,0 +1,389 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the dark blue pickup crossed the intersection from left to right, or the light-colored sedan moved across the intersection from right toward left?",
+      "options": [
+        "The dark blue pickup crossed the intersection from left to right.",
+        "The light-colored sedan moved across the intersection from right toward left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        11,
+        12
+      ],
+      "frame_evidence": [
+        "1733341182193411.jpg",
+        "1733341184593430.jpg"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: the reddish SUV crossed the intersection from right to left, or the white Nissan SUV passed the camera vehicle on the left?",
+      "options": [
+        "The reddish SUV crossed the intersection from right to left.",
+        "The white Nissan SUV passed the camera vehicle on the left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        15,
+        17
+      ],
+      "frame_evidence": [
+        "1733341193393501.jpg",
+        "1733341199393549.jpg"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: the blue sedan approached in the opposite lane and passed the camera vehicle, or the dark SUV approached in the opposite lane and passed on the left?",
+      "options": [
+        "The blue sedan approached and passed.",
+        "The dark SUV approached and passed on the left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        28,
+        29
+      ],
+      "frame_evidence": [
+        "1733341232593603.jpg",
+        "1733341234193286.jpg"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the dark car moved alongside the camera vehicle in the adjacent lane, or the black sedan advanced from alongside to farther ahead?",
+      "options": [
+        "The dark car moved alongside the camera vehicle.",
+        "The black sedan advanced from alongside to farther ahead."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        39,
+        40
+      ],
+      "frame_evidence": [
+        "1733341285855646.jpg",
+        "1733341288655668.jpg"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: the semi-truck passed the dashcam vehicle on the left, or the vehicle shifted its view to the right at the intersection?",
+      "options": [
+        "The semi-truck passed on the left.",
+        "The vehicle shifted its view to the right."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        62,
+        63
+      ],
+      "frame_evidence": [
+        "1733341383793944.jpg",
+        "1733341389394259.jpg"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "A silver car crossed the intersection from right to left and exited the view.",
+        "A dark car near the right side of the intersection moved into the roadway and continued away.",
+        "A reddish SUV crossed the intersection from right to left and cleared the camera's lane.",
+        "A white Nissan SUV passed the camera vehicle on the left and moved out of view."
+      ],
+      "answer_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "event_ids": [
+        13,
+        14,
+        15,
+        17
+      ],
+      "frame_evidence": [
+        "1733341187793455.jpg",
+        "1733341188593462.jpg",
+        "1733341193393501.jpg",
+        "1733341199393549.jpg"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "A dark SUV approached in the opposite lane and passed the camera vehicle on the left.",
+        "An oncoming blue sedan approached and passed the camera vehicle.",
+        "A dark passenger vehicle entered from the right and crossed in front of the dashcam vehicle.",
+        "The vehicle continued along the residential street toward orange roadside work signs."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "event_ids": [
+        29,
+        28,
+        30,
+        27
+      ],
+      "frame_evidence": [
+        "1733341234193286.jpg",
+        "1733341232593603.jpg",
+        "1733341240193198.jpg",
+        "1733341228193369.jpg"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle reached the tunnel entrance and proceeded inside behind the truck.",
+        "A white bus passed leftward beyond the median in the opposing lanes.",
+        "The vehicle continued along the right-curving road toward the tunnel entrance, passing the roadside stop sign.",
+        "A white box truck continued ahead and entered the tunnel as the camera vehicle approached."
+      ],
+      "answer_indices": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "event_ids": [
+        38,
+        34,
+        35,
+        36
+      ],
+      "frame_evidence": [
+        "1733341274655557.jpg",
+        "1733341260595548.jpg",
+        "1733341260595548.jpg",
+        "1733341266194727.jpg"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The overhead signals changed from green to yellow as a white SUV crossed in from the right.",
+        "Several cars in the opposing lanes approached and passed across the left side of the view.",
+        "A white pickup equipped with a front-mounted snowplow passed out of view to the left.",
+        "A dark SUV moved across the foreground from right to left and exited."
+      ],
+      "answer_indices": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "event_ids": [
+        56,
+        52,
+        49,
+        54
+      ],
+      "frame_evidence": [
+        "1733341358193856.jpg",
+        "1733341350193705.jpg",
+        "1733341345393682.jpg",
+        "1733341355793750.jpg"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The vehicle shifted its view to the right at the intersection.",
+        "A semi-truck approached from the opposite direction and passed the dashcam vehicle on the left.",
+        "The vehicle moved steadily forward toward the open gates, which drew nearer.",
+        "The dashcam vehicle proceeded along the rural road as a dark car approached in the opposite lane."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "event_ids": [
+        63,
+        62,
+        64,
+        61
+      ],
+      "frame_evidence": [
+        "1733341389394259.jpg",
+        "1733341383793944.jpg",
+        "1733341394993900.jpg",
+        "1733341372593489.jpg"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately after the light-colored sedan moved across the intersection from the right toward the left?",
+      "options": [
+        "A dark car near the right side of the intersection moved into the roadway and continued away.",
+        "A dark blue pickup crossed the intersection from left to right.",
+        "A silver car crossed the intersection from right to left and exited the view.",
+        "A reddish SUV crossed the intersection from right to left."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        12,
+        14,
+        11,
+        13,
+        15
+      ],
+      "frame_evidence": [
+        "1733341184593430.jpg",
+        "1733341188593462.jpg",
+        "1733341182193411.jpg",
+        "1733341187793455.jpg",
+        "1733341193393501.jpg"
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "before_after",
+      "question": "What happened immediately before the dark passenger vehicle entered from the right and crossed in front of the dashcam vehicle?",
+      "options": [
+        "The vehicle continued along the residential street toward orange roadside work signs.",
+        "A dark SUV approached in the opposite lane and passed the camera vehicle on the left.",
+        "The vehicle advanced toward the intersection and shifted left toward the open route around the construction closure.",
+        "A blue sedan approached in the opposite lane and passed the camera vehicle."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        30,
+        27,
+        29,
+        31,
+        28
+      ],
+      "frame_evidence": [
+        "1733341240193198.jpg",
+        "1733341228193369.jpg",
+        "1733341234193286.jpg",
+        "1733341243793458.jpg",
+        "1733341232593603.jpg"
+      ]
+    },
+    {
+      "question_id": 13,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed the roadside stop sign while continuing toward the tunnel entrance?",
+      "options": [
+        "A white bus passed leftward beyond the median.",
+        "A white box truck continued farther ahead and entered the tunnel.",
+        "The vehicle reached the tunnel entrance and proceeded inside behind the truck.",
+        "A dark car became visible on the left and moved alongside the camera vehicle."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        35,
+        34,
+        36,
+        38,
+        39
+      ],
+      "frame_evidence": [
+        "1733341260595548.jpg",
+        "1733341260595548.jpg",
+        "1733341266194727.jpg",
+        "1733341274655557.jpg",
+        "1733341285855646.jpg"
+      ]
+    },
+    {
+      "question_id": 14,
+      "type": "before_after",
+      "question": "What happened immediately after the dark SUV moved across the foreground from right to left and exited?",
+      "options": [
+        "The overhead signals facing the camera changed from green to yellow.",
+        "A dark pickup approached from the left and passed through the foreground.",
+        "A dark SUV passed close across the left foreground and exited.",
+        "Several cars in the opposing lanes approached and passed across the left side."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        54,
+        56,
+        55,
+        57,
+        52
+      ],
+      "frame_evidence": [
+        "1733341355793750.jpg",
+        "1733341358193856.jpg",
+        "1733341356193753.jpg",
+        "1733341361393908.jpg",
+        "1733341350193705.jpg"
+      ]
+    },
+    {
+      "question_id": 15,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle shifted its view to the right at the intersection?",
+      "options": [
+        "A semi-truck approached from the opposite direction and passed the dashcam vehicle on the left.",
+        "The vehicle proceeded along the rural road as a dark car approached in the opposite lane.",
+        "The vehicle moved steadily forward toward the open gates.",
+        "A white pickup equipped with a front-mounted snowplow passed out of view to the left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        63,
+        62,
+        61,
+        64,
+        49
+      ],
+      "frame_evidence": [
+        "1733341389394259.jpg",
+        "1733341383793944.jpg",
+        "1733341372593489.jpg",
+        "1733341394993900.jpg",
+        "1733341345393682.jpg"
+      ]
+    }
+  ]
+}

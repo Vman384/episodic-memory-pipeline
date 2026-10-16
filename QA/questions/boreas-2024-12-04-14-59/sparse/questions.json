@@ -1,0 +1,267 @@
+{
+  "false_events": [
+    {
+      "question_id": 4,
+      "description": "A deer stepped onto the snowy shoulder beside the rural road.",
+      "why_plausible": "Deer can be encountered near open fields and wooded roads in winter, but this event is not in the verified list.",
+      "source_event_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "question_id": 5,
+      "description": "A snowplow passed the vehicle on the opposite side of the road.",
+      "why_plausible": "Winter residue along rural roads makes snow-removal vehicles a credible possibility, but none is listed as occurring.",
+      "source_event_ids": [
+        2,
+        4
+      ]
+    },
+    {
+      "question_id": 6,
+      "description": "A fallen tree branch partly blocked the right lane near the tunnel entrance.",
+      "why_plausible": "Branches can fall near roadside cut slopes and tunnel approaches, but this obstruction is not among the verified events.",
+      "source_event_ids": [
+        28,
+        29
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A red fox crossed the rural road ahead of the vehicle.",
+      "why_plausible": "Foxes may cross open rural roads, especially near fields, but this crossing did not occur in the verified account.",
+      "source_event_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A tractor turned out from a field entrance onto the road.",
+      "why_plausible": "Farm vehicles commonly use entrances along rural roads, but no tractor joining the road is listed.",
+      "source_event_ids": [
+        4,
+        5
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A flock of geese gathered on the snowy roadside beside the fields.",
+      "why_plausible": "Geese can gather near open farmland, but this roadside flock is not a verified event.",
+      "source_event_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "A maintenance worker in a reflective vest stood beside a service vehicle inside the tunnel.",
+      "why_plausible": "Tunnel maintenance work is credible in an enclosed roadway, but the verified tunnel events do not include a worker or service vehicle there.",
+      "source_event_ids": [
+        32,
+        34
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "A motorcycle overtook the dashcam vehicle inside the tunnel.",
+      "why_plausible": "Motorcycles can share highway tunnels with other traffic, but no motorcycle overtaking is listed.",
+      "source_event_ids": [
+        35,
+        36
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "Water dripped from the tunnel ceiling and formed a wet patch in the lane.",
+      "why_plausible": "Leaks and damp pavement can occur in tunnels, but the verified tunnel details do not include dripping water or a wet patch.",
+      "source_event_ids": [
+        33,
+        38
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A delivery van was parked beside a residential driveway with its hazard lights flashing.",
+      "why_plausible": "A delivery stop is plausible on a neighborhood street, but no such van or flashing lights are listed.",
+      "source_event_ids": [
+        50,
+        51
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A dog on a leash was being walked along the snowy sidewalk.",
+      "why_plausible": "Dog walkers are common in residential areas, but this event is not in the verified list.",
+      "source_event_ids": [
+        50,
+        54
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A cyclist rode across the intersection in front of the vehicle.",
+      "why_plausible": "Cyclists may use residential intersections even in cold weather, but no cyclist crossing is listed.",
+      "source_event_ids": [
+        53,
+        54
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did the vehicle pass a roadside marker beside four flagpoles displaying Canadian, British, U.S., and dark purple flags?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Was a white pickup ahead of the vehicle seen with an illuminated amber beacon on its roof?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        14
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Was a person visible beside the right wall near the tunnel exit?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        40
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "deceptive",
+      "question": "Did a deer step onto the snowy shoulder beside the rural road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 5,
+      "type": "deceptive",
+      "question": "Did a snowplow pass the vehicle on the opposite side of the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a fallen tree branch partly block the right lane near the tunnel entrance?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "noteworthy",
+      "question": "Which of these events actually happened during the drive?",
+      "options": [
+        "A red fox crossed the rural road ahead of the vehicle.",
+        "A tractor turned out from a field entrance onto the road.",
+        "A roadside sign assembly showed two route shields marked 58, with arrows for straight ahead and a right turn.",
+        "A flock of geese gathered on the snowy roadside beside the fields."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        7
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "noteworthy",
+      "question": "Which of these events actually happened during the drive?",
+      "options": [
+        "A maintenance worker in a reflective vest stood beside a service vehicle inside the tunnel.",
+        "A small, dark irregular patch was visible on the roadway in the driving lane inside the tunnel.",
+        "A motorcycle overtook the dashcam vehicle inside the tunnel.",
+        "Water dripped from the tunnel ceiling and formed a wet patch in the lane."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        33
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "noteworthy",
+      "question": "Which of these events actually happened during the drive?",
+      "options": [
+        "A delivery van was parked beside a residential driveway with its hazard lights flashing.",
+        "A dog on a leash was being walked along the snowy sidewalk.",
+        "A cyclist rode across the intersection in front of the vehicle.",
+        "A pedestrian in dark clothing crossed the intersection directly ahead of the vehicle."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        54
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a large truck on the left side of the road, or the vehicle passed a house with a Canadian flag on the right side of the road?",
+      "options": [
+        "The vehicle passed a large truck on the left side of the road.",
+        "The vehicle passed a house with a Canadian flag on the right side of the road."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        5,
+        7
+      ],
+      "frame_evidence": [
+        "1752864995580160.png",
+        "1752865013580348.png"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: birds were seen flying in the sky, or the vehicle approached and passed a large agricultural machine on the left side of the road?",
+      "options": [
+        "The vehicle approached and passed a large agricultural machine on the left side of the road.",
+        "Birds were seen flying in the sky."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        16,
+        24
+      ],
+      "frame_evidence": [
+        "1752865145581676.png",
+        "1752865365583740.png"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a green tractor on the left side of the road, or a black car drove through the intersection and created a cloud of dust?",
+      "options": [
+        "A black car drove through the intersection and created a cloud of dust.",
+        "The vehicle passed a green tractor on the left side of the road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        30,
+        35
+      ],
+      "frame_evidence": [
+        "1752865515585384.png",
+        "1752865592586201.png"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a black pickup truck parked near a building, or the vehicle passed a black car driving in the opposite direction?",
+      "options": [
+        "The vehicle passed a black pickup truck parked near a building.",
+        "The vehicle passed a black car driving in the opposite direction."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        49,
+        52
+      ],
+      "frame_evidence": [
+        "1752865730587542.png",
+        "1752865770588162.png"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle transitioned from a paved road to an unpaved dirt road, or the vehicle approached and stopped at the stop sign?",
+      "options": [
+        "The vehicle approached and stopped at the stop sign.",
+        "The vehicle transitioned from a paved road to an unpaved dirt road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        14,
+        34
+      ],
+      "frame_evidence": [
+        "1752865067580866.png",
+        "1752865590586187.png"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "What is the chronological order of these events?",
+      "options": [
+        "The vehicle approaches and passes a tractor with a trailer parked on the right side of the road.",
+        "The vehicle passes a house on the right side of the road.",
+        "The vehicle approaches and passes two cyclists on the right side of the road.",
+        "The vehicle drives past a building on the left side of the road."
+      ],
+      "answer_indices": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "event_ids": [
+        20,
+        6,
+        11,
+        13
+      ],
+      "frame_evidence": [
+        "1752865340583485.png",
+        "1752865012580332.png",
+        "1752865045580610.png",
+        "1752865065580808.png"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "What is the chronological order of these events?",
+      "options": [
+        "The vehicle continues driving on the dirt road, passing by the pipe or hose on the left side.",
+        "The vehicle continues driving along the dirt road, passing by the farm equipment on the right.",
+        "The vehicle approaches and passes a large agricultural machine on the left side of the road.",
+        "The vehicle steadily approaches the irrigation system."
+      ],
+      "answer_indices": [
+        0,
+        1,
+        3,
+        2
+      ],
+      "event_ids": [
+        17,
+        19,
+        23,
+        24
+      ],
+      "frame_evidence": [
+        "1752865270582988.png",
+        "1752865335583434.png",
+        "1752865360583672.png",
+        "1752865365583740.png"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "What is the chronological order of these events?",
+      "options": [
+        "The vehicle continues driving straight on the road, following the black car ahead.",
+        "The vehicle drives along a paved rural road, turns into a gravel parking area, and approaches the white SUV and white sedan.",
+        "The vehicle passes a black car driving in the opposite direction.",
+        "The vehicle drives past a black pickup truck parked near a building on the right side of the road."
+      ],
+      "answer_indices": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "event_ids": [
+        45,
+        53,
+        52,
+        49
+      ],
+      "frame_evidence": [
+        "1752865695587192.png",
+        "1752865780588206.png",
+        "1752865770588162.png",
+        "1752865730587542.png"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed a green tractor on the left side of the road?",
+      "options": [
+        "The vehicle continued driving straight on the dirt road, approaching the building on the right.",
+        "The vehicle continued driving on the dirt road, passing by tractors working in the fields on the left.",
+        "The vehicle continued driving on the dirt road, passing by the agricultural buildings and the parked truck.",
+        "The vehicle approached and stopped at the stop sign."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        30,
+        31
+      ],
+      "frame_evidence": [
+        "1752865515585384.png",
+        "1752865530585531.png"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "before_after",
+      "question": "What happened immediately before the black car drove through the intersection and created a cloud of dust?",
+      "options": [
+        "The vehicle continued driving straight on the dirt road, passing by the parked SUV and utility poles.",
+        "The vehicle approached and stopped at the stop sign.",
+        "The vehicle continued driving straight on the dirt road, passing by utility poles and open fields.",
+        "The vehicle approached and passed two cyclists on the right side of the road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        34,
+        35
+      ],
+      "frame_evidence": [
+        "1752865590586187.png",
+        "1752865592586201.png"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed a black car driving in the opposite direction?",
+      "options": [
+        "The vehicle continues driving straight on the rural road, passing by utility poles and trees on both sides.",
+        "The vehicle drives along a paved rural road, turns into a gravel parking area, and approaches the white SUV and white sedan.",
+        "The vehicle continues driving straight on the road, passing by the parked black vehicle and the speed limit sign.",
+        "The vehicle approaches and passes two cyclists on the right side of the road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        52,
+        53
+      ],
+      "frame_evidence": [
+        "1752865770588162.png",
+        "1752865780588206.png"
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle followed the white car as it drove along the dirt road?",
+      "options": [
+        "The vehicle continues driving forward on the dirt road, approaching the parked white car and the box on the ground.",
+        "The vehicle passes a white car parked on the right side of the road and continues driving on the dirt road.",
+        "The vehicle drives along a paved rural road and turns into a gravel parking area.",
+        "The vehicle continues driving on the rural road, maintaining a steady pace behind another vehicle."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        54,
+        55
+      ],
+      "frame_evidence": [
+        "1752865785588127.png",
+        "1752865790588221.png"
+      ]
+    }
+  ]
+}

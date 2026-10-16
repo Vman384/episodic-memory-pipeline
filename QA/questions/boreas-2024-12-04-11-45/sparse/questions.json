@@ -1,0 +1,158 @@
+{
+  "false_events": [
+    {
+      "question_id": 3,
+      "description": "A deer suddenly crossed the rural road in front of the camera vehicle.",
+      "why_plausible": "The vehicle traveled through forested and rural environments where deer crossings are credible, but no deer crossing occurred in the verified events.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 4,
+      "description": "A maintenance vehicle stopped inside the tunnel and blocked one lane.",
+      "why_plausible": "Tunnel maintenance vehicles and temporary lane obstructions are plausible hazards in a drive that included tunnel environments, but this did not occur in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 5,
+      "description": "A horse and rider traveled along the right shoulder of the rural road.",
+      "why_plausible": "Riders and horses can plausibly appear on rural roads, but no horse and rider were present in the verified events.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 5,
+      "description": "A fallen tree branch extended into the vehicle's lane on the forest road.",
+      "why_plausible": "Fallen branches are credible obstacles on forest roads, but no such branch obstruction occurred in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 5,
+      "description": "A roadside police motorcycle pulled alongside the camera vehicle and signaled it to slow down.",
+      "why_plausible": "A police motorcycle could plausibly operate near traffic on a rural or highway route, but this event was not observed.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 6,
+      "description": "A flock of sheep crossed the roadway ahead of the camera vehicle.",
+      "why_plausible": "Livestock crossings are plausible on rural roads, but no sheep crossed the roadway in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 6,
+      "description": "A blue passenger bus emerged from the tunnel and passed the camera vehicle.",
+      "why_plausible": "Passenger buses can reasonably travel through tunnels and on highways, but no such bus pass occurred.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 6,
+      "description": "A road worker carried a warning sign across the highway near a work zone.",
+      "why_plausible": "Road workers carrying temporary signs are plausible near highway construction, but this specific action did not occur in the video.",
+      "source_event_ids": [
+        5
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a large car carrier truck transporting multiple pickup trucks move alongside the camera vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did a person on a three-wheeled motorcycle with a passenger cross an intersection from left to right?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        6
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "deceptive",
+      "question": "Did a deer suddenly cross the rural road in front of the camera vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 4,
+      "type": "deceptive",
+      "question": "Did a maintenance vehicle stop inside the tunnel and block one lane?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 5,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A horse and rider traveled along the right shoulder of the rural road.",
+        "A fallen tree branch extended into the vehicle's lane on the forest road.",
+        "A roadside police motorcycle pulled alongside the camera vehicle and signaled it to slow down.",
+        "A person on a three-wheeled motorcycle, wearing a high-visibility vest and carrying a passenger, crossed the intersection from left to right."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        6
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 6,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A flock of sheep crossed the roadway ahead of the camera vehicle.",
+        "A blue passenger bus emerged from the tunnel and passed the camera vehicle.",
+        "A road worker carried a warning sign across the highway near a work zone.",
+        "A construction zone on the highway shoulder contained a white tanker truck, a yellow backhoe, an orange excavator, traffic barrels, and a white utility truck."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

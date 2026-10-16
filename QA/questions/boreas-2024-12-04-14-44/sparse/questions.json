@@ -1,0 +1,421 @@
+{
+  "false_events": [
+    {
+      "question_id": 6,
+      "description": "A delivery van pulls onto the road from a forest-side turnout.",
+      "why_plausible": "Vehicles may enter rural roads from small turnouts, but this event is not among the verified events.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A motorcycle overtakes the camera vehicle inside the tunnel.",
+      "why_plausible": "A motorcycle could plausibly overtake in a tunnel, but the verified tunnel overtake involved a black car.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "A deer crosses the highway just after the vehicle exits the tunnel.",
+      "why_plausible": "Wildlife can appear near tree-lined rural highways, but no such crossing is listed among the verified events.",
+      "source_event_ids": [
+        3
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A red pickup truck approaches the intersection from the cross street.",
+      "why_plausible": "A pickup approaching a rural intersection is ordinary and credible, but the verified approaching vehicle was a yellow school bus.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A road worker in a reflective vest carries a traffic cone across the roadway.",
+      "why_plausible": "Work-zone activity is plausible where a worker is present, but the verified worker was holding a stop sign and was on the sidewalk.",
+      "source_event_ids": [
+        5
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A white panel van drives alongside the camera vehicle in the adjacent lane.",
+      "why_plausible": "A van traveling beside the camera vehicle is plausible on a multi-lane road, but this event is not in the verified list.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A gray sedan brakes sharply ahead inside the tunnel.",
+      "why_plausible": "Traffic may slow suddenly in a tunnel, but no sharp braking event is listed among the verified events.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A roadside maintenance truck is parked on the shoulder after the tunnel exit.",
+      "why_plausible": "A maintenance vehicle could be parked beside a rural highway, but this event is not among the verified events.",
+      "source_event_ids": [
+        3
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A school bus stops at the intersection and extends its stop arm.",
+      "why_plausible": "A school bus at an intersection could stop to pick up or drop off students, but the verified event only describes a bus approaching from the cross street.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A pedestrian steps off the left sidewalk and crosses in front of the camera vehicle.",
+      "why_plausible": "A pedestrian near a residential intersection could cross the road, but the verified pedestrian was walking on the sidewalk.",
+      "source_event_ids": [
+        5
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A utility crew member kneels beside the utility box to make repairs.",
+      "why_plausible": "Repair work near a utility box is plausible, but no kneeling repair activity is described in the verified event.",
+      "source_event_ids": [
+        5
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A blue compact car passes the camera vehicle on the left in the tunnel.",
+      "why_plausible": "A car could plausibly pass in a tunnel, but the verified passing vehicle was black.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A flock of birds lifts from the trees beside the highway as the vehicle exits the tunnel.",
+      "why_plausible": "Birds near a tree-lined highway are plausible, but this event is not among the verified events.",
+      "source_event_ids": [
+        3
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A tractor turns onto the highway ahead of the camera vehicle.",
+      "why_plausible": "Farm machinery can enter rural highways, but no tractor maneuver is listed among the verified events.",
+      "source_event_ids": [
+        3
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A cyclist rides across the intersection in front of the approaching school bus.",
+      "why_plausible": "A cyclist could pass through a rural intersection, but the verified event does not include a cyclist.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A road worker waves a vehicle through while standing in the roadway.",
+      "why_plausible": "A worker directing traffic could plausibly signal drivers, but the verified worker was standing on the sidewalk holding a stop sign.",
+      "source_event_ids": [
+        5
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A second yellow bus follows the first bus toward the intersection.",
+      "why_plausible": "Multiple buses could plausibly travel on the same route, but only one approaching bus is included in the verified event list.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A large truck enters the frame from the left and moves parallel to the camera vehicle.",
+      "why_plausible": "A truck could travel alongside the camera vehicle on a multi-lane road, but the verified parallel vehicle was a black SUV.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A tunnel maintenance light flashes as the camera vehicle passes through.",
+      "why_plausible": "Flashing maintenance lights can occur in tunnels, but this event is not among the verified events.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A road crew member places a warning triangle beside the highway after the tunnel exit.",
+      "why_plausible": "Temporary roadside warnings are plausible on a highway, but no crew member or warning triangle is listed for this event.",
+      "source_event_ids": [
+        3
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a black SUV enter from the left and drive parallel to the camera vehicle in the adjacent lane?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did a black car overtake the camera vehicle while it was driving through a tunnel?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did the vehicle emerge from a dark tunnel into daylight, with trees along the highway and a yellow school bus visible on the left?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Did a yellow school bus approach an intersection from the cross street?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Was a worker in a high-visibility vest standing on the right sidewalk holding a stop sign near a utility box and yellow dumpster?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a delivery van pull onto the road from a forest-side turnout?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a motorcycle overtake the camera vehicle inside the tunnel?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did a deer cross the highway just after the vehicle exited the tunnel?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Did a red pickup truck approach the intersection from the cross street?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Did a road worker in a reflective vest carry a traffic cone across the roadway?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which event actually happened during the drive?",
+      "options": [
+        "A gray sedan braked sharply ahead inside the tunnel.",
+        "A roadside maintenance truck was parked on the shoulder after the tunnel exit.",
+        "A black SUV entered from the left and drove parallel to the camera vehicle in the adjacent lane.",
+        "A white panel van drove alongside the camera vehicle in the adjacent lane."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which event actually happened during the drive?",
+      "options": [
+        "A school bus stopped at the intersection and extended its stop arm.",
+        "A yellow school bus appeared in the distance, approaching the intersection from the cross street.",
+        "A pedestrian stepped off the left sidewalk and crossed in front of the camera vehicle.",
+        "A utility crew member knelt beside the utility box to make repairs."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which event actually happened during the drive?",
+      "options": [
+        "A blue compact car passed the camera vehicle on the left in the tunnel.",
+        "A flock of birds lifted from the trees beside the highway as the vehicle exited the tunnel.",
+        "A tractor turned onto the highway ahead of the camera vehicle.",
+        "The vehicle emerged from a dark tunnel into daylight, revealing a tree-lined highway and a yellow school bus on the left."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which event actually happened during the drive?",
+      "options": [
+        "A cyclist rode across the intersection in front of the approaching school bus.",
+        "A road worker waved a vehicle through while standing in the roadway.",
+        "A second yellow bus followed the first bus toward the intersection.",
+        "A worker in a high-visibility vest stood on the right sidewalk holding a stop sign near a utility box and yellow dumpster."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 15,
+      "type": "noteworthy",
+      "question": "Which event actually happened during the drive?",
+      "options": [
+        "A large orange and red truck entered from the left and moved parallel to the camera vehicle.",
+        "A road crew member placed a warning triangle beside the highway after the tunnel exit.",
+        "A black car entered from the left and overtook the camera vehicle in the tunnel.",
+        "A tunnel maintenance light flashed rapidly as the camera vehicle passed through."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

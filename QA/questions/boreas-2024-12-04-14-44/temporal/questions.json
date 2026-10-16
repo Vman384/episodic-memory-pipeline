@@ -1,0 +1,275 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: a yellow bus passing in the opposing lanes beyond the median, or a gray SUV traveling across the intersection from right to left?",
+      "options": [
+        "A yellow bus passed in the opposing lanes beyond the median.",
+        "A gray SUV traveled across the intersection from right to left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        28,
+        30
+      ],
+      "frame_evidence": [
+        "1733341553197012.png",
+        "1733341568195534.png"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: a white sedan gradually pulling ahead in the left lane, or an orange SUV passing in the opposing lanes?",
+      "options": [
+        "An orange SUV passed in the opposing lanes.",
+        "A white sedan gradually pulled ahead in the left lane."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        23,
+        19
+      ],
+      "frame_evidence": [
+        "1733341535207642.png",
+        "1733341522200460.png"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: the school bus approaching along the road ahead while the dashcam vehicle remained stopped, or the traffic signals facing the camera changing from red to green?",
+      "options": [
+        "The traffic signals facing the camera changed from red to green.",
+        "The school bus approached along the road ahead while the dashcam vehicle remained stopped."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        52,
+        69
+      ],
+      "frame_evidence": [
+        "1733341594196759.png",
+        "1733341615397074.png"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: a dark van advancing from the right into the intersection, or a dark sedan traveling across the foreground from right to left?",
+      "options": [
+        "A dark sedan traveled across the foreground from right to left.",
+        "A dark van advanced from the right into the intersection."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        64,
+        68
+      ],
+      "frame_evidence": [
+        "1733341603196910.png",
+        "1733341609197024.png"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: a silver car passing on the opposite carriageway, or a dark car advancing alongside in the left lane inside the tunnel?",
+      "options": [
+        "A dark car advanced alongside in the left lane inside the tunnel.",
+        "A silver car passed on the opposite carriageway."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        16,
+        24
+      ],
+      "frame_evidence": [
+        "1733341512195613.png",
+        "1733341544207714.png"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "A white sedan traveled alongside in the left lane and gradually pulled ahead.",
+        "A yellow bus passed in the opposing lanes beyond the median.",
+        "The vehicle advanced past the traffic-signal warning sign on the right shoulder.",
+        "An orange SUV passed in the opposing lanes to the left."
+      ],
+      "answer_indices": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "event_ids": [
+        23,
+        28,
+        4,
+        19
+      ],
+      "frame_evidence": [
+        "1733341535207642.png",
+        "1733341553197012.png",
+        "1733341491194939.png",
+        "1733341522200460.png"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "The school bus moved across the intersection toward the right.",
+        "A gray sedan crossed the intersection from right to left in front of the stationary camera vehicle.",
+        "The traffic signals facing the camera changed from red to green.",
+        "A silver minivan traveled across the intersection from left to right and left the frame."
+      ],
+      "answer_indices": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "event_ids": [
+        71,
+        53,
+        69,
+        50
+      ],
+      "frame_evidence": [
+        "1733341621197727.png",
+        "1733341596196762.png",
+        "1733341615397074.png",
+        "1733341593196751.png"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Put these events in chronological order.",
+      "options": [
+        "A dark van advanced from the right into the intersection and proceeded leftward.",
+        "A dark SUV traveled from the center-right across the intersection toward the left.",
+        "A white crossover moved from left to right, with a red sedan following.",
+        "A dark sedan traveled across the foreground from right to left."
+      ],
+      "answer_indices": [
+        1,
+        2,
+        0,
+        3
+      ],
+      "event_ids": [
+        64,
+        37,
+        43,
+        68
+      ],
+      "frame_evidence": [
+        "1733341603196910.png",
+        "1733341572196099.png",
+        "1733341587196706.png",
+        "1733341609197024.png"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle advanced past the traffic-signal warning sign on the right shoulder?",
+      "options": [
+        "A flatbed truck crossed the intersection from left to right and moved out of view.",
+        "A yellow bus passed in the opposing lanes beyond the median.",
+        "A white sedan gradually pulled ahead in the left lane.",
+        "A gray SUV traveled across the intersection from right to left."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4,
+        3,
+        28,
+        23,
+        30
+      ],
+      "frame_evidence": [
+        "1733341491194939.png",
+        "1733341476194308.png",
+        "1733341553197012.png",
+        "1733341535207642.png",
+        "1733341568195534.png"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "before_after",
+      "question": "What happened immediately after the dark sedan traveled across the foreground from right to left and progressively left the frame?",
+      "options": [
+        "The traffic signals facing the camera changed from red to green.",
+        "A yellow school bus approached along the road ahead while the dashcam vehicle remained stopped.",
+        "A white SUV approached in the oncoming lane and grew larger in view.",
+        "A white car remained alongside in the left lane and moved forward."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        68,
+        69,
+        55,
+        75,
+        22
+      ],
+      "frame_evidence": [
+        "1733341609197024.png",
+        "1733341615397074.png",
+        "1733341597196771.png",
+        "1733341624196968.png",
+        "1733341534207635.png"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately after the silver minivan traveled across the intersection from left to right and left the frame?",
+      "options": [
+        "A gray sedan crossed the intersection from right to left in front of the stationary camera vehicle.",
+        "A dark SUV traveled across the intersection from left to right.",
+        "A yellow school bus passed in the opposing lanes beyond the median.",
+        "A dark van advanced from the right into the intersection."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        50,
+        53,
+        45,
+        28,
+        64
+      ],
+      "frame_evidence": [
+        "1733341593196751.png",
+        "1733341596196762.png",
+        "1733341589196707.png",
+        "1733341553197012.png",
+        "1733341603196910.png"
+      ]
+    }
+  ]
+}

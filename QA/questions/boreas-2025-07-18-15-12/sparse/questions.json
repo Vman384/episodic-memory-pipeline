@@ -1,0 +1,352 @@
+{
+  "false_events": [
+    {
+      "question_id": 5,
+      "description": "A motorcyclist overtakes the camera vehicle on the left side of the rural road.",
+      "why_plausible": "Motorcycles can reasonably use straight rural roads and pass slower traffic, but no such overtaking event occurred in the video.",
+      "source_event_ids": [
+        2,
+        4
+      ]
+    },
+    {
+      "question_id": 6,
+      "description": "A deer suddenly crosses the road in front of the camera vehicle.",
+      "why_plausible": "The forest and rural surroundings make a deer crossing plausible, but no deer crossed the road in this video.",
+      "source_event_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A road maintenance vehicle stops in the lane ahead of the camera vehicle.",
+      "why_plausible": "Maintenance vehicles can operate on rural dirt roads, but no road maintenance vehicle stopped in the lane.",
+      "source_event_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "The camera vehicle passes through a tunnel while an oncoming car has its headlights illuminated.",
+      "why_plausible": "The drive included tunnel surroundings, making an illuminated oncoming vehicle in a tunnel plausible, but this event did not occur.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A blue pickup truck turns from a side road onto the dirt road ahead of the camera vehicle.",
+      "why_plausible": "Pickup trucks commonly use rural roads and side tracks, but no blue pickup made this turn in the video.",
+      "source_event_ids": [
+        1,
+        3
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A horse and rider travel along the right shoulder of the rural road.",
+      "why_plausible": "Horse riding is plausible in a rural setting, but no horse and rider appeared in the video.",
+      "source_event_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A flock of sheep crosses the dirt road ahead of the camera vehicle.",
+      "why_plausible": "Livestock may cross rural roads, but no flock of sheep crossed the road.",
+      "source_event_ids": [
+        1,
+        3
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A fallen tree blocks half of the road in the forest section.",
+      "why_plausible": "Fallen trees are a credible obstruction on forest roads, but no fallen tree blocked the roadway.",
+      "source_event_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A white van pulls over onto the left shoulder and opens its side door.",
+      "why_plausible": "A van stopping on a rural shoulder is plausible, but no white van performed this action.",
+      "source_event_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A cyclist wearing a bright vest rides toward the camera vehicle in the opposite lane.",
+      "why_plausible": "Cyclists may use quiet rural roads, but no cyclist in a bright vest approached in the opposite lane.",
+      "source_event_ids": [
+        2,
+        4
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A green tractor drives slowly toward the camera vehicle in the opposite lane.",
+      "why_plausible": "Tractors are common on rural roads, but the verified tractor was stationary and red rather than an approaching green tractor.",
+      "source_event_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A flock of birds rises from the roadside as the camera vehicle passes.",
+      "why_plausible": "Birds can be disturbed by passing vehicles in rural or forest environments, but no such flock was recorded.",
+      "source_event_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A road worker holding a stop sign directs the camera vehicle to wait.",
+      "why_plausible": "Temporary traffic control is plausible on rural roads, but no road worker stopped or directed the vehicle.",
+      "source_event_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A yellow school bus approaches and passes the camera vehicle on the rural road.",
+      "why_plausible": "School buses can travel on rural roads, but no yellow school bus appeared in the video.",
+      "source_event_ids": [
+        2,
+        4
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A camper trailer is being towed around a bend in the road ahead.",
+      "why_plausible": "Towed campers can occur on rural routes, but no camper trailer was seen.",
+      "source_event_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A passenger car stops at the entrance to the tunnel and reverses away from it.",
+      "why_plausible": "A driver could plausibly hesitate at a tunnel entrance, but no car stopped and reversed there.",
+      "source_event_ids": [
+        4
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a white sedan turn off the paved road onto a dusty dirt track and raise a large cloud of dust?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did a person on an ATV drive parallel to the camera vehicle while kicking up dust?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Was a red tractor with a canopy parked on the right shoulder of a dirt road with a person in its seat?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Did a large red dump truck approach in the oncoming lane and pass the camera vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "deceptive",
+      "question": "Did a motorcyclist overtake the camera vehicle on the left side of the rural road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a deer suddenly cross the road in front of the camera vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a road maintenance vehicle stop in the lane ahead of the camera vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did the camera vehicle pass through a tunnel while an oncoming car had its headlights illuminated?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "noteworthy",
+      "question": "Which of these events actually happened during the drive?",
+      "options": [
+        "A blue pickup truck turned from a side road onto the dirt road ahead.",
+        "A horse and rider traveled along the right shoulder.",
+        "A white sedan turned onto a dusty dirt track and drove away.",
+        "A flock of sheep crossed the dirt road."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "noteworthy",
+      "question": "Which of these events actually happened during the drive?",
+      "options": [
+        "A fallen tree blocked half of the forest road.",
+        "A white van pulled over and opened its side door.",
+        "A cyclist in a bright vest approached in the opposite lane.",
+        "A person on an ATV drove parallel to the camera vehicle while raising dust."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which of these events actually happened during the drive?",
+      "options": [
+        "A green tractor drove toward the camera vehicle.",
+        "A flock of birds rose from the roadside.",
+        "A red tractor with a canopy remained parked on the right shoulder.",
+        "A road worker holding a stop sign directed the vehicle to wait."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which of these events actually happened during the drive?",
+      "options": [
+        "A yellow school bus approached and passed the camera vehicle.",
+        "A large red dump truck approached in the oncoming lane and was passed.",
+        "A camper trailer was towed around a bend ahead.",
+        "A passenger car stopped at the tunnel entrance and reversed away."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

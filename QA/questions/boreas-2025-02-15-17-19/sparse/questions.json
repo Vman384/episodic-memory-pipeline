@@ -1,0 +1,441 @@
+{
+  "false_events": [
+    {
+      "question_id": 6,
+      "description": "A deer stepped out from the wooded roadside onto the snowy lane.",
+      "why_plausible": "Deer can appear beside rural roads and forest edges, especially in winter.",
+      "source_event_ids": [
+        38,
+        39
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A fallen tree branch partially blocked the snowy access road.",
+      "why_plausible": "Branches can fall across narrow, tree-lined roads during winter weather.",
+      "source_event_ids": [
+        27,
+        39
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "A maintenance worker in a reflective vest crossed the industrial yard in front of the vehicle.",
+      "why_plausible": "Workers may be present around industrial buildings and service yards.",
+      "source_event_ids": [
+        17,
+        20
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A red pickup truck was parked beside the chain-link gate at the snowy facility entrance.",
+      "why_plausible": "Vehicles commonly park near gated facility entrances and roadside buildings.",
+      "source_event_ids": [
+        21,
+        22
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A flock of geese crossed the slushy urban intersection in front of traffic.",
+      "why_plausible": "Urban intersections can be near parks or open spaces where birds may wander.",
+      "source_event_ids": [
+        68,
+        69
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A moose stood beside the snowy rural road near the trees.",
+      "why_plausible": "Large wildlife can be encountered near wooded roads, particularly in rural areas.",
+      "source_event_ids": [
+        38,
+        39
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A cyclist pushed a bicycle along the snowbound service lane.",
+      "why_plausible": "A cyclist might walk a bicycle through a narrow industrial access lane when the surface is difficult to ride on.",
+      "source_event_ids": [
+        17,
+        18
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A delivery van reversed out of a driveway into the snowy residential street.",
+      "why_plausible": "Driveways and parked vehicles are common along residential streets.",
+      "source_event_ids": [
+        155,
+        168
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A fallen utility wire hung low across the snowy lane.",
+      "why_plausible": "Utility wires are present around service yards and can sag or fall in winter conditions.",
+      "source_event_ids": [
+        2,
+        3
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A fox ran across the road between the roadside snowbanks.",
+      "why_plausible": "Foxes may cross wooded or residential roads, including areas with snowbanks.",
+      "source_event_ids": [
+        39,
+        143
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A tow truck pulled a stranded car out of a snowbank.",
+      "why_plausible": "Vehicles can become stuck in deep roadside snow in winter neighborhoods.",
+      "source_event_ids": [
+        168,
+        171
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A motorcyclist passed the dashcam vehicle on the snowy road.",
+      "why_plausible": "Motorcycles can share multi-lane roads with cars, even when winter conditions are present.",
+      "source_event_ids": [
+        52,
+        53
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A cyclist rode through the slushy crosswalk beside the buses.",
+      "why_plausible": "Cyclists may pass through signalized urban intersections and crosswalk areas.",
+      "source_event_ids": [
+        71,
+        72
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A police officer directed vehicles by hand at the snowy intersection.",
+      "why_plausible": "Officers sometimes manage traffic at busy intersections when weather or congestion creates difficulties.",
+      "source_event_ids": [
+        66,
+        68
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A small dog ran loose across the snowy residential street.",
+      "why_plausible": "Pets can occasionally stray into residential roads, including those bordered by snowbanks.",
+      "source_event_ids": [
+        145,
+        151
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A snowmobile traveled along the plowed edge of the urban road.",
+      "why_plausible": "Snowmobiles may be seen in winter regions, particularly near snow-covered roads.",
+      "source_event_ids": [
+        59,
+        60
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A street sweeper crossed the intersection, clearing slush from the roadway.",
+      "why_plausible": "Municipal vehicles may operate on slushy urban streets during winter maintenance.",
+      "source_event_ids": [
+        95,
+        99
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A black bear crossed the snowy lane near the forest edge.",
+      "why_plausible": "Wildlife can appear near wooded roads, making a bear crossing a credible but uncommon rural-road event.",
+      "source_event_ids": [
+        38,
+        39
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A tractor towing a small trailer entered the snow-covered service yard.",
+      "why_plausible": "Tractors and trailers can be used around industrial or rural facilities, including for winter work.",
+      "source_event_ids": [
+        14,
+        17
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A city bus stopped in the middle of the intersection to let passengers off.",
+      "why_plausible": "Buses operate in the urban intersections along the route and may stop to serve passengers.",
+      "source_event_ids": [
+        66,
+        67
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a large snow-covered arched structure with a circular mechanical unit stand beside the narrow lane?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Was a freestanding Do Not Enter sign beside a blue shed in the snowy yard?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did the vehicle pass a large parabolic dish and wire-frame antenna mounted on a tower behind a low industrial building?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        16
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Was an oncoming red snowplow with a wide angled blade passing on the snow-covered road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        102
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Did a dark car sit diagonally across the residential road, with its front pointing toward the right roadside?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        141
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a deer step out from the wooded roadside onto the snowy lane?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a fallen tree branch partially block the snowy access road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did a maintenance worker in a reflective vest cross the industrial yard in front of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Was a red pickup truck parked beside the chain-link gate at the snowy facility entrance?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Did a flock of geese cross the slushy urban intersection in front of traffic?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which of these events actually occurred during the drive?",
+      "options": [
+        "A moose stood beside the snowy rural road near the trees.",
+        "A cyclist pushed a bicycle along the snowbound service lane.",
+        "A large parabolic dish with an extended wire-frame antenna stood on a tower behind a low industrial building.",
+        "A delivery van reversed out of a driveway into the snowy residential street."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        16
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which of these events actually occurred during the drive?",
+      "options": [
+        "A fallen utility wire hung low across the snowy lane.",
+        "A fox ran across the road between the roadside snowbanks.",
+        "A tow truck pulled a stranded car out of a snowbank.",
+        "A dark car was positioned diagonally across the road, facing toward the right roadside."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        141
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which of these events actually occurred during the drive?",
+      "options": [
+        "A motorcyclist passed the dashcam vehicle on the snowy road.",
+        "A pedestrian in a bright orange jacket crossed directly in front of the vehicle on a slushy crosswalk.",
+        "A cyclist rode through the slushy crosswalk beside the buses.",
+        "A police officer directed vehicles by hand at the snowy intersection."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        80
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which of these events actually occurred during the drive?",
+      "options": [
+        "A small dog ran loose across the snowy residential street.",
+        "A snowmobile traveled along the plowed edge of the urban road.",
+        "A street sweeper crossed the intersection, clearing slush from the roadway.",
+        "A school bus was visible beside fluorescent school-crossing signs on a slushy residential road."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        158
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 15,
+      "type": "noteworthy",
+      "question": "Which of these events actually occurred during the drive?",
+      "options": [
+        "A black bear crossed the snowy lane near the forest edge.",
+        "A tractor towing a small trailer entered the snow-covered service yard.",
+        "A city bus stopped in the middle of the intersection to let passengers off.",
+        "A snowplow truck with its blade lowered was working ahead near an intersection."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        97
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

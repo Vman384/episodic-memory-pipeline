@@ -1,0 +1,439 @@
+{
+  "false_events": [
+    {
+      "question_id": 6,
+      "description": "A deer stood at the edge of the snowy field beside the rural road.",
+      "why_plausible": "Wildlife can be encountered near open fields and wooded rural roads, especially in winter.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A road-maintenance vehicle with flashing amber lights was parked beside the tunnel entrance.",
+      "why_plausible": "Maintenance vehicles are plausible near a tunnel and its approach.",
+      "source_event_ids": [
+        21,
+        22
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "A cyclist wearing a reflective jacket rode along the residential street.",
+      "why_plausible": "A cyclist in reflective clothing could plausibly use a residential road, even in cold weather.",
+      "source_event_ids": [
+        41,
+        51
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A fallen tree branch partly obstructed the forest-side shoulder.",
+      "why_plausible": "Branches can fall near wooded roads, particularly in winter weather.",
+      "source_event_ids": [
+        29,
+        30
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A farm tractor waited at the edge of the rural intersection.",
+      "why_plausible": "Farm equipment is plausible near rural intersections and fields.",
+      "source_event_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A snowplow was clearing the lane beside the highway.",
+      "why_plausible": "A snowplow would be plausible on a winter road with snow along its shoulders.",
+      "source_event_ids": [
+        2,
+        10
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A deer crossed the divided road near the underpass.",
+      "why_plausible": "Wildlife could plausibly approach a roadway bordered by open, snowy embankments.",
+      "source_event_ids": [
+        13,
+        17
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A road worker carried a traffic cone across the tunnel entrance.",
+      "why_plausible": "Workers and traffic-control equipment are plausible near a tunnel or roadway work area.",
+      "source_event_ids": [
+        21,
+        36
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A fallen tree lay across part of the forest-side shoulder.",
+      "why_plausible": "A fallen tree is a plausible roadside hazard in a wooded area.",
+      "source_event_ids": [
+        29,
+        30
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A cyclist pushed a bicycle along the snowy residential sidewalk.",
+      "why_plausible": "A cyclist walking a bicycle could plausibly appear on a residential street in winter.",
+      "source_event_ids": [
+        51,
+        52
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A school bus was stopped beside the residential intersection with its warning lights on.",
+      "why_plausible": "A school bus could plausibly stop near a residential intersection, especially in an area marked for school crossings.",
+      "source_event_ids": [
+        47,
+        50
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A flock of geese stood on the snowy grass beside the road.",
+      "why_plausible": "Birds can gather on roadside grass in both rural and suburban settings.",
+      "source_event_ids": [
+        2,
+        30
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A delivery van was stopped on the shoulder beside the tunnel approach.",
+      "why_plausible": "A delivery vehicle could plausibly be present on a road near industrial and commercial areas.",
+      "source_event_ids": [
+        12,
+        19
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A motorcyclist wearing a bright helmet passed through the tunnel.",
+      "why_plausible": "Motorcycles can use tunnels and may appear among ordinary highway traffic.",
+      "source_event_ids": [
+        24,
+        26
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A raccoon was visible beside the wooded embankment.",
+      "why_plausible": "Small wildlife such as raccoons can plausibly be seen near wooded roadside areas.",
+      "source_event_ids": [
+        29,
+        30
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A road crew was repairing a pothole in the residential travel lane.",
+      "why_plausible": "Road crews and pavement repairs are plausible on streets with extensive cracking and patching.",
+      "source_event_ids": [
+        43,
+        45
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A freight train crossed the road at a level crossing.",
+      "why_plausible": "Rail traffic is plausible in an area where a rail corridor and freight cars are nearby.",
+      "source_event_ids": [
+        38
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A horse and rider traveled along the rural road shoulder.",
+      "why_plausible": "A horse and rider could plausibly be encountered on a rural roadside.",
+      "source_event_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A maintenance worker inspected a row of lights inside the tunnel.",
+      "why_plausible": "Tunnel lighting could plausibly require inspection by maintenance staff.",
+      "source_event_ids": [
+        26,
+        27
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A parked car had its hazard lights flashing beside the snowy residential road.",
+      "why_plausible": "A vehicle stopped with its hazard lights on is plausible on a winter residential street.",
+      "source_event_ids": [
+        51,
+        54
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a bus on the opposite side of the road display the phrase \u201cGOLF GETS IT\u201d in a large side advertisement?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        9
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did the road enter a concrete structure with two adjacent tunnel openings, one brightly lit with green lane signals and the other dark?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        24
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did a narrow stairway climb the wooded embankment on the right beside a pedestrian railing?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        29
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Was a person in a high-visibility vest standing beside yellow equipment and temporary boards near tracks at the roadside?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        48
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Did a yellow roadside diamond sign read \u201cBRIDGE CLOSED\u201d on the residential street?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        53
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a deer stand at the edge of a snowy field beside the rural road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Was a road-maintenance vehicle with flashing amber lights parked beside the tunnel entrance?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did a cyclist wearing a reflective jacket ride along the residential street?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Did a fallen tree branch partly obstruct the forest-side shoulder?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Did a farm tractor wait at the edge of the rural intersection?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which event actually occurred during the drive?",
+      "options": [
+        "A snowplow was clearing the lane beside the highway.",
+        "A long white semi-trailer was positioned across the right side of the intersection as the dashcam approached.",
+        "A deer crossed the divided road near the underpass.",
+        "A road worker carried a traffic cone across the tunnel entrance."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        6
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which event actually occurred during the drive?",
+      "options": [
+        "A fallen tree lay across part of the forest-side shoulder.",
+        "A cyclist pushed a bicycle along the snowy residential sidewalk.",
+        "Two pedestrians walked along the pavement at the left side of the street beside patchy snow and parked vehicles.",
+        "A school bus was stopped beside the residential intersection with its warning lights on."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        51
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which event actually occurred during the drive?",
+      "options": [
+        "A flock of geese stood on the snowy grass beside the road.",
+        "A delivery van was stopped on the shoulder beside the tunnel approach.",
+        "A motorcyclist wearing a bright helmet passed through the tunnel.",
+        "A roadside sign read \u201cPine Street\u201d with a right-turning exit arrow beside the approach to a tunnel."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        20
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which event actually occurred during the drive?",
+      "options": [
+        "A raccoon was visible beside the wooded embankment.",
+        "A road crew was repairing a pothole in the residential travel lane.",
+        "A freight train crossed the road at a level crossing.",
+        "A white pickup with a wide orange front plow approached the intersection while a high-visibility worker stood beside equipment on the left roadside."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        49
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 15,
+      "type": "noteworthy",
+      "question": "Which event actually occurred during the drive?",
+      "options": [
+        "A horse and rider traveled along the rural road shoulder.",
+        "A maintenance worker inspected a row of lights inside the tunnel.",
+        "A parked car had its hazard lights flashing beside the snowy residential road.",
+        "A large blue roadside sign read \u201cThorold Business Area \u2014 Exit Pine St.\u201d as the divided road approached an underpass."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        19
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

@@ -1,0 +1,431 @@
+{
+  "false_events": [
+    {
+      "question_id": 6,
+      "description": "A deer suddenly crosses the road in front of the vehicle in a wooded stretch.",
+      "why_plausible": "Deer can commonly appear near forest roads and rural driving routes.",
+      "source_event_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A fallen tree partially blocks the vehicle's lane on the rural road.",
+      "why_plausible": "Fallen branches or trees are plausible hazards on forested and rural roads.",
+      "source_event_ids": [
+        4,
+        5
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "The vehicle passes a maintenance truck stopped inside the tunnel.",
+      "why_plausible": "Maintenance vehicles are plausible in or near tunnels where roadway work may occur.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A motorcyclist overtakes the camera vehicle on the right shoulder.",
+      "why_plausible": "Motorcycles can appear on multi-lane roads and may pass slower traffic.",
+      "source_event_ids": [
+        5,
+        8
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A horse trailer turns onto the rural road ahead of the vehicle.",
+      "why_plausible": "Horse trailers are plausible on rural roads near agricultural or equestrian properties.",
+      "source_event_ids": [
+        2,
+        8
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A helicopter flies low across the road from right to left.",
+      "why_plausible": "Aircraft can plausibly be visible over open rural or forested areas.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A hot-air balloon is visible above the distant tree line.",
+      "why_plausible": "Open countryside can provide suitable visibility for a distant hot-air balloon.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A flock of birds forms a dense moving shape across the upper sky.",
+      "why_plausible": "Birds are common overhead in rural and forest environments.",
+      "source_event_ids": [
+        1
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A tall cylindrical grain silo stands immediately beside the road.",
+      "why_plausible": "Agricultural storage structures are plausible along rural roads.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A wooden water tower appears behind the roadside vegetation.",
+      "why_plausible": "Water towers can occur near rural communities and older roadside facilities.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "An abandoned passenger railcar is parked beside the road.",
+      "why_plausible": "Disused industrial or transportation equipment can be found near older roadside facilities.",
+      "source_event_ids": [
+        2
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A cyclist rides along the sidewalk in the same direction as the vehicle.",
+      "why_plausible": "Cyclists commonly use sidewalks or roadside paths near buildings and local streets.",
+      "source_event_ids": [
+        3,
+        15
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A jogger runs along the sidewalk toward the camera vehicle.",
+      "why_plausible": "Pedestrians exercising along sidewalks are plausible in developed roadside areas.",
+      "source_event_ids": [
+        3,
+        15
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A road worker stands on the sidewalk and waves traffic through.",
+      "why_plausible": "Road workers may be present near buildings or roadway maintenance areas.",
+      "source_event_ids": [
+        3,
+        5
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "The vehicle enters a fully enclosed road tunnel after leaving the sunlight.",
+      "why_plausible": "Tunnels are plausible on routes passing through hilly or infrastructure-heavy areas.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "The vehicle passes beneath a railway overpass with visible tracks above.",
+      "why_plausible": "Railway overpasses are common sources of abrupt shade on roads.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "The vehicle drives through a narrow covered wooden bridge.",
+      "why_plausible": "Covered bridges can occur on rural roads and create a sudden change in lighting.",
+      "source_event_ids": [
+        4
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A large garbage truck merges into the lane beside the vehicle.",
+      "why_plausible": "Garbage trucks are common large vehicles on developed roads and residential routes.",
+      "source_event_ids": [
+        6,
+        7
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "An ambulance with flashing lights passes the vehicle in the adjacent lane.",
+      "why_plausible": "Emergency vehicles can plausibly appear in ordinary traffic.",
+      "source_event_ids": [
+        6,
+        8
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A cement mixer truck turns across the vehicle's path at an intersection.",
+      "why_plausible": "Construction vehicles are plausible near urban and rural road intersections.",
+      "source_event_ids": [
+        6,
+        8
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did a small dark object consistent with an aircraft move across the sky?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did the vehicle drive under a large concrete bridge, entering deep shadow?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did a yellow school bus enter from the right and travel in the adjacent lane?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        6
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Did a large red semi-truck with a white trailer cross the intersection in front of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        8
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Did a grey pickup truck equipped with a snowplow blade enter the lane beside the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        11
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a deer suddenly cross the road in front of the vehicle in a wooded stretch?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a fallen tree partially block the vehicle's lane on the rural road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did the vehicle pass a maintenance truck stopped inside the tunnel?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Did a motorcyclist overtake the camera vehicle on the right shoulder?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Did a horse trailer turn onto the rural road ahead of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A small dark object consistent with an aircraft moved across the sky.",
+        "A helicopter flew low across the road from right to left.",
+        "A hot-air balloon was visible above the distant tree line.",
+        "A flock of birds formed a dense moving shape across the upper sky."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which unusual roadside feature actually appeared during the drive?",
+      "options": [
+        "A tall cylindrical grain silo stood immediately beside the road.",
+        "A large weathered dome-shaped structure with a ribbed metallic exterior appeared beside the road.",
+        "A wooden water tower appeared behind the roadside vegetation.",
+        "An abandoned passenger railcar was parked beside the road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which of these pedestrian-related events actually happened during the drive?",
+      "options": [
+        "A cyclist rode along the sidewalk in the same direction as the vehicle.",
+        "A jogger ran along the sidewalk toward the camera vehicle.",
+        "A person walked on the sidewalk next to a building on the right side of the road.",
+        "A road worker stood on the sidewalk and waved traffic through."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which unusual roadway transition actually occurred during the drive?",
+      "options": [
+        "The vehicle entered a fully enclosed road tunnel after leaving the sunlight.",
+        "The vehicle passed beneath a railway overpass with visible tracks above.",
+        "The vehicle drove through a narrow covered wooden bridge.",
+        "The vehicle drove under a large concrete bridge, entering deep shadow."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 15,
+      "type": "noteworthy",
+      "question": "Which large-vehicle event actually happened during the drive?",
+      "options": [
+        "A large garbage truck merged into the lane beside the vehicle.",
+        "An ambulance with flashing lights passed in the adjacent lane.",
+        "A cement mixer truck turned across the vehicle's path at an intersection.",
+        "A yellow school bus entered from the right and traveled in the adjacent lane."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        6
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

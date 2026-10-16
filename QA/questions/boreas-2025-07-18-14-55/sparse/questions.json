@@ -1,0 +1,267 @@
+{
+  "false_events": [
+    {
+      "description": "A large herd of deer crosses the road in front of the vehicle.",
+      "why_plausible": "Deer are common in rural areas and could plausibly cross the road, but this specific event did not occur in the video.",
+      "source_event_ids": []
+    },
+    {
+      "description": "A group of people are seen picnicking on the side of the road.",
+      "why_plausible": "Picnicking is a common activity in rural areas, but this specific event did not occur in the video.",
+      "source_event_ids": []
+    },
+    {
+      "description": "A large truck is seen driving in the opposite direction on the road.",
+      "why_plausible": "Trucks are common on rural roads, but this specific event did not occur in the video.",
+      "source_event_ids": []
+    },
+    {
+      "description": "A group of cows are grazing on the side of the road.",
+      "why_plausible": "Cows are common in rural areas and could be grazing on the side of the road, but this specific event did not occur in the video.",
+      "source_event_ids": []
+    },
+    {
+      "description": "A group of people are seen jogging along the road.",
+      "why_plausible": "Jogging is a common activity in rural areas, but this specific event did not occur in the video.",
+      "source_event_ids": []
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did the vehicle encounter a large recreational vehicle parked beside a house immediately next to the roadway?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Was there a yellow roadside sign reading \"NO EXIT\" visible on the right side of the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did the vehicle see an orange traffic cone along the right shoulder, beside roadside debris or fallen wooden beams?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Were two small road users, likely cyclists or pedestrians, visible traveling ahead on the roadway?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Was there 2 cyclist traveling ahead in the same lane on the narrow rural road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a large herd of deer cross the road in front of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Was a group of people seen picnicking on the side of the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Was a large truck seen driving in the opposite direction on the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Were a group of cows seen grazing on the side of the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Was a group of people seen jogging along the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which of the following events was the noteworthy rare event that actually occurred?",
+      "options": [
+        "A large herd of deer crosses the road in front of the vehicle.",
+        "A large recreational motorhome is parked beside a house immediately next to the roadway.",
+        "A group of people are seen picnicking on the side of the road.",
+        "A large truck is seen driving in the opposite direction on the road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which of the following events was the noteworthy rare event that actually occurred?",
+      "options": [
+        "A group of cows are grazing on the side of the road.",
+        "A yellow roadside sign reading \"NO EXIT\" is visible on the right side of the road.",
+        "A group of people are seen jogging along the road.",
+        "A tall skyscraper building was seen far away from the vehicle."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which of the following events was the noteworthy rare event that actually occurred?",
+      "options": [
+        "A large herd of deer crosses the road in front of the vehicle.",
+        "An orange traffic cone appears along the right shoulder, beside roadside debris or fallen wooden beams.",
+        "A group of people are seen picnicking on the side of the road.",
+        "A large truck is seen driving in the opposite direction on the road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which of the following events was the noteworthy rare event that actually occurred?",
+      "options": [
+        "A group of cows are grazing on the side of the road.",
+        "Two small road users, likely cyclists or pedestrians, are visible traveling ahead on the roadway.",
+        "A group of people are seen jogging along the road.",
+        "A large truck is seen driving in the opposite direction on the road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    }
+  ]
+}

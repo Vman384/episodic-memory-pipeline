@@ -1,0 +1,244 @@
+{
+  "false_events": [
+    {
+      "question_id": 7,
+      "description": "A deer steps out from the forest shoulder and crosses the road ahead of the vehicle.",
+      "why_plausible": "The vehicle traveled through wooded areas, where wildlife crossing the roadway would be credible, but no deer crossing occurred in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 8,
+      "description": "A motorcyclist passes the vehicle in the opposite lane near the tunnel entrance.",
+      "why_plausible": "A motorcycle could plausibly use the rural road and pass in the opposite lane, but this event did not occur in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 9,
+      "description": "A bicyclist rides along the right shoulder and briefly enters the vehicle's lane.",
+      "why_plausible": "A bicyclist could reasonably be encountered on a rural road, but no bicyclist entered the lane in this video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 9,
+      "description": "A fallen tree branch blocks part of the road and the vehicle drives around it.",
+      "why_plausible": "Forest roads can contain fallen debris after wind or weather, but the vehicle did not encounter a blocking branch.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 9,
+      "description": "A road maintenance worker in a reflective vest signals the vehicle to slow down.",
+      "why_plausible": "Rural roads and tunnel approaches may have maintenance activity, but no worker directed the vehicle in this video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 10,
+      "description": "A horse trailer turns across the road at a rural intersection.",
+      "why_plausible": "A horse trailer is a plausible rural-road vehicle, but none crossed the vehicle's path in the video.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 10,
+      "description": "A school bus stops on the opposite side of the road and its warning lights flash.",
+      "why_plausible": "School buses can appear on suburban or rural roads, but no stopped school bus or flashing warning lights were seen.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 10,
+      "description": "A pickup truck towing a boat merges into the vehicle's lane after leaving a side road.",
+      "why_plausible": "A pickup towing recreational equipment could plausibly travel on these roads, but no such merge occurred.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 11,
+      "description": "A road sign falls over into the shoulder as the vehicle approaches.",
+      "why_plausible": "Temporary or weather-damaged signs can occur along rural roads, but no sign fell during the drive.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 11,
+      "description": "A construction excavator is parked partly in the travel lane near the tunnel.",
+      "why_plausible": "Heavy equipment could plausibly be present near a tunnel or roadwork area, but no excavator obstructed the lane.",
+      "source_event_ids": []
+    },
+    {
+      "question_id": 11,
+      "description": "A flock of geese crosses the roadway in front of the camera vehicle.",
+      "why_plausible": "Birds can cross open rural roads, but no flock of geese crossed the roadway in this video.",
+      "source_event_ids": []
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Did three pedestrians cross the residential street from left to right?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did a white van enter an intersection from the left and cross the scene?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Did a white Bell utility truck enter from the left and turn left across the vehicle's path?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Did a white Ryder delivery truck enter from the right and cross in front of the camera vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Did a large white semi-truck pass in the opposite direction as the vehicle emerged from under a concrete overpass?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a deer step out from the forest shoulder and cross the road ahead of the vehicle?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a motorcyclist pass the vehicle in the opposite lane near the tunnel entrance?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "noteworthy",
+      "question": "Which of these events actually occurred during the drive?",
+      "options": [
+        "A bicyclist rode along the right shoulder and briefly entered the vehicle's lane.",
+        "A fallen tree branch blocked part of the road and the vehicle drove around it.",
+        "Three pedestrians crossed a residential street from left to right.",
+        "A road maintenance worker in a reflective vest signaled the vehicle to slow down."
+      ],
+      "answer_indices": [
+        2
+      ],
+      "event_ids": [
+        1
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "noteworthy",
+      "question": "Which of these events actually occurred during the drive?",
+      "options": [
+        "A horse trailer turned across the road at a rural intersection.",
+        "A white van entered an intersection from the left and crossed the scene.",
+        "A school bus stopped on the opposite side of the road with its warning lights flashing.",
+        "A pickup truck towing a boat merged into the vehicle's lane."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        2
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "noteworthy",
+      "question": "Which of these events actually occurred during the drive?",
+      "options": [
+        "A road sign fell over into the shoulder as the vehicle approached.",
+        "A construction excavator was parked partly in the travel lane near the tunnel.",
+        "A flock of geese crossed the roadway in front of the camera vehicle.",
+        "A large white semi-truck passed in the opposite direction as the vehicle emerged from under a concrete overpass."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        5
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

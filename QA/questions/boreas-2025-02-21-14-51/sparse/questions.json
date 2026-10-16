@@ -1,0 +1,441 @@
+{
+  "false_events": [
+    {
+      "question_id": 6,
+      "description": "A moose stepped onto the snowy road from the trees.",
+      "why_plausible": "Wildlife can approach roads bordered by woods, especially in winter.",
+      "source_event_ids": [
+        30,
+        214
+      ]
+    },
+    {
+      "question_id": 7,
+      "description": "A fallen tree blocked one lane of the road.",
+      "why_plausible": "A tree could fall across a forest-edge or rural road during winter weather.",
+      "source_event_ids": [
+        30,
+        36
+      ]
+    },
+    {
+      "question_id": 8,
+      "description": "A deer crossed in front of the vehicle near the roadside.",
+      "why_plausible": "Deer commonly cross quiet roads near wooded areas.",
+      "source_event_ids": [
+        30,
+        214
+      ]
+    },
+    {
+      "question_id": 9,
+      "description": "A road crew was using a snowplow to clear the lane ahead.",
+      "why_plausible": "Snow clearing is a routine possibility on roads bordered by deep snowbanks.",
+      "source_event_ids": [
+        29,
+        30
+      ]
+    },
+    {
+      "question_id": 10,
+      "description": "A cyclist rode along the snowy shoulder.",
+      "why_plausible": "Cyclists may use rural road shoulders even in cold weather.",
+      "source_event_ids": [
+        30,
+        140
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A fox ran across the road ahead.",
+      "why_plausible": "A fox could plausibly cross a quiet road near wooded or residential areas.",
+      "source_event_ids": [
+        30,
+        214
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A snowmobile crossed the road at a trail entrance.",
+      "why_plausible": "Snowmobiles can use trails that intersect roads in winter.",
+      "source_event_ids": [
+        30,
+        36
+      ]
+    },
+    {
+      "question_id": 11,
+      "description": "A flock of geese walked across the roadway.",
+      "why_plausible": "Geese sometimes cross roads near open lots and residential areas.",
+      "source_event_ids": [
+        32,
+        33
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A black bear stood beside the road near the tree line.",
+      "why_plausible": "Large wildlife may be encountered along forested roads.",
+      "source_event_ids": [
+        30,
+        214
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A roadside mailbox was knocked over into the snowbank.",
+      "why_plausible": "Mailboxes are common along residential streets and can be damaged during winter.",
+      "source_event_ids": [
+        163,
+        244
+      ]
+    },
+    {
+      "question_id": 12,
+      "description": "A tractor was pulling a small trailer along the snowy road.",
+      "why_plausible": "Farm or maintenance vehicles can use rural roads during winter.",
+      "source_event_ids": [
+        29,
+        30
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A small flock of turkeys crossed the road in front of the vehicle.",
+      "why_plausible": "Wild turkeys can appear on roads near wooded residential areas.",
+      "source_event_ids": [
+        30,
+        214
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A roadside snow fence had fallen across part of the lane.",
+      "why_plausible": "Snow-control fencing may be installed along exposed roads and can be displaced in winter.",
+      "source_event_ids": [
+        29,
+        30
+      ]
+    },
+    {
+      "question_id": 13,
+      "description": "A horse-drawn sleigh passed in the opposite direction.",
+      "why_plausible": "A sleigh could plausibly appear on a quiet rural road in snowy conditions.",
+      "source_event_ids": [
+        29,
+        30
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A raccoon was perched on a roadside signpost.",
+      "why_plausible": "Raccoons can be found around wooded edges and residential streets.",
+      "source_event_ids": [
+        30,
+        214
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A delivery van was stopped with its hazard lights flashing beside the road.",
+      "why_plausible": "A delivery vehicle might stop on a residential or rural road to make a drop-off.",
+      "source_event_ids": [
+        151,
+        152
+      ]
+    },
+    {
+      "question_id": 14,
+      "description": "A flock of ducks crossed the road from a roadside ditch.",
+      "why_plausible": "Ducks may cross roads near drainage ditches or small watercourses.",
+      "source_event_ids": [
+        30,
+        32
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A beaver was dragging a branch across the roadside shoulder.",
+      "why_plausible": "Beavers can be encountered near wooded roads close to waterways.",
+      "source_event_ids": [
+        30,
+        214
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A portable roadside speed camera was mounted on a tripod.",
+      "why_plausible": "Temporary traffic enforcement equipment can be placed along residential roads.",
+      "source_event_ids": [
+        141,
+        148
+      ]
+    },
+    {
+      "question_id": 15,
+      "description": "A snow-covered bicycle was lying beside the road.",
+      "why_plausible": "A bicycle could be left or knocked over beside a snowy residential street.",
+      "source_event_ids": [
+        140,
+        346
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "existence",
+      "question": "Was a small airplane visible high above the snowy residential street?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        316
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 2,
+      "type": "existence",
+      "question": "Did a box truck sit angled across much of the road near a junction?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        38
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 3,
+      "type": "existence",
+      "question": "Was a dark bird perched on a traffic-signal arm above an intersection?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        168
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 4,
+      "type": "existence",
+      "question": "Did the vehicle pass a roadside sign reading \u201cAUTHORIZED PARKING ONLY\u201d beside a University of Toronto directory?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        405
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 5,
+      "type": "existence",
+      "question": "Was a large rear panel on a UPS truck swung outward while the truck was on the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        384
+      ],
+      "frame_evidence": [],
+      "false_event": false
+    },
+    {
+      "question_id": 6,
+      "type": "deceptive",
+      "question": "Did a moose step onto the snowy road from the trees?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 7,
+      "type": "deceptive",
+      "question": "Did a fallen tree block one lane of the road?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 8,
+      "type": "deceptive",
+      "question": "Did a deer cross in front of the vehicle near the roadside?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 9,
+      "type": "deceptive",
+      "question": "Was a road crew using a snowplow to clear the lane ahead?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 10,
+      "type": "deceptive",
+      "question": "Did a cyclist ride along the snowy shoulder?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 11,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A fox ran across the road ahead.",
+        "A snowmobile crossed the road at a trail entrance.",
+        "A flock of geese walked across the roadway.",
+        "A dark bird perched on the horizontal arm of a traffic signal."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        168
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 12,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A black bear stood beside the road near the tree line.",
+        "A roadside mailbox was knocked over into the snowbank.",
+        "A tractor was pulling a small trailer along the snowy road.",
+        "A large, open manhole or pothole was visible in the right half of the travel lane."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        191
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 13,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A small flock of turkeys crossed the road in front of the vehicle.",
+        "A roadside snow fence had fallen across part of the lane.",
+        "A horse-drawn sleigh passed in the opposite direction.",
+        "A person in a bright yellow jacket stood beside the snowbank along a right-side fence."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        206
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 14,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A raccoon was perched on a roadside signpost.",
+        "A delivery van was stopped with its hazard lights flashing beside the road.",
+        "A flock of ducks crossed the road from a roadside ditch.",
+        "A small airplane was visible high in the clear sky above the road."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        361
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    },
+    {
+      "question_id": 15,
+      "type": "noteworthy",
+      "question": "Which of these rare events actually happened during the drive?",
+      "options": [
+        "A beaver was dragging a branch across the roadside shoulder.",
+        "A portable roadside speed camera was mounted on a tripod.",
+        "A snow-covered bicycle was lying beside the road.",
+        "A vehicle on the left was almost entirely enclosed beneath a light-colored protective cover."
+      ],
+      "answer_indices": [
+        3
+      ],
+      "event_ids": [
+        407
+      ],
+      "frame_evidence": [],
+      "false_event": true
+    }
+  ]
+}

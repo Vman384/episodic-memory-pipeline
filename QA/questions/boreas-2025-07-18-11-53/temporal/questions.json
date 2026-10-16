@@ -1,0 +1,300 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the 40 km/h maximum-speed sign, or it approached the small bridge?",
+      "options": [
+        "The vehicle passed the 40 km/h maximum-speed sign.",
+        "The vehicle approached the small bridge."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        3,
+        4
+      ],
+      "frame_evidence": [
+        "1752854054405188.jpg",
+        "1752854056005220.jpg"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a mailbox while continuing straight uphill, or it passed a gravel driveway joining from the right?",
+      "options": [
+        "It passed the mailbox while continuing straight uphill.",
+        "It passed the gravel driveway joining from the right."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        10,
+        11
+      ],
+      "frame_evidence": [
+        "1752854190006354.jpg",
+        "1752854205606490.jpg"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the 50 sign, or it passed the Mono Centre roadside sign?",
+      "options": [
+        "It passed the 50 sign.",
+        "It passed the Mono Centre roadside sign."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        28,
+        30
+      ],
+      "frame_evidence": [
+        "1752854452009048.jpg",
+        "1752854463209149.jpg"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the winding-road warning sign, or it passed the dark SUV on the narrow forest road?",
+      "options": [
+        "It passed the winding-road warning sign.",
+        "It passed the dark SUV on the narrow forest road."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        46,
+        49
+      ],
+      "frame_evidence": [
+        "1752854592010948.jpg",
+        "1752854653626508.jpg"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed the mailbox on the right while following a gradual right-hand curve, or it turned from the gravel entrance onto the paved road?",
+      "options": [
+        "It passed the mailbox on the right while following a gradual right-hand curve.",
+        "It turned from the gravel entrance onto the paved road."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        78,
+        83
+      ],
+      "frame_evidence": [
+        "1752854989614886.jpg",
+        "1752855006414790.jpg"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred: (A) the vehicle passed a parked dark SUV on the left shoulder; (B) the vehicle passed a dirt track joining from the left; (C) the vehicle passed a gravel driveway and mailbox on the right.",
+      "options": [
+        "The vehicle passed a gravel driveway and mailbox on the right.",
+        "The vehicle passed a parked dark SUV on the left shoulder.",
+        "The vehicle passed a dirt track joining from the left."
+      ],
+      "answer_indices": [
+        1,
+        2,
+        0
+      ],
+      "event_ids": [
+        66,
+        63,
+        67
+      ],
+      "frame_evidence": [
+        "1752854860814008.jpg",
+        "1752854832812904.jpg",
+        "1752854872013427.jpg"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred: (A) the vehicle passed the no-parking sign; (B) the vehicle passed the inn, a parked SUV, and a person beside it; (C) the vehicle passed the car parked in the left-side pull-off; (D) the vehicle passed a small paved side road joining from the left.",
+      "options": [
+        "The vehicle passed the small paved side road joining from the left.",
+        "The vehicle passed the inn, a parked SUV, and a person beside it.",
+        "The vehicle passed the car parked in the left-side pull-off.",
+        "The vehicle passed the no-parking sign."
+      ],
+      "answer_indices": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "event_ids": [
+        36,
+        35,
+        38,
+        39
+      ],
+      "frame_evidence": [
+        "1752854496809498.jpg",
+        "1752854491209340.jpg",
+        "1752854502409499.jpg",
+        "1752854508809496.jpg"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred: (A) the vehicle passed a mailbox beside the right shoulder while following a left bend; (B) the vehicle passed the 40 km/h speed-limit sign; (C) the vehicle drove across the bridge; (D) a yellow warning sign came into view ahead on the right.",
+      "options": [
+        "The yellow warning sign came into view ahead on the right.",
+        "The vehicle passed the 40 km/h speed-limit sign.",
+        "The vehicle drove across the bridge.",
+        "The vehicle passed the mailbox beside the right shoulder."
+      ],
+      "answer_indices": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "event_ids": [
+        71,
+        72,
+        73,
+        75
+      ],
+      "frame_evidence": [
+        "1752854956014418.jpg",
+        "1752854957214412.jpg",
+        "1752854972814330.jpg",
+        "1752854981214658.jpg"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "sequence_order",
+      "question": "Put these events in the order they occurred: (A) the vehicle passed the green-and-pale roadside marker; (B) it approached the left-curve warning sign; (C) it cleared the short bridge; (D) it turned right at a junction onto an adjoining paved road.",
+      "options": [
+        "It turned right at a junction onto an adjoining paved road.",
+        "It cleared the short bridge.",
+        "It passed the green-and-pale roadside marker.",
+        "It approached the left-curve warning sign."
+      ],
+      "answer_indices": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "event_ids": [
+        86,
+        87,
+        88,
+        89
+      ],
+      "frame_evidence": [
+        "1752855051215104.jpg",
+        "1752855052015110.jpg",
+        "1752855056815150.jpg",
+        "1752855087215512.jpg"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed the yellow warning sign on the right?",
+      "options": [
+        "It passed the stop-ahead warning sign on the right.",
+        "It passed the driveway and parked sedan on the right.",
+        "It passed a mailbox on the right while following a gradual right-hand curve.",
+        "It passed the winding-road warning sign on the right."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        75,
+        76,
+        74,
+        78,
+        46
+      ],
+      "frame_evidence": [
+        "1752854981214658.jpg",
+        "1752854984014684.jpg",
+        "1752854978814521.jpg",
+        "1752854989614886.jpg",
+        "1752854592010948.jpg"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle turned from the broad gravel intersection onto the narrower gravel road?",
+      "options": [
+        "It passed a right-side driveway and mailbox.",
+        "It approached the gravel crossroads, with the stop sign drawing closer and a roadside building becoming more prominent.",
+        "It passed a dirt track joining from the left.",
+        "It passed a dark SUV parked on the left shoulder."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        60,
+        59,
+        62,
+        63,
+        66
+      ],
+      "frame_evidence": [
+        "1752854789612561.jpg",
+        "1752854776812393.jpg",
+        "1752854821612820.jpg",
+        "1752854832812904.jpg",
+        "1752854860814008.jpg"
+      ]
+    },
+    {
+      "question_id": 12,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle passed the parked white sedan on the right shoulder?",
+      "options": [
+        "It passed the inn, a parked SUV, and a person standing beside it.",
+        "It reached the entrance of a left-curving bridge.",
+        "It passed the gravel driveway and parked sedan on the right.",
+        "It turned right at a junction onto an adjoining paved road."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        90,
+        91,
+        35,
+        74,
+        89
+      ],
+      "frame_evidence": [
+        "1752855107216278.jpg",
+        "1752855110016717.jpg",
+        "1752854491209340.jpg",
+        "1752854978814521.jpg",
+        "1752855087215512.jpg"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "questions": [
+    {
+      "question_id": 1,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a utility truck parked on the left side of the road, or a white truck appeared in the left lane and passed the vehicle?",
+      "options": [
+        "The vehicle passed a utility truck parked on the left side of the road.",
+        "A white truck appeared in the left lane and passed the vehicle."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        27,
+        33
+      ],
+      "frame_evidence": [
+        "1733330855745965.png",
+        "1733330883746260.png"
+      ]
+    },
+    {
+      "question_id": 2,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed under a green road sign indicating directions to Glendale Ave. and Niagara-on-the-Lake, or the vehicle passed by a 'BEER STORE' sign?",
+      "options": [
+        "The vehicle passed under a green road sign indicating directions to Glendale Ave. and Niagara-on-the-Lake.",
+        "The vehicle passed by a 'BEER STORE' sign."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        48,
+        104
+      ],
+      "frame_evidence": [
+        "1733330950746943.png",
+        "1733331205749752.png"
+      ]
+    },
+    {
+      "question_id": 3,
+      "type": "pairwise_order",
+      "question": "Which happened first: a green car appeared in the left lane beside the vehicle, or a white van passed the vehicle in the left lane?",
+      "options": [
+        "A green car appeared in the left lane beside the vehicle.",
+        "A white van passed the vehicle in the left lane."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        90,
+        83
+      ],
+      "frame_evidence": [
+        "1733331138748844.png",
+        "1733331106748662.png"
+      ]
+    },
+    {
+      "question_id": 4,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle approached and stopped at a stop sign at an intersection, or the vehicle approached and stopped at a red traffic light after driving under an overpass?",
+      "options": [
+        "The vehicle approached and stopped at a stop sign at an intersection.",
+        "The vehicle approached and stopped at a red traffic light after driving under an overpass."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4,
+        117
+      ],
+      "frame_evidence": [
+        "1733330745746106.png",
+        "1733331260749751.png"
+      ]
+    },
+    {
+      "question_id": 5,
+      "type": "pairwise_order",
+      "question": "Which happened first: the vehicle passed a construction warning sign on the right side of the road, or the vehicle passed a sign indicating 'Niagara-on-the-Lake Population'?",
+      "options": [
+        "The vehicle passed a construction warning sign on the right side of the road.",
+        "The vehicle passed a sign indicating 'Niagara-on-the-Lake Population'."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        42,
+        43
+      ],
+      "frame_evidence": [
+        "1733330925746568.png",
+        "1733330928746573.png"
+      ]
+    },
+    {
+      "question_id": 6,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle passes under a road sign indicating directions to Lake Street, Welland Ave, and Niagara St.",
+        "The vehicle passes by a 'BEER STORE' sign on the right side of the road.",
+        "The vehicle overtakes a black car and a white truck on the right side of the road.",
+        "The vehicle approaches and passes an orange construction sign indicating construction ahead."
+      ],
+      "answer_indices": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "event_ids": [
+        101,
+        104,
+        105,
+        49
+      ],
+      "frame_evidence": [
+        "1733331190749989.png",
+        "1733331205749752.png",
+        "1733331210749905.png",
+        "1733330953746820.png"
+      ]
+    },
+    {
+      "question_id": 7,
+      "type": "sequence_order",
+      "question": "Which is the chronological order of these events?",
+      "options": [
+        "The vehicle enters the tunnel under the overpass.",
+        "A person riding a motorized scooter is seen on the left side of the road.",
+        "The vehicle approaches and passes through a traffic light intersection, with the black SUV's brake lights turning off.",
+        "The vehicle passes under an overpass while the traffic light changes from red to yellow to green."
+      ],
+      "answer_indices": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "event_ids": [
+        115,
+        125,
+        120,
+        10
+      ],
+      "frame_evidence": [
+        "1733331252751358.png",
+        "1733331300749892.png",
+        "1733331275749557.png",
+        "1733330770746269.png"
+      ]
+    },
+    {
+      "question_id": 8,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle approached and stopped at the first stop sign at an intersection?",
+      "options": [
+        "The vehicle continued driving forward after stopping at the stop sign.",
+        "The vehicle passed a utility truck parked on the left side of the road.",
+        "The vehicle entered a tunnel under an overpass.",
+        "A white van passed the vehicle in the left lane."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        4,
+        5,
+        27,
+        83
+      ],
+      "frame_evidence": [
+        "1733330745746106.png",
+        "1733330748746197.png",
+        "1733330855745965.png",
+        "1733331106748662.png"
+      ]
+    },
+    {
+      "question_id": 9,
+      "type": "before_after",
+      "question": "What happened immediately before the vehicle passed under a green road sign indicating directions to Glendale Ave. and Niagara-on-the-Lake?",
+      "options": [
+        "The vehicle approached an orange construction sign indicating construction ahead.",
+        "The vehicle passed by a sign indicating 'Niagara-on-the-Lake Population'.",
+        "The vehicle passed a construction warning sign on the right side of the road.",
+        "The vehicle passed under a road sign indicating directions to Lake Street, Welland Ave, and Niagara St."
+      ],
+      "answer_indices": [
+        1
+      ],
+      "event_ids": [
+        48,
+        43,
+        42,
+        101
+      ],
+      "frame_evidence": [
+        "1733330950746943.png",
+        "1733330928746573.png",
+        "1733330925746568.png",
+        "1733331190749989.png"
+      ]
+    },
+    {
+      "question_id": 10,
+      "type": "before_after",
+      "question": "What happened immediately after the vehicle entered the tunnel under the overpass?",
+      "options": [
+        "The vehicle continued driving through the tunnel toward the exit.",
+        "The vehicle approached and stopped at a stop sign.",
+        "The vehicle passed by a 'BEER STORE' sign.",
+        "A person riding a motorized scooter appeared on the left side of the road."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        115,
+        116,
+        59,
+        104
+      ],
+      "frame_evidence": [
+        "1733331252751358.png",
+        "1733331255764041.png",
+        "1733330990746961.png",
+        "1733331205749752.png"
+      ]
+    },
+    {
+      "question_id": 11,
+      "type": "before_after",
+      "question": "What happened immediately after a white van passed the vehicle in the left lane?",
+      "options": [
+        "The vehicle maintained a steady position in the center lane, following the large truck ahead.",
+        "A green car appeared in the left lane beside the vehicle.",
+        "The vehicle passed a yellow school bus.",
+        "The vehicle overtook a black car and a white truck on the right side."
+      ],
+      "answer_indices": [
+        0
+      ],
+      "event_ids": [
+        83,
+        84,
+        90,
+        89
+      ],
+      "frame_evidence": [
+        "1733331106748662.png",
+        "1733331110748696.png",
+        "1733331138748844.png",
+        "1733331135748784.png"
+      ]
+    }
+  ]
+}
