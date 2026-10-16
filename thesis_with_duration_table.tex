@@ -42,7 +42,7 @@
 \maketitle
 
 \begin{abstract}
-Vision-Language Models (VLMs) are seeing increased adoption in modern systems such as autonomous vehicles and embodied agents. These systems require a continuous, long-term understanding of past events, known as episodic memory, to maintain task context and prevent operational failures. Despite its critical importance, current benchmarks evaluating episodic memory in VLMs remain limited. Existing datasets typically feature short-duration clips (seconds to minutes) in event-dense environments, characterised by high-frequency occurrences that result in high Signal-to-Noise Ratio (SNR) scenarios. Consequently, there is a significant lack of benchmarks addressing low-SNR, event-sparse environments such as forests, rural roads, and tunnels which demand fine-grained episodic discrimination and long-range temporal retrieval over extended sequences. To address this gap, we propose a benchmarking framework for evaluating episodic memory in modern VLMs in low-SNR environments, utilising extended duration videos ranging from 6 minutes to 1 hour. The framework includes a pipeline for generating natural language query-based question-answer pairs using modern Large Language Models (LLMs) and VLMs, followed by human verification. The benchmark targets three key evaluation categories: sparse-event localisation and temporal ordering. This benchmark is anticipated to provide an evaluation framework capable of exposing the limitations of current multi-modal architectures.
+Vision-Language Models (VLMs) are seeing increased adoption in modern systems such as autonomous vehicles and embodied agents. These systems require a continuous, long-term understanding of past events, known as episodic memory, to maintain task context and prevent operational failures. Despite its critical importance, current benchmarks evaluating episodic memory in VLMs remain limited. Existing datasets typically feature short-duration clips (seconds to minutes) in event-dense environments, characterised by high-frequency occurrences that result in high Signal-to-Noise Ratio (SNR) scenarios. Consequently, there is a significant lack of benchmarks addressing low-SNR, event-sparse environments such as forests, rural roads, and tunnels which demand fine-grained episodic discrimination and long-range temporal retrieval over extended sequences. To address this gap, we propose a benchmarking framework for evaluating episodic memory in modern VLMs in low-SNR environments, utilising extended duration videos ranging from 6 minutes to 1 hour. The framework includes a pipeline for generating natural language query-based question-answer pairs using modern Large Language Models (LLMs) and VLMs, followed by human verification. The benchmark targets two key evaluation categories: sparse-event localisation and temporal ordering. This benchmark is anticipated to provide an evaluation framework capable of exposing the limitations of current multi-modal architectures.
 \end{abstract}
 
 % ---------------------------------------------------------
@@ -59,7 +59,7 @@ Consequently, a significant gap exists regarding the evaluation of VLMs in low S
 
 To address this critical gap, this study is guided by the following research question: \textit{\textbf{Can modern Vision-Language Models accurately recall, distinguish, and reason with episodic memories in an event-sparse environment?}}
 
-The primary objective of this project is to develop a comprehensive and reliable benchmark to assess the episodic memory of VLMs within the aforementioned domains. To achieve this, an automated pipeline is proposed to generate question-answer pairs based on long-form video inputs, which are subsequently validated via human annotation. The benchmark evaluates models across three main categories:
+The primary objective of this project is to develop a comprehensive and reliable benchmark to assess the episodic memory of VLMs within the aforementioned domains. To achieve this, an automated pipeline is proposed to generate question-answer pairs based on long-form video inputs, which are subsequently validated via human annotation. The benchmark evaluates models across two main categories:
 \begin{itemize} 
 \item \textbf{Sparse Event Localisation:} Verifying the occurrence of rare, outlier events over extended durations (e.g., identifying a wildlife crossing during a long drive). 
 \item \textbf{Temporal Order:} Assessing the model's capacity to recall the chronological sequence of past events. 
@@ -190,20 +190,20 @@ Invented events are tracked within an auxiliary \texttt{false\_events} schema al
 \scriptsize
 \setlength{\tabcolsep}{2pt}
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{lrrrrr}
+\begin{tabular}{lr}
 \toprule
-\textbf{Group} & \textbf{\#Videos} & \textbf{Mean (min)} & \textbf{Sparse QA} & \textbf{Temporal QA} & \textbf{Total QA} \\
+\textbf{Group} & \textbf{\#Videos} \\
 \midrule
-Short & 5 & 4.74 & 60 & 65 & 125 \\
-Medium & 4 & 13.03 & 51 & 50 & 101 \\
-Long & 8 & 19.16 & 113 & 105 & 218 \\
+Short & 5 \\
+Medium & 4 \\
+Long & 8 \\
 \midrule
-All & 17 & 13.47 & 224 & 220 & 444 \\
+All & 17 \\
 \bottomrule
 \end{tabular}
 }% resizebox
 \endgroup
-\caption{Duration-stratified composition of the 17 video sequences. Short: $t \leq 10$ min; medium: $10 < t \leq 15$ min; long: $t > 15$ min. Durations are measured from camera-frame timestamps.}
+\caption{Duration-stratified distribution of the 17 video sequences. Short: $t \leq 10$ min; medium: $10 < t \leq 15$ min; long: $t > 15$ min. The mean video duration is 1800~s (30~min), and the benchmark contains 422 QA pairs in total.}
 \label{tab:duration_composition}
 \end{table}
 \FloatBarrier
@@ -218,9 +218,9 @@ The overall design of the benchmark reflects the operational demands of autonomo
 % ---------------------------------------------------------
 % RESULTS
 % ---------------------------------------------------------
-\section{Discussion}
+\section{Results}
 
-In this section, we'll evaluate the result from various different VLM models to assess them on how they go against our Episodic Memory benchmark.
+This section reports the performance of the evaluated VLMs on the proposed episodic-memory benchmark.
 
 We conducted the test on various VLM models from the top well known companies. Some closed source models include 
 
